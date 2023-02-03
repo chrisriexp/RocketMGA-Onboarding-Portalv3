@@ -1,6 +1,6 @@
 <template>
     <div class="w-full h-fit py-4 bg-white border-t-2 border-custom-gray border-opacity-20">
-        <div class="w-[90%] h-fit flex flow-root mx-auto text-custom-gray text-sm uppercase">
+        <div class="w-[90%] h-fit flow-root mx-auto text-custom-gray text-sm uppercase">
             <p class="float-left">© 2023 <span class="text-custom-red">RocketMGA</span></p>
             <div class="flex float-right gap-4">
                 <p>All rights reserved</p>
