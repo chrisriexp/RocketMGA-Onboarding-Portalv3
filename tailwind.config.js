@@ -14,10 +14,11 @@ module.exports = {
       'custom-red': '#FD0000',
       'custom-gray': '#4c4c4c',
       'custom-light-blue': '#EFF3F6',
-      'custom-dark-blue': '#172340'
+      'custom-dark-blue': '#172340',
+      'custom-orange': '#F59C4A'
       },
       boxShadow: {
-      'newdrop': '0 4px 50px #00000040;',
+      'newdrop': 'rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;',
       },
     },
     screens: {

@@ -4,22 +4,22 @@
         <img src="../../assets/1.jpg" alt="Abstract Background Image">
     </div>
 
-    <form @submit.prevent="resetPassword" class="grid gap-4 w-fit h-fit mx-auto mt-48 px-16 py-8 bg-white shadow-newdrop border-custom-gray border-[1px] border-opacity-20 rounded-lg z-10 relative">
+    <form @submit.prevent="resetPassword" class="grid gap-6 w-[400px] h-fit mx-auto mt-48 px-16 py-8 bg-white shadow-newdrop border-custom-gray border-[1px] border-opacity-20 rounded-lg z-10 relative">
         <h1 class="text-center text-custom-dark-blue text-xl">Reset Password</h1>
 
-        <textInput :isdisabled="verifedEmail" @inputUpdate="inputChange" :id="'email'" :label="'Email'" :placeholderText="'johndoe@gmail.com'" :email=true />
+        <textInput :isdisabled="verifedEmail" @inputUpdate="inputChange" :inputValue="form.email" :id="'email'" :label="'Email'" :placeholderText="'john@doe.com'" :email=true />
         <textInput v-if="codeSent && !verifedEmail" @inputUpdate="inputChange" :id="'verification_code'" :label="'Verification Code'" :placeholderText="'000000'" />
         <textInput v-if="verifedEmail" @inputUpdate="inputChange" :id="'password'" :label="'Password'" :placeholderText="'*******'" :password=true />
         <textInput v-if="verifedEmail" @inputUpdate="inputChange" :id="'confirm_password'" :label="'Confirm Password'" :placeholderText="'*******'" :password=true />
 
 
         <div v-if="!verifedEmail" class="w-full">
-            <button v-if="!codeSent" @click="sendCode" class="mt-4 bg-custom-dark-blue text-white rounded-md p-2 hover:cursor-pointer w-full">Send Code</button>
-            <button v-else @click="verifyCode" class="mt-4 bg-custom-dark-blue text-white rounded-md p-2 hover:cursor-pointer w-full">Verify Email</button>
+            <button v-if="!codeSent" type="button" @click="sendCode" class="mt-4 bg-custom-dark-blue text-white rounded-md p-2 hover:cursor-pointer w-full">Send Code</button>
+            <button v-else type="button" @click="verifyCode" class="mt-4 bg-custom-dark-blue text-white rounded-md p-2 hover:cursor-pointer w-full">Verify Email</button>
         </div>
         <input v-else type="submit" class="mt-4 bg-custom-dark-blue text-white rounded-md p-2 hover:cursor-pointer">
 
-        <router-link to="/register" class="text-sm text-custom-dark-blue text-center">Don't have an account? <span class="underline">Register</span></router-link>
+        <router-link to="/register" class="text-sm text-custom-dark-blue text-center mt-[-15px]">Don't have an account? <span class="underline">Register</span></router-link>
     </form>
 
     <Footer class="bottom-0 absolute" />
@@ -82,9 +82,37 @@ export default {
             }
         },
         sendCode(){
-            this.emailCode = Math.floor(Math.random()*90000).toString()
-            this.codeSent = true
-            console.log(this.emailCode)
+            let valid = true
+
+            this.errors.forEach(item => {
+                if(item.errors.length > 0){
+                    valid = false
+                    item.errors.forEach(error => {
+                        this.$alert({
+                            title: item.name.toUpperCase()+" ERROR",
+                            text: error,
+                            type: 'warn'
+                        })
+                    })
+                }
+                return
+            })
+
+            if(this.form.email == null || this.form.email == ''){
+                valid = false
+                this.$alert({
+                    title: 'Email Valdation',
+                    text: 'Please enter a valid email.',
+                    type: 'warn'
+                })
+                return
+            }
+
+            if(valid){
+                this.emailCode = Math.floor(Math.random()*90000).toString()
+                this.codeSent = true
+                console.log(this.emailCode)
+            }
         },
         verifyCode(){
             if(this.verification_code == this.emailCode){
@@ -93,7 +121,7 @@ export default {
                 this.$alert({
                     title: 'Verification Code Error:',
                     text: 'The verification code you entered is invalid.',
-                    type: 'error'
+                    type: 'warn'
                 })
 
                 this.codeSent = false
@@ -109,7 +137,7 @@ export default {
                         this.$alert({
                             title: item.name.toUpperCase()+" ERROR",
                             text: error,
-                            type: 'error'
+                            type: 'warn'
                         })
                     })
                 }

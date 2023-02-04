@@ -4,17 +4,17 @@
         <img src="../../assets/1.jpg" alt="Abstract Background Image">
     </div>
 
-    <form @submit.prevent="register" class="grid gap-4 w-fit h-fit mx-auto mt-32 px-16 py-8 bg-white shadow-newdrop border-custom-gray border-[1px] border-opacity-20 rounded-lg z-10 relative">
+    <form @submit.prevent="register" class="grid gap-6 w-[400px] h-fit mx-auto mt-32 px-16 py-8 bg-white shadow-newdrop border-custom-gray border-[1px] border-opacity-20 rounded-lg z-10 relative">
         <h1 class="text-center text-custom-dark-blue text-xl font-medium">Register</h1>
 
         <textInput @inputUpdate="inputChange" :id="'name'" :label="'Name'" :placeholderText="'John Doe'" />
-        <textInput @inputUpdate="inputChange" :id="'email'" :label="'Email'" :placeholderText="'johndoe@gmail.com'" :email=true />
+        <textInput @inputUpdate="inputChange" :id="'email'" :label="'Email'" :placeholderText="'john@doe.com'" :email=true />
         <textInput @inputUpdate="inputChange" :id="'password'" :label="'Password'" :placeholderText="'*******'" :password=true />
         <textInput @inputUpdate="inputChange" :id="'confirm_password'" :label="'Confirm Password'" :placeholderText="'*******'" :password=true />
 
         <input type="submit" class="mt-4 bg-custom-dark-blue text-white rounded-md p-2 hover:cursor-pointer">
 
-        <router-link to="/" class="text-sm text-custom-dark-blue text-center">Already have an account? <span class="underline">Login</span></router-link>
+        <router-link to="/" class="text-sm text-custom-dark-blue text-center mt-[-15px]">Already have an account? <span class="underline">Login</span></router-link>
     </form>
 
     <Footer class="bottom-0 absolute" />

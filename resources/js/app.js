@@ -4,7 +4,9 @@ import {createApp} from 'vue'
 import App from '../App.vue'
 import '../css/app.css'
 import '../css/tailwind.css'
+import 'vue-select/dist/vue-select.css';
 import Notifications from '@kyvg/vue3-notification'
+import vSelect from "vue-select";
 import {createRouter, createWebHistory} from 'vue-router';
 import NotFound from './views/NotFound.vue'
 import Home from './views/Home.vue'
@@ -65,4 +67,4 @@ function validateAccessToken(to, from, next) {
     });
 }
 
-createApp(App).use(Notifications, { name: "alert" }).use(router).mount("#app")
+createApp(App).use(Notifications, { name: "alert" }).use(router).component("v-select", vSelect).mount("#app")

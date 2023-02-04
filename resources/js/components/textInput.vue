@@ -1,6 +1,6 @@
 <template>
-    <div class="grid">
-        <label class="text-md text-custom-dark-blue">{{ label }}</label>
+    <div class="grid gap-2 h-fit">
+        <label class="text-md text-custom-dark-blue font-medium">{{ label }} <span v-if="required" class="text-custom-red">*</span></label>
         <input
             v-if="!password"
             v-model="v$.inputData.$model"
@@ -10,7 +10,7 @@
             :id="id"
             :placeholder="placeholderText"
             :class="v$.inputData.$error ? 'border-custom-red focus:border-custom-red' : 'border-custom-gray border-opacity-20 focus:border-custom-blue'"
-            class="w-[300px] p-2 rounded-md border-2 focus:ring-0"
+            class="w-full p-2 rounded-md border-2 focus:ring-0"
         >
         <input
             v-else
@@ -20,7 +20,7 @@
             :id="id"
             :placeholder="placeholderText"
             :class="v$.inputData.$error ? 'border-custom-red focus:border-custom-red' : 'border-custom-gray border-opacity-20 focus:border-custom-blue'"
-            class="w-[300px] p-2 rounded-md border-2 focus:ring-0"
+            class="w-full p-2 rounded-md border-2 focus:ring-0"
         >
         <div class="input-errors" v-for="(error, index) of v$.inputData.$errors" :key="index">
             <div class="error-msg text-sm text-red-400">{{ error.$message }}</div>
@@ -30,10 +30,11 @@
 
 <script>
 import { useVuelidate } from '@vuelidate/core'
-import { required, email, minLength, maxLength, helpers} from '@vuelidate/validators'
+import { required, email, helpers} from '@vuelidate/validators'
+import {computed, watch} from 'vue';
 
 export default {
-    setup () {
+    setup() {
         return {
             v$: useVuelidate()
         }
@@ -57,6 +58,8 @@ export default {
 
             this.valid = validRules
         }
+
+        this.inputData = this.inputValue
     },
     data() {
         return {
@@ -68,6 +71,10 @@ export default {
         id: String,
         label: String,
         placeholderText: String,
+        inputValue: {
+            type: String,
+            default: ''
+        },
         isdisabled: {
             type: Boolean,
             default: false
@@ -83,6 +90,11 @@ export default {
         email: {
             type: Boolean,
             default: false
+        }
+    },
+    watch: {
+        inputValue(newValue, oldValue) {
+            this.inputData = newValue
         }
     },
     methods: {

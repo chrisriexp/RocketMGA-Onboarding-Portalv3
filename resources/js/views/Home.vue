@@ -4,15 +4,15 @@
         <img src="../../assets/1.jpg" alt="Abstract Background Image">
     </div>
 
-    <form @submit.prevent="login" class="grid gap-4 w-fit h-fit mx-auto mt-64 px-16 py-8 bg-white shadow-newdrop border-custom-gray border-[1px] border-opacity-20 rounded-lg z-10 relative">
+    <form @submit.prevent="login" class="grid gap-6 w-[400px] h-fit mx-auto mt-64 px-16 py-8 bg-white shadow-newdrop border-custom-gray border-[1px] border-opacity-20 rounded-lg z-10 relative">
         <h1 class="text-center text-custom-dark-blue text-xl font-medium">Login</h1>
 
-        <textInput @inputUpdate="inputChange" :id="'email'" :label="'Email'" :placeholderText="'johndoe@gmail.com'" :email=true />
+        <textInput @inputUpdate="inputChange" :id="'email'" :label="'Email'" :placeholderText="'john@doe.com'" :email=true />
         <textInput @inputUpdate="inputChange" :id="'password'" :label="'Password'" :placeholderText="'*******'" :password=true />
 
         <input type="submit" class="mt-4 bg-custom-dark-blue text-white rounded-md p-2 hover:cursor-pointer">
 
-        <div class="flow-root w-full">
+        <div class="flow-root w-full mt-[-15px]">
             <router-link to="/register" class="text-sm underline text-custom-dark-blue float-left">Create Account</router-link>
             <router-link to="/reset-password" class="text-sm underline text-custom-dark-blue float-right">Forgot Password</router-link>
         </div>
