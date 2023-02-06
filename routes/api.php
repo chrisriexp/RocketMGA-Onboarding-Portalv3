@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\OnboardingController;
+use App\Http\Controllers\API\FileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -30,3 +31,8 @@ Route::middleware('auth:sanctum')->get('/logout', [AuthController::class, 'logou
 /**Onboarding Routes */
 Route::middleware('auth:sanctum')->get('/onboarding/check', [OnboardingController::class, 'check']);
 Route::middleware('auth:sanctum')->post('/onboarding/update', [OnboardingController::class, 'update']);
+
+/**FIle Upload */
+// Route::middleware('auth:sanctum')->get('/files', [FileController::class, 'index']);
+// Route::middleware('auth:sanctum')->get('/file', [FileController::class, 'getUser']);
+Route::middleware('auth:sanctum')->post('/upload', [FileController::class, 'upload'])->name('upload');

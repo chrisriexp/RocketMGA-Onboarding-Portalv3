@@ -12,7 +12,7 @@
         <entityInfo v-else-if="step == 2" @back="back" />
     </div>
 
-    <Footer :class="step == 1 || step == 2 ? 'absolute' : 'relative'" class="bottom-0" />
+    <Footer :class="step == 1 ? 'absolute' : 'relative'" class="bottom-0" />
 </template>
 
 <script>

@@ -24,7 +24,7 @@
                 <textMask @inputUpdate="inputChange" :inputValue="form.agency_tax_id" :id="'agency_tax_id'" :label="'Agency Tax ID'" :placeholderText="'000-00-0000'" :maskText="'###-##-####'" />
             </div>
 
-            <div class="w-full grid grid-cols-2 gap-6">
+            <div>
                 <div class="grid gap-2">
                     <label class="text-md text-custom-dark-blue font-medium">Agency Type <span class="text-custom-red">*</span></label>
                     <v-select
@@ -40,6 +40,13 @@
                 </div>
             </div>
 
+            <hr>
+
+            <div v-if="checkRun" class="w-full grid grid-cols-2 gap-6">
+                <fileUpload @fileUploaded="fileUploaded" :type="'agency_license_file'" :inputValue="form.agency_license_file" :label="'Agency License'" />
+                <fileUpload :type="'agency_logo'" :inputValue="form.agency_logo" :label="'Company Logo'" :required=false />
+            </div>
+
             <div class="flex gap-12 w-full">
                 <button @click="back" type="button" class="w-[65%] bg-custom-gray bg-opacity-40 rounded-lg py-2 uppercase text-white font-bold text-sm hover:cursor-pointer">back</button>
                 <input type="submit" class="w-full bg-custom-orange  rounded-lg py-2 uppercase text-white font-bold text-sm hover:cursor-pointer" value="next">
@@ -52,11 +59,13 @@
 import ProgressBar from '../progressBar.vue'
 import textInput from '../textInput.vue'
 import textMask from '../textMask.vue'
+import fileUpload from '../fileUpload.vue'
 
 export default {
     name: "Entity Info",
     data() {
         return {
+            checkRun: false,
             options: [
                 {
                     name: 'Individual/Sole Proprietor',
@@ -97,6 +106,7 @@ export default {
                 agent_license_eff: '',
                 agent_license_exp: '',
                 agency_license: '',
+                agency_license_file: '',
                 agency_tax_id: '',
                 agency_type: '',
                 agency_logo: ''
@@ -140,10 +150,12 @@ export default {
             const keys = Object.keys(this.form)
 
             keys.forEach(key => {
-                if(response.data.message[key] != null || response.data.message[key] != ''){
+                if(!response.data.message[key] == null || !response.data.message[key] == ''){
                     this.form[key] = response.data.message[key]
                 }
             })
+
+            this.checkRun = true
         })
     },
     methods: {
@@ -167,6 +179,9 @@ export default {
                 })
             }
         },
+        fileUploaded(key, value){
+            this.form[key] = value
+        },
         async next(){
             let valid = true
 
@@ -183,6 +198,15 @@ export default {
                     })
                 }
             })
+
+            if(!this.form.agency_license_file){
+                valid = false
+                this.$alert({
+                    title: 'Validation Error',
+                    text: 'please upload you agency license.',
+                    type: 'warn'
+                })
+            }
 
             if(valid){
                 await axios.post('/api/onboarding/update', {
@@ -212,7 +236,8 @@ export default {
     components: {
         ProgressBar,
         textInput,
-        textMask
+        textMask,
+        fileUpload
     }
 }
 </script>

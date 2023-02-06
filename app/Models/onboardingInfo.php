@@ -40,6 +40,7 @@ class onboardingInfo extends Model
         'agent_license_eff',
         'agent_license_exp',
         'agency_license',
+        'agency_license_file',
         'agency_tax_id',
         'agency_type',
         'agency_logo'

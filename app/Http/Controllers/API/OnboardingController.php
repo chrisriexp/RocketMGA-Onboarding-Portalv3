@@ -41,25 +41,43 @@ class OnboardingController extends Controller
     }
 
     public function update(Request $request){
-        $data = $request['data'];
-        $step = $request['step'];
-
         $id = $request->user()->rocket_id;
+        $data = $request['data'];
 
-        if($step == 0){
-            $data['phone'] = preg_replace('/\D+/', '', $data['phone']);
+        if($request->has('step')){
+            $step = $request['step'];
 
+            if($step == 0){
+                $data['phone'] = preg_replace('/\D+/', '', $data['phone']);
+    
+                $validator = Validator::make($data, [
+                    'agency_name'=> 'required',
+                    'agent_name'=> 'required',
+                    'email'=> 'required|email',
+                    'phone'=> 'required|digits:10',
+                    'address'=> 'required'
+                ]);
+            } elseif($step == 1){
+                $validator = Validator::make($data, [
+                    'carriers'=> 'required',
+                    'additional_states'=> 'required'
+                ]);
+            } elseif($step == 2){
+                $data['agency_tax_id'] = str_replace('-', '', $data['agency_tax_id']);
+
+                $validator = Validator::make($data, [
+                    'agent_license'=> 'required',
+                    'agent_npn'=> 'required|digits:7',
+                    'agent_license_eff'=> 'required',
+                    'agent_license_exp'=> 'required',
+                    'agency_license'=> 'required',
+                    'agency_tax_id'=> 'required|digits:9',
+                    'agency_type'=> 'required'
+                ]);
+            }
+        } else {
             $validator = Validator::make($data, [
-                'agency_name'=> 'required',
-                'agent_name'=> 'required',
-                'email'=> 'required|email',
-                'phone'=> 'required|digits:10',
-                'address'=> 'required'
-            ]);
-        } elseif($step == 1){
-            $validator = Validator::make($data, [
-                'carriers'=> 'required',
-                'additional_states'=> 'required'
+
             ]);
         }
 
@@ -82,24 +100,28 @@ class OnboardingController extends Controller
         $existingUser->fill($data);
         $existingUser->save();
 
-        if($step == 1){
-            $carriers = json_decode($data['carriers'], true);
-            $mgaCarriers = ['aon', 'beyond', 'dual', 'flow', 'neptune', 'palomar', 'sterling', 'wright'];
-
-            $results = [];
-            foreach ($mgaCarriers as $carrier){
-                $found = false;
-                foreach ($carriers as $value){
-                    if(str_contains(strtolower($value['name']), $carrier)){
-                        $found = true;
-                        break;
+        if($request->has('step')){
+            $step = $request['step'];
+            
+            if($step == 1){
+                $carriers = json_decode($data['carriers'], true);
+                $mgaCarriers = ['aon', 'beyond', 'dual', 'flow', 'neptune', 'palomar', 'sterling', 'wright'];
+    
+                $results = [];
+                foreach ($mgaCarriers as $carrier){
+                    $found = false;
+                    foreach ($carriers as $value){
+                        if(str_contains(strtolower($value['name']), $carrier)){
+                            $found = true;
+                            break;
+                        }
                     }
+                    $results[$carrier] = $found;
                 }
-                $results[$carrier] = $found;
+    
+                $existingUser->fill($results);
+                $existingUser->save();
             }
-
-            $existingUser->fill($results);
-            $existingUser->save();
         }
 
         $response = [
