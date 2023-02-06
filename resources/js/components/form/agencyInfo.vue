@@ -1,7 +1,7 @@
 <template>
     <div class="grid gap-6 w-[680px] px-16 py-6 mx-auto mt-16 bg-white rounded-lg border-[1px] border-custom-gray border-opacity-20 shadow-newdrop z-0 relative">
         <!--Progress Bar-->
-        <ProgressBar :width="'0%'" />
+        <ProgressBar :width="'0'" />
 
         <!--Header-->
         <h2 class="text-center text-custom-dark-blue text-2xl font-semibold">Agency Information</h2>
@@ -13,22 +13,7 @@
             </div>
 
             <div class="w-full grid grid-cols-2 gap-6">
-                <!--Phone Number-->
-                <div class="grid gap-2 h-fit">
-                    <label class="text-md text-custom-dark-blue font-medium">Phone Number <span class="text-custom-red">*</span></label>
-                    <input
-                        v-model="v$.form.phone.$model"
-                        type='text'
-                        v-mask="['(###) ###-####']"
-                        placeholder="(555) 555-5555"
-                        :class="v$.form.phone.$error ? 'border-custom-red focus:border-custom-red' : 'border-custom-gray border-opacity-20 focus:border-custom-blue'"
-                        class="w-full p-2 rounded-md border-2 focus:ring-0"
-                    >
-                    <div class="input-errors" v-for="(error, index) of v$.form.phone.$errors" :key="index">
-                        <div class="error-msg text-sm text-red-400">{{ error.$message }}</div>
-                    </div>
-                </div>
-
+                <textMask @inputUpdate="inputChange" :inputValue="form.phone" :id="'phone'" :label="'Phone Number'" :placeholderText="'(555) 555-5555'" :maskText="'(###) ###-####'" />
                 <textInput @inputUpdate="inputChange" :inputValue="form.email" :id="'email'" :label="'Email Address'" :placeholderText="'john@doe.com'" :email=true />
             </div>
 
@@ -64,25 +49,18 @@
                 <textInput class="opacity-40" @inputUpdate="inputChange" :inputValue="form.zip" :id="'zip'" :label="'Zip'" :isdisabled=true />
             </div>
 
-            <input type="submit" class="bg-custom-blue rounded-lg py-2 uppercase text-white font-bold text-sm hover:cursor-pointer" value="next">
+            <input type="submit" class="bg-custom-orange rounded-lg py-2 uppercase text-white font-bold text-sm hover:cursor-pointer" value="next">
         </form>
     </div>
 </template>
 
 <script>
-import { useVuelidate } from '@vuelidate/core'
-import { required, minLength, maxLength, helpers} from '@vuelidate/validators'
-import {mask} from 'vue-the-mask'
 import VueGoogleAutocomplete from 'vue-google-autocomplete'
 import ProgressBar from '../progressBar.vue'
 import textInput from '../textInput.vue'
+import textMask from '../textMask.vue'
 
 export default {
-    setup() {
-        return {
-            v$: useVuelidate()
-        }
-    },
     name: "Agency Info",
     data() {
         return {
@@ -116,7 +94,6 @@ export default {
                     name: 'email',
                     errors: []
                 }
-                
             ]
         }
     },
@@ -131,6 +108,11 @@ export default {
                 }
             })
         })
+    },
+    watch: {
+        // form(){
+        //     console.log('form change')
+        // }
     },
     methods: {
         inputChange(id, value, errors){
@@ -181,18 +163,6 @@ export default {
                 }
             })
 
-            if(this.v$.form.$error){
-                valid = false
-                this.v$.form.$errors.forEach(error => {
-                    console.log(error.$message)
-                    this.$alert({
-                        title: 'Validation Error',
-                        text: error.$message,
-                        type: 'warn'
-                    })
-                })
-            }
-
             if(this.form.address == null){
                 valid = false
 
@@ -231,15 +201,8 @@ export default {
     components: {
         ProgressBar,
         textInput,
+        textMask,
         VueGoogleAutocomplete
-    },
-    directives: {mask},
-    validations () {
-        return {
-            form: {
-                phone: {required, minLengthValue: helpers.withMessage('Please enter a 10 digit phone number.', minLength(14)), maxLengthValue: helpers.withMessage('Please enter a 10 digit phone number.', maxLength(14))}
-            }
-        }
-    },
+    }
 }
 </script>

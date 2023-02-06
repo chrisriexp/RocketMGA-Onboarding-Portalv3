@@ -1,7 +1,7 @@
 <template>
     <div class="grid gap-6 w-[680px] px-16 py-6 mx-auto mt-16 bg-white rounded-lg border-[1px] border-custom-gray border-opacity-20 shadow-newdrop z-0 relative">
         <!--Progress Bar-->
-        <ProgressBar :width="'35%'" />
+        <ProgressBar :width="'35'" />
 
         <!--Header-->
         <div class="grid text-sm">
@@ -41,7 +41,7 @@
                             v-model="item.name"
                             type='text'
                             placeholder="Carrier Name"
-                            class="w-full h-fit text-sm p-[6px] rounded-md border-2 border-custom-gray border-opacity-20 focus:border-custom-blue focus:ring-0"
+                            class="w-full h-fit text-sm p-[7px] rounded-md border-2 border-custom-gray border-opacity-20 focus:border-custom-blue focus:ring-0"
                         >
 
                         <TrashIcon v-if="form.carriers.length > 1" @click="deleteCarrier(index)" class="h-8 my-auto text-custom-red hover:cursor-pointer" />
@@ -55,13 +55,12 @@
                         <v-select
                             placeholder='Select State'
                             id="stateSelect"
-                            @input="stateInput(index)"
                             ref="selectRef"
                             code="code"
                             v-model="form.additional_states[index]"
                             :options="options"
                             label="name"
-                            class="w-full text-sm rounded-md"
+                            class="w-full text-sm rounded-md border-2 border-transparent"
                         ></v-select>
 
                         <TrashIcon v-if="form.additional_states.length > 1" @click="deleteState(index)" class="h-8 text-custom-red hover:cursor-pointer" />
@@ -73,7 +72,7 @@
 
             <div class="flex gap-12 w-full">
                 <button @click="back" type="button" class="w-[65%] bg-custom-gray bg-opacity-40 rounded-lg py-2 uppercase text-white font-bold text-sm hover:cursor-pointer">back</button>
-                <input type="submit" class="w-full bg-custom-blue rounded-lg py-2 uppercase text-white font-bold text-sm hover:cursor-pointer" value="next">
+                <input type="submit" class="w-full bg-custom-orange  rounded-lg py-2 uppercase text-white font-bold text-sm hover:cursor-pointer" value="next">
             </div>
         </form>
     </div>
@@ -143,9 +142,6 @@ export default {
         deleteState(index){
             this.form.additional_states.splice(index, 1)
         },
-        stateInput(value, index){
-            console.log(value+index)
-        },
         addAllStates(){
             this.form.additional_states = []
 
@@ -174,8 +170,15 @@ export default {
         async carrierDisYes(){
             this.carrierPopup = false
 
-            await axios.post('/api/onboarding/carrierInfo', {
-                'additional_states': JSON.stringify(this.form.additional_states)
+            await axios.post('/api/onboarding/update', {
+                'step': 1,
+                'data': {
+                    'additional_states': JSON.stringify(this.form.additional_states),
+                    'carriers': JSON.stringify(this.form.carriers)
+                }
+            })
+            .then(response => {
+                this.$emit('next')
             })
             return
         },
@@ -197,7 +200,7 @@ export default {
                 }
             })
             .then(response => {
-                // this.$emit('next')
+                this.$emit('next')
             })
             .catch(error => {
                 console.log(error)

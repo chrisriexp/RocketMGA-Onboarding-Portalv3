@@ -45,6 +45,20 @@ export default {
             ]
         }
     },
+    async created() {
+        const accessToken = localStorage.getItem('token');
+        if (accessToken) {
+            axios.get('/api/token/validate')
+            .then(response => {
+                if (response.data.valid) {
+                    this.$router.push({name: 'OnboardingForm'})
+                }
+            })
+            .catch(error => {
+                console.error(error);
+            });
+        }
+    },
     methods: {
         inputChange(id, value, errors){
             this.form[id] = value

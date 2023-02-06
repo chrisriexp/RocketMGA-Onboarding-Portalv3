@@ -48,6 +48,7 @@ return new class extends Migration
             $table->integer('eo_limit')->nullable();
             $table->date('eo_exp')->nullable();
             $table->string('eo')->nullable();
+            $table->string('agency_license_file')->nullable();
             $table->string('agency_type')->nullable();
             $table->string('agency_logo')->nullable();
             $table->string('stage')->nullable();

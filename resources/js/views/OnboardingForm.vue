@@ -9,9 +9,10 @@
 
         <agencyInfo v-if="step == 0" @next="next" />
         <carrierInfo v-else-if="step == 1" @back="back" @next="next" />
+        <entityInfo v-else-if="step == 2" @back="back" />
     </div>
 
-    <Footer :class="step == 1 ? 'absolute' : 'relative'" class="bottom-0" />
+    <Footer :class="step == 1 || step == 2 ? 'absolute' : 'relative'" class="bottom-0" />
 </template>
 
 <script>
@@ -20,6 +21,7 @@ import Footer from '../components/footer.vue'
 
 import agencyInfo from '../components/form/agencyInfo.vue'
 import carrierInfo from '../components/form/carrierInfo.vue'
+import entityInfo from '../components/form/entityInfo.vue'
 
 export default {
     name: "Onboarding From",
@@ -47,7 +49,8 @@ export default {
         NavBar,
         Footer,
         agencyInfo,
-        carrierInfo
+        carrierInfo,
+        entityInfo
     }
 }
 </script>

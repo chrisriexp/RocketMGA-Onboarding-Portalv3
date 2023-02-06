@@ -2,32 +2,11 @@
     <div class="grid gap-2 h-fit">
         <label class="text-md text-custom-dark-blue font-medium">{{ label }} <span v-if="required" class="text-custom-red">*</span></label>
         <input
-            v-if="date"
-            v-model="v$.inputData.$model"
-            @change="change($event)"
-            type='date'
-            :disabled="isdisabled"
-            :id="id"
-            :class="v$.inputData.$error ? 'border-custom-red focus:border-custom-red' : 'border-custom-gray border-opacity-20 focus:border-custom-blue'"
-            class="w-full p-2 rounded-md border-2 focus:ring-0"
-        >
-        <input
-            v-else-if="password"
-            v-model="v$.inputData.$model"
-            @change="change($event)"
-            type='password'
-            :id="id"
-            :placeholder="placeholderText"
-            :class="v$.inputData.$error ? 'border-custom-red focus:border-custom-red' : 'border-custom-gray border-opacity-20 focus:border-custom-blue'"
-            class="w-full p-2 rounded-md border-2 focus:ring-0"
-        >
-        <input
-            v-else
             v-model="v$.inputData.$model"
             @change="change($event)"
             type='text'
-            :disabled="isdisabled"
             :id="id"
+            v-mask="[maskText]"
             :placeholder="placeholderText"
             :class="v$.inputData.$error ? 'border-custom-red focus:border-custom-red' : 'border-custom-gray border-opacity-20 focus:border-custom-blue'"
             class="w-full p-2 rounded-md border-2 focus:ring-0"
@@ -41,6 +20,7 @@
 <script>
 import { useVuelidate } from '@vuelidate/core'
 import { required, email, helpers} from '@vuelidate/validators'
+import {mask} from 'vue-the-mask'
 
 export default {
     setup() {
@@ -80,6 +60,7 @@ export default {
         id: String,
         label: String,
         placeholderText: String,
+        maskText: String,
         inputValue: {
             type: String,
             default: ''
@@ -88,21 +69,9 @@ export default {
             type: Boolean,
             default: false
         },
-        date: {
-            type: Boolean,
-            default: false
-        },
-        password: {
-            type: Boolean,
-            default: false
-        },
         required: {
             type: Boolean,
             default: true
-        },
-        email: {
-            type: Boolean,
-            default: false
         }
     },
     watch: {
@@ -121,6 +90,7 @@ export default {
             this.$emit('inputUpdate', e.target.id, this.inputData, errors)
         }
     },
+    directives: {mask},
     validations () {
         return {
             inputData: this.valid,

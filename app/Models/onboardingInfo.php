@@ -34,6 +34,14 @@ class onboardingInfo extends Model
         'neptune',
         'palomar',
         'sterling',
-        'wright'
+        'wright',
+        'agent_npn',
+        'agent_license',
+        'agent_license_eff',
+        'agent_license_exp',
+        'agency_license',
+        'agency_tax_id',
+        'agency_type',
+        'agency_logo'
     ];
 }
