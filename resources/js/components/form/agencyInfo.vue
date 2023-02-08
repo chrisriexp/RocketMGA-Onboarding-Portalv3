@@ -8,7 +8,7 @@
 
         <form @submit.prevent="next" class="grid gap-4 w-full">
             <div class="w-full grid grid-cols-2 gap-6">
-                <textInput @inputUpdate="inputChange" :inputValue="form.agent_name" :id="'agent_name'" :label="'Agent Name'" :placeholderText="'John Doe'" />
+                <textInput @inputUpdate="inputChange" :inputValue="form.agent_name" :id="'agent_name'" :label="'Agent Full Name'" :placeholderText="'John Doe'" />
                 <textInput @inputUpdate="inputChange" :inputValue="form.agency_name" :id="'agency_name'" :label="'Agency Name'" :placeholderText="'ABC Insurance'" />
             </div>
 

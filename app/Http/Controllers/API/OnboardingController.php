@@ -65,14 +65,30 @@ class OnboardingController extends Controller
             } elseif($step == 2){
                 $data['agency_tax_id'] = str_replace('-', '', $data['agency_tax_id']);
 
+                if($request['wright']){
+                    $validator = Validator::make($data, [
+                        'agent_license'=> 'required',
+                        'agency_license'=> 'required',
+                        'agency_tax_id'=> 'required|digits:9',
+                        'agency_type'=> 'required'
+                    ]);
+                } else {
+                    $validator = Validator::make($data, [
+                        'agent_license'=> 'required',
+                        'agent_npn'=> 'required|digits:7',
+                        'agent_license_eff'=> 'required',
+                        'agent_license_exp'=> 'required',
+                        'agency_license'=> 'required',
+                        'agency_tax_id'=> 'required|digits:9',
+                        'agency_type'=> 'required'
+                    ]);
+                }
+            } elseif($step == 3){
                 $validator = Validator::make($data, [
-                    'agent_license'=> 'required',
-                    'agent_npn'=> 'required|digits:7',
-                    'agent_license_eff'=> 'required',
-                    'agent_license_exp'=> 'required',
-                    'agency_license'=> 'required',
-                    'agency_tax_id'=> 'required|digits:9',
-                    'agency_type'=> 'required'
+                    'eo_exp'=> 'required',
+                    'eo_policy'=> 'required',
+                    'eo_limit'=> 'required',
+                    'eo_insurer'=> 'required',
                 ]);
             }
         } else {

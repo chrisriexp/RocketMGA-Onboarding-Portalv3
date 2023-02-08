@@ -43,6 +43,10 @@ export default {
             this.form = {
                 agency_license_file: ''
             }
+        } else if(this.type == 'agent_license_file'){
+            this.form = {
+                agent_license_file: ''
+            }
         } else if(this.type == 'agency_logo'){
             this.form = {
                 agency_logo: ''

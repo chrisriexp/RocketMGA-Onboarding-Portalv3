@@ -9,12 +9,12 @@
         <form @submit.prevent="next" class="grid gap-4 w-full">
             <div class="w-full grid grid-cols-2 gap-6">
                 <textInput @inputUpdate="inputChange" :inputValue="form.agent_license" :id="'agent_license'" :label="'Agent License'" :placeholderText="'Z000000'" />
-                <textMask @inputUpdate="inputChange" :inputValue="form.agent_npn" :id="'agent_npn'" :label="'Agent NPN'" :placeholderText="'0000000'" :maskText="'#######'" />
+                <textMask @inputUpdate="inputChange" :inputValue="form.agent_npn" class="agent_npn" :id="'agent_npn'" :label="'Agent NPN'" :placeholderText="'0000000'" :maskText="'#######'" />
             </div>
 
             <div class="w-full grid grid-cols-2 gap-6">
-                <textInput @inputUpdate="inputChange" :inputValue="form.agent_license_eff" :id="'agent_license_eff'" :label="'Agent License Issue Date'" :date=true />
-                <textInput @inputUpdate="inputChange" :inputValue="form.agent_license_exp" :id="'agent_license_exp'" :label="'Agent License Exp Date'" :date=true />
+                <textInput @inputUpdate="inputChange" :inputValue="form.agent_license_eff" class="agent_license_eff" :id="'agent_license_eff'" :label="'Agent License Issue Date'" :date=true />
+                <textInput @inputUpdate="inputChange" :inputValue="form.agent_license_exp" class="agent_license_exp" :id="'agent_license_exp'" :label="'Agent License Exp Date'" :date=true />
             </div>
 
             <hr>
@@ -44,8 +44,10 @@
 
             <div v-if="checkRun" class="w-full grid grid-cols-2 gap-6">
                 <fileUpload @fileUploaded="fileUploaded" :type="'agency_license_file'" :inputValue="form.agency_license_file" :label="'Agency License'" />
-                <fileUpload :type="'agency_logo'" :inputValue="form.agency_logo" :label="'Company Logo'" :required=false />
+                <fileUpload @fileUploaded="fileUploaded" :type="'agent_license_file'" :inputValue="form.agent_license_file" :label="'Agent License'" />
             </div>
+
+            <fileUpload :type="'agency_logo'" :inputValue="form.agency_logo" :label="'Company Logo'" :required=false />
 
             <div class="flex gap-12 w-full">
                 <button @click="back" type="button" class="w-[65%] bg-custom-gray bg-opacity-40 rounded-lg py-2 uppercase text-white font-bold text-sm hover:cursor-pointer">back</button>
@@ -100,11 +102,13 @@ export default {
                     code: 'Trust'
                 }
             ],
+            wright: false,
             form: {
                 agent_npn: '',
                 agent_license: '',
                 agent_license_eff: '',
                 agent_license_exp: '',
+                agent_license_file: '',
                 agency_license: '',
                 agency_license_file: '',
                 agency_tax_id: '',
@@ -147,11 +151,30 @@ export default {
     async created() {
         await axios.get('/api/onboarding/check')
         .then(response => {
+            this.wright = response.data.message.wright
+
+            if(this.wright){
+                let items = ['agent_npn', 'agent_license_eff', 'agent_license_exp']
+
+                items.forEach(item => {
+                    const element = document.getElementsByClassName(item)
+
+                    if(element.length > 0){
+                        element[0].classList.add('hidden');
+                    }
+                })
+            }
+
             const keys = Object.keys(this.form)
 
             keys.forEach(key => {
                 if(!response.data.message[key] == null || !response.data.message[key] == ''){
-                    this.form[key] = response.data.message[key]
+                    if(key == 'agency_type'){
+                        const obj = JSON.parse(response.data.message[key])
+                        this.form[key] = obj.code
+                    } else {
+                        this.form[key] = response.data.message[key]
+                    }
                 }
             })
 
@@ -206,11 +229,31 @@ export default {
                     text: 'please upload you agency license.',
                     type: 'warn'
                 })
+            } else if(!this.form.agent_license_file){
+                valid = false
+                this.$alert({
+                    title: 'Validation Error',
+                    text: 'please upload you agent license.',
+                    type: 'warn'
+                })
             }
 
             if(valid){
+                let agency_type = this.form.agency_type
+
+                if(typeof agency_type == 'string'){
+                    this.options.forEach(option => {
+                        if(option.code == agency_type){
+                            agency_type = option
+                        }
+                    })
+                }
+
+                this.form.agency_type = agency_type
+
                 await axios.post('/api/onboarding/update', {
                     'step': 2,
+                    'wright': this.wright,
                     'data': this.form
                 })
                 .then(response => {

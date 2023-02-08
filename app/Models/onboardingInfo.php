@@ -39,10 +39,19 @@ class onboardingInfo extends Model
         'agent_license',
         'agent_license_eff',
         'agent_license_exp',
+        'agent_license_file',
         'agency_license',
         'agency_license_file',
         'agency_tax_id',
         'agency_type',
-        'agency_logo'
+        'agency_logo',
+        'eo',
+        'eo_exp',
+        'eo_policy',
+        'eo_limit',
+        'eo_insurer',
+        'document_id',
+        'document_embed',
+        'completed'
     ];
 }

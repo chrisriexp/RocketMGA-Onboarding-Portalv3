@@ -42,6 +42,7 @@ return new class extends Migration
             $table->string('agent_license')->nullable();
             $table->date('agent_license_eff')->nullable();
             $table->date('agent_license_exp')->nullable();
+            $table->string('agent_license_file')->nullable();
             $table->string('agent_npn')->nullable();
             $table->string('eo_policy')->nullable();
             $table->string('eo_insurer')->nullable();
@@ -52,9 +53,8 @@ return new class extends Migration
             $table->string('agency_type')->nullable();
             $table->string('agency_logo')->nullable();
             $table->string('stage')->nullable();
-            $table->boolean('completed')->nullable();
+            $table->boolean('completed')->default(false);
             $table->string('document_id')->nullable();
-            $table->string('document_status')->nullable();
             $table->string('document_embed')->nullable();
             $table->timestamps();
         });
