@@ -327,7 +327,7 @@ export default {
                     }
                 ],
                 "content_placeholders": [
-                {
+                    {
                         "block_id": "beyondAgreement",
                         "content_library_items": [
                             {
