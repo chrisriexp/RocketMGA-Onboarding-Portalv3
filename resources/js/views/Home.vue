@@ -7,8 +7,8 @@
     <form @submit.prevent="login" class="grid gap-6 w-[400px] h-fit mx-auto mt-64 px-16 py-8 bg-white shadow-newdrop border-custom-gray border-[1px] border-opacity-20 rounded-lg z-10 relative">
         <h1 class="text-center text-custom-dark-blue text-xl font-medium">Login</h1>
 
-        <textInput @inputUpdate="inputChange" :id="'email'" :label="'Email'" :placeholderText="'john@doe.com'" :email=true />
-        <textInput @inputUpdate="inputChange" :id="'password'" :label="'Password'" :placeholderText="'*******'" :password=true />
+        <textInput @inputUpdate="inputChange" :inputValue="form.email" :id="'email'" :label="'Email'" :placeholderText="'john@doe.com'" :email=true />
+        <textInput @inputUpdate="inputChange" :inputValue="form.password" :id="'password'" :label="'Password'" :placeholderText="'*******'" :password=true />
 
         <input type="submit" class="mt-4 bg-custom-dark-blue text-white rounded-md p-2 hover:cursor-pointer">
 
@@ -48,8 +48,9 @@ export default {
     async created() {
         const accessToken = localStorage.getItem('token');
         if (accessToken) {
-            axios.get('/api/token/validate')
+            axios.post('/api/token/validate')
             .then(response => {
+
                 if (response.data.valid) {
                     this.$router.push({name: 'OnboardingForm'})
                 }

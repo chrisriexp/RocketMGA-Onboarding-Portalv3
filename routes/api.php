@@ -22,7 +22,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 /**Authentication Routes */
-Route::middleware('auth:sanctum')->get('/token/validate', [AuthController::class, 'validateToken']);
+Route::middleware('auth:sanctum')->post('/token/validate', [AuthController::class, 'validateToken']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/resetPassword', [AuthController::class, 'resetPassword']);
@@ -33,6 +33,6 @@ Route::middleware('auth:sanctum')->get('/onboarding/check', [OnboardingControlle
 Route::middleware('auth:sanctum')->post('/onboarding/update', [OnboardingController::class, 'update']);
 
 /**FIle Upload */
-// Route::middleware('auth:sanctum')->get('/files', [FileController::class, 'index']);
+Route::middleware(['auth:sanctum', 'abilities:admin,superadmin,marketing'])->get('/files', [FileController::class, 'index']);
 // Route::middleware('auth:sanctum')->get('/file', [FileController::class, 'getUser']);
 Route::middleware('auth:sanctum')->post('/upload', [FileController::class, 'upload'])->name('upload');

@@ -52,6 +52,7 @@ class onboardingInfo extends Model
         'eo_insurer',
         'document_id',
         'document_embed',
+        'stage',
         'completed'
     ];
 }

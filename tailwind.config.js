@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
+    "./node_modules/flowbite/**/*.js",
     "./index.html",
     "./resources/**/*.{vue,js,ts,jsx,tsx}"
   ],
@@ -38,5 +39,8 @@ module.exports = {
       // => @media (min-width: 1536px) { ... }
     },
   },
-  plugins: [require("@tailwindcss/forms")],
+  plugins: [
+    require("@tailwindcss/forms"),
+    require('flowbite/plugin')
+  ],
 }

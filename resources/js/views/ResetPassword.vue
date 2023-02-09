@@ -29,6 +29,8 @@
 import Footer from '../components/footer.vue'
 import textInput from '../components/textInput.vue'
 
+import emailjs from '@emailjs/browser';
+
 export default {
     name: "Reset Password",
     data() {
@@ -37,6 +39,11 @@ export default {
             codeSent: false,
             emailCode: '',
             verification_code: '',
+            api: {
+                serviceID: 'service_nf9yozb',
+                publicKey: 'h29zXRTKkaswfKPkp',
+                verificationCode: 'template_771e0me'
+            },
             form: {
                 email: '',
                 password: '',
@@ -110,8 +117,14 @@ export default {
 
             if(valid){
                 this.emailCode = Math.floor(Math.random()*90000).toString()
+
+                emailjs.init(this.api.publicKey)
+                emailjs.send(this.api.serviceID, this.api.verificationCode, {
+                    toEmail: this.form.email,
+                    verificationCodeEmail: this.emailCode,
+                })
+
                 this.codeSent = true
-                console.log(this.emailCode)
             }
         },
         verifyCode(){

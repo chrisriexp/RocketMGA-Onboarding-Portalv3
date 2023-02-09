@@ -6,9 +6,14 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use App\Models\FileUpload;
+use Illuminate\Support\Facades\Auth;
 
 class FileController extends Controller
 {
+    public function index(Request $request){
+        return FileUpload::all();
+    }
+
     public function upload(Request $request){
         $validator = Validator::make($request->all(), [
             'file' => 'required|mimes:jpg,jpeg,png,pdf|max:2048'

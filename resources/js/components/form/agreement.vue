@@ -496,7 +496,7 @@ export default {
             //Send Document
             setTimeout(() =>{
                 this.sendDocument()
-            }, 5500);
+            }, 6000);
         },
         async sendDocument() {
             const myHeaders = {
@@ -510,7 +510,7 @@ export default {
             
             await axios.post(`https://api.pandadoc.com/public/v1/documents/${this.form.document_id}/send`, raw, myHeaders)
             .catch(error => {
-                if(error.status == 409){
+                if(error.status === 409){
                     setTimeout(() => {
                         this.sendDocument()
                     }, 1000);

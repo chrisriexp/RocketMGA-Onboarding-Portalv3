@@ -13,6 +13,8 @@ import Home from './views/Home.vue'
 import Register from './views/Register.vue'
 import ResetPassword from './views/ResetPassword.vue'
 import OnboardingForm from './views/OnboardingForm.vue'
+import AdminLogin from './views/Admin/Login.vue'
+import AdminDashboard from './views/Admin/Dashboard.vue'
 
 const router = createRouter({
     history: createWebHistory(),
@@ -42,29 +44,64 @@ const router = createRouter({
             name: "OnboardingForm",
             component: OnboardingForm,
             beforeEnter: validateAccessToken
+        },
+        {
+            path: "/admin",
+            children: [
+                {
+                    path: "",
+                    name: "AdminLogin",
+                    component: AdminLogin
+                },
+                {
+                    path: "dashboard",
+                    name: "AdminDashboard",
+                    component: AdminDashboard,
+                    meta: {admin: true},
+                    beforeEnter: validateAccessToken
+                }
+            ]
         }
     ],
 })
 
-function validateAccessToken(to, from, next) {
+async function validateAccessToken(to, from, next) {
     const accessToken = localStorage.getItem('token');
+
     if (!accessToken) {
         next({ name: "Home" });
         return;
     }
 
-    axios.get('/api/token/validate')
-    .then(response => {
-        if (response.data.valid) {
-            next();
-        } else {
+    if(to.meta.admin) {
+        await axios.post('/api/token/validate', {"admin": true})
+        .then(response => {
+            if(response.data.valid){
+                next();
+            } else {
+                router.replace({ name: "AdminLogin"});
+            }
+        })
+        .catch(error => {
+            console.error(error);
+            next({ name: "AdminLogin" });
+        });
+    } else {
+        await axios.post('/api/token/validate')
+        .then(response => {
+            if (response.data.valid) {
+                next();
+            } else {
+                next({ name: "Home" });
+            }
+        })
+        .catch(error => {
+            console.error(error);
             next({ name: "Home" });
-        }
-    })
-    .catch(error => {
-        console.error(error);
-        next({ name: "Home" });
-    });
+        });
+    }
+
+    
 }
 
 createApp(App).use(Notifications, { name: "alert" }).use(router).component("v-select", vSelect).mount("#app")
