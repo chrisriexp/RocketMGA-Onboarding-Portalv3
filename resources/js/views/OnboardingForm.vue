@@ -53,7 +53,16 @@ export default {
                 'agreement'
             ],
             step: 0,
-            data: {}
+            data: {},
+            api: {
+                serviceID: 'service_nf9yozb',
+                publicKey: 'h29zXRTKkaswfKPkp',
+                dualTemplate: 'template_n43poh8',
+                palomarTemplate: 'template_lsue7c3',
+                maxTemplate: 'template_ajztr2i',
+                onboardingConfirmation: 'template_ymmtc35',
+                neptuneError: 'template_utc3pnh'
+            },
         }
     },
     async created() {
@@ -74,6 +83,10 @@ export default {
             this.step -= 1
         },
         async submit() {
+            const names = this.data.agent_name.split(" ")
+            const first_name = names[0]
+            const last_name = names[1]
+
             this.step += 1
 
             //Add Aon and Wright Data to Google Sheets
@@ -96,7 +109,7 @@ export default {
 
             //Create Additional States String
             let statesStr = ""
-            this.appointedStates.forEach(state => {
+            this.data.additional_states.forEach(state => {
                 if(!statesStr){
                     statesStr = state.name
                 } else {
@@ -108,123 +121,124 @@ export default {
 
             //Email Carriers and Max
             //Email to Dual
-            emailjs.init(this.apiData.publicKey)
-            emailjs.send(this.apiData.serviceID, this.apiData.dualTemplate, {
+            emailjs.init(this.api.publicKey)
+            emailjs.send(this.api.serviceID, this.api.dualTemplate, {
                 agencyName: this.data.agency_name,
-                agentName: this.onboardingInformation.first_name + " " + this.onboardingInformation.last_name,
-                agentEmail: this.onboardingInformation.email,
-                agentPhone: this.onboardingInformation.phone,
-                agencyFullAddress: this.onboardingInformation.address
+                agentName: this.data.agent_name,
+                agentEmail: this.data.email,
+                agentPhone: this.data.phone,
+                agencyFullAddress: this.data.address
             })
 
             //Email to Palomar
-            emailjs.init(this.apiData.publicKey)
-            emailjs.send(this.apiData.serviceID, this.apiData.palomarTemplate, {
-                agencyName: this.onboardingInformation.agency_name,
-                agentName: this.onboardingInformation.first_name + " " + this.onboardingInformation.last_name,
-                agentEmail: this.onboardingInformation.email,
-                agentPhone: this.onboardingInformation.phone,
-                agencyFullAddress: this.onboardingInformation.address
+            emailjs.init(this.api.publicKey)
+            emailjs.send(this.api.serviceID, this.api.palomarTemplate, {
+                agencyName: this.data.agency_name,
+                agentName: this.data.agent_name,
+                agentEmail: this.data.email,
+                agentPhone: this.data.phone,
+                agencyFullAddress: this.data.address
             })
 
             //Sub Agent Welcome Email
-            emailjs.init(this.apiData.publicKey)
-            emailjs.send(this.apiData.serviceID, this.apiData.onboardingConfirmation, {
-                agencyName: this.onboardingInformation.agency_name,
-                toEmail: this.onboardingInformation.email,
+            emailjs.init(this.api.publicKey)
+            emailjs.send(this.api.serviceID, this.api.onboardingConfirmation, {
+                agencyName: this.data.agency_name,
+                toEmail: this.data.email,
             })
 
             //Email to Max
-            emailjs.init(this.apiData.publicKey)
-            emailjs.send(this.apiData.serviceID, this.apiData.maxTemplate, {
-                agentName: this.onboardingInformation.first_name + " " + this.onboardingInformation.last_name,
-                agencyName: this.onboardingInformation.agency_name,
-                agencyDBAname: this.onboardingInformation.dba_name,
-                agencyType: this.onboardingInformation.agency_type,
-                agentLicense: this.onboardingInformation.agent_license,
-                agentLicenseEff: this.onboardingInformation.agent_license_eff,
-                agentLicenseExp: this.onboardingInformation.agent_license_exp,
-                NPN: this.onboardingInformation.agent_npn,
-                rocketMGAid: this.onboardingInformation.rocketMGA_id,
-                agencyEmail: this.onboardingInformation.email,
-                agencyPhone: this.onboardingInformation.phone,
-                agencyFullAddress: this.onboardingInformation.address,
+            emailjs.init(this.api.publicKey)
+            emailjs.send(this.api.serviceID, this.api.maxTemplate, {
+                agentName: this.data.agent_name,
+                agencyName: this.data.agency_name,
+                agencyDBAname: this.data.dba_name,
+                agencyType: this.data.agency_type,
+                agentLicense: this.data.agent_license,
+                agentLicenseEff: this.data.agent_license_eff,
+                agentLicenseExp: this.data.agent_license_exp,
+                NPN: this.data.agent_npn,
+                rocketMGAid: this.data.rocket_id,
+                agencyEmail: this.data.email,
+                agencyPhone: this.data.phone,
+                agencyFullAddress: this.data.address,
                 additionalStates: statesStr
             })
 
             //Update database submitted and stage
-            await axios.put('/api/user/update/' + this.userID, {
-                "user": {
+            await axios.post('/api/onboarding/update',{
+                "data": {
                     "stage": "Submitted",
-                    "submitted": true
+                    "completed": true
                 }
             })
 
-            //Create new completed Notification for Backend
-            await axios.post('/api/notification/add', {
-                "agency": this.onboardingInformation.agency_name,
-                "agency_id": this.userID
-            })
+            // //Create new completed Notification for Backend
+            // await axios.post('/api/notification/add', {
+            //     "agency": this.data.agency_name,
+            //     "agency_id": this.userID
+            // })
 
-            //Send Flow and Palomar Credentials to Appointed Agents Table
-            await axios.post('/api/appointed/add', {
-                "rocketMGA_id": this.onboardingInformation.rocketMGA_id,
-                "flow": this.onboardingInformation.email,
-                "palomar": this.onboardingInformation.email
-            })
+            // //Send Flow and Palomar Credentials to Appointed Agents Table
+            // await axios.post('/api/appointed/add', {
+            //     "rocket_id": this.data.rocket_id,
+            //     "flow": this.data.email,
+            //     "palomar": this.data.email
+            // })
 
             //Check and Add to Zoho
             await axios.post('https://shielded-ridge-03597.herokuapp.com/https://hooks.zapier.com/hooks/catch/14170682/bjht2i9/', {
-                "agency_name": this.onboardingInformation.agency_name,
-                "agent_name": this.onboardingInformation.first_name + " " + this.onboardingInformation.last_name,
-                "phone": this.onboardingInformation.phone.replace(/[() -]/g, ''),
-                "email": this.onboardingInformation.email,
-                "adress": this.onboardingInformation.address_1 + " " + this.onboardingInformation.address_2,
-                "city": this.onboardingInformation.city,
-                "state": this.onboardingInformation.state,
-                "zip": this.onboardingInformation.zip,
-                "npn": this.onboardingInformation.agent_npn,
+                "agency_name": this.data.agency_name,
+                "agent_name": this.data.agent_name,
+                "phone": this.data.phone.replace(/[() -]/g, ''),
+                // "email": this.data.email,
+                "email": "chrisriexp@gmail.com",
+                "adress": this.data.address_1 + " " + this.data.address_2,
+                "city": this.data.city,
+                "state": this.data.state,
+                "zip": this.data.zip,
+                "npn": this.data.agent_npn,
                 "source": "Onboarding Portal"
             })
 
             //Send Data to Wright Sheet
             await axios.post('https://shielded-ridge-03597.herokuapp.com/https://hooks.zapier.com/hooks/catch/14170682/bjh4r3i/',  {
-                "name": this.onboardingInformation.agency_name,
-                "dba_name": this.onboardingInformation.dba_name,
-                "phone": this.onboardingInformation.phone,
-                "email": this.onboardingInformation.email,
-                "agency_type": this.onboardingInformation.agency_type,
-                "address1": this.onboardingInformation.address_1,
-                "address2": this.onboardingInformation.address_2,
-                "city": this.onboardingInformation.city,
-                "state": this.onboardingInformation.state,
-                "zip": this.onboardingInformation.zip,
-                "agent_name": this.onboardingInformation.first_name + " " + this.onboardingInformation.last_name,
-                "agent_license": this.onboardingInformation.agent_license,
-                "license_eff": this.onboardingInformation.agent_license_eff,
-                "license_exp": this.onboardingInformation.agent_license_exp,
-                "npn": this.onboardingInformation.agent_npn,
+                "name": this.data.agency_name,
+                "dba_name": this.data.dba_name,
+                "phone": this.data.phone,
+                "email": this.data.email,
+                "agency_type": this.data.agency_type,
+                "address1": this.data.address_1,
+                "address2": this.data.address_2,
+                "city": this.data.city,
+                "state": this.data.state,
+                "zip": this.data.zip,
+                "agent_name": this.data.agent_name,
+                "agent_license": this.data.agent_license,
+                "license_eff": this.data.agent_license_eff,
+                "license_exp": this.data.agent_license_exp,
+                "npn": this.data.agent_npn,
                 "week": week
             })
 
             //Send Data to Aon Sheet
             await axios.post('https://shielded-ridge-03597.herokuapp.com/https://hooks.zapier.com/hooks/catch/14170682/bjtgf41', {
-                "name": this.onboardingInformation.agency_name,
-                "phone": this.onboardingInformation.phone,
-                "email": this.onboardingInformation.email,
-                "address": this.onboardingInformation.address_1 + " " + this.onboardingInformation.address_2,
-                "city": this.onboardingInformation.city,
-                "state": this.onboardingInformation.state,
-                "zip": this.onboardingInformation.zip,
+                "name": this.data.agency_name,
+                "phone": this.data.phone,
+                "email": this.data.email,
+                "address": this.data.address_1 + " " + this.data.address_2,
+                "city": this.data.city,
+                "state": this.data.state,
+                "zip": this.data.zip,
                 "additional_states": statesStr,
-                "first_name": this.onboardingInformation.first_name,
-                "last_name": this.onboardingInformation.last_name,
+                "first_name": first_name,
+                "last_name": last_name,
                 "week": week
             })
 
-            this.neptuneAPI()
+            // this.neptuneAPI()
 
-            this.submitted = true
+            // this.submitted = true
 
             console.log('submit')
         }
