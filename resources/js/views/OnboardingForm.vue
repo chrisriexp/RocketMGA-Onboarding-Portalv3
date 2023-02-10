@@ -193,11 +193,10 @@ export default {
                 }
             })
 
-            // //Create new completed Notification for Backend
-            // await axios.post('/api/notification/add', {
-            //     "agency": this.data.agency_name,
-            //     "agency_id": this.userID
-            // })
+            //Create new completed Notification for Backend
+            await axios.post('/api/notification', {
+                "agency_name": this.data.agency_name
+            })
 
             // //Send Flow and Palomar Credentials to Appointed Agents Table
             // await axios.post('/api/appointed/add', {

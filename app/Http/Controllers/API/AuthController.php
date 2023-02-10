@@ -16,34 +16,33 @@ class AuthController extends Controller
 
         $tokenExists = DB::table('personal_access_tokens')->where('tokenable_id', $id)->exists();
 
-        $premitedRoles = ['admin', 'superadmin', 'marketing'];
+        $premitedRoles = ['admin', 'super-admin', 'marketing'];
 
         if($request->has('admin')){
-            foreach ($premitedRoles as $role){
-                if($request->user()->role == $role){
-                    if($tokenExists){
-                        $response = [
-                            'valid'=> true,
-                            'message'=> 'Token authenticated successfully.'
-                        ];
-            
-                        return response()->json($response, 200);
-                    } else {
-                        $response = [
-                            'valid'=> false,
-                            'message'=> 'Token authentication failed.'
-                        ];
-            
-                        return response()->json($response, 401);
-                    }
+            if(in_array($request->user()->role, $premitedRoles)){
+                if($tokenExists){
+                    $response = [
+                        'valid'=> true,
+                        'role'=> $request->user()->role,
+                        'message'=> 'Token authenticated successfully.'
+                    ];
+        
+                    return response()->json($response, 200);
                 } else {
                     $response = [
                         'valid'=> false,
-                        'message'=> 'User is not an admin account.'
+                        'message'=> 'Token authentication failed.'
                     ];
-    
+        
                     return response()->json($response, 401);
                 }
+            } else {
+                $response = [
+                    'valid'=> false,
+                    'message'=> 'User is not an admin account.'
+                ];
+
+                return response()->json($response, 401);
             }
         } else {
             if($tokenExists){
@@ -168,6 +167,44 @@ class AuthController extends Controller
             $response = [
                 'success'=> false,
                 'message'=> 'User does not exist.'
+            ];
+
+            return response()->json($response, 401);
+        }
+    }
+
+    public function resetEmail(Request $request){
+        $validator = Validator::make($request->all(), [
+            'email'=> 'required|email',
+            'confirm_email'=> 'required|same:email',
+            'password'=> 'required|min:8',
+        ]);
+
+        if($validator->fails()){
+            $response = [
+                'success'=> false, 
+                'message'=> $validator->errors()
+            ];
+            
+            return response()->json($response, 400);
+        }
+
+        $user = User::where('email', $request->user()->email)->first();
+
+        if(Auth::attempt(['email'=> $request->user()->email, 'password'=> $request->password])){
+            $user->email = $request->email;
+            $user->save();
+
+            $response = [
+                'success'=> true,
+                'message'=> 'Email reset successfully.'
+            ];
+
+            return response()->json($response, 200);
+        } else {
+            $response = [
+                'success'=> false,
+                'message'=> 'Password is incorrect.'
             ];
 
             return response()->json($response, 401);

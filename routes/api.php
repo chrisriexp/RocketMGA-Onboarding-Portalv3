@@ -3,6 +3,7 @@
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\OnboardingController;
 use App\Http\Controllers\API\FileController;
+use App\Http\Controllers\API\NotificationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -17,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+Route::middleware(['auth:sanctum', 'ability:admin,super-admin,marketing'])->get('/user', function (Request $request) {
     return $request->user();
 });
 
@@ -26,6 +27,7 @@ Route::middleware('auth:sanctum')->post('/token/validate', [AuthController::clas
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/resetPassword', [AuthController::class, 'resetPassword']);
+Route::post('/resetEmail', [AuthController::class, 'resetEmail']);
 Route::middleware('auth:sanctum')->get('/logout', [AuthController::class, 'logout']);
 
 /**Onboarding Routes */
@@ -33,6 +35,11 @@ Route::middleware('auth:sanctum')->get('/onboarding/check', [OnboardingControlle
 Route::middleware('auth:sanctum')->post('/onboarding/update', [OnboardingController::class, 'update']);
 
 /**FIle Upload */
-Route::middleware(['auth:sanctum', 'abilities:admin,superadmin,marketing'])->get('/files', [FileController::class, 'index']);
+Route::middleware(['auth:sanctum', 'ability:admin,super-admin,marketing'])->get('/files', [FileController::class, 'index']);
 // Route::middleware('auth:sanctum')->get('/file', [FileController::class, 'getUser']);
 Route::middleware('auth:sanctum')->post('/upload', [FileController::class, 'upload'])->name('upload');
+
+/**Notifications */
+Route::middleware('auth:sanctum')->post('/notification', [NotificationController::class, 'add']);
+Route::middleware(['auth:sanctum', 'ability:admin,super-admin,marketing'])->get('/notification', [NotificationController::class, 'index']);
+Route::middleware(['auth:sanctum', 'ability:admin,super-admin,marketing'])->post('/notification/read', [NotificationController::class, 'read']);

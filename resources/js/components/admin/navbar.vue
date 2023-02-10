@@ -3,7 +3,8 @@
         <div class="h-full px-4 pb-4 overflow-y-auto bg-white">
             <div class="grid gap-2 h-fit">
                 <img src="../../../assets/logo-red.svg" alt="RocketMGA Logo" class="pb-4 border-b-2 mb-6">
-                <router-link :to="{name: ''}" :class="active == 'profile' ? 'text-white bg-custom-red' : ''" class="flex gap-4 align-middle font-medium rounded-lg py-2 px-2 hover:bg-custom-gray hover:bg-opacity-10 hover:text-custom-red"><UserCircleIcon class="h-6 my-auto" />Profile</router-link>
+                <router-link :to="{name: 'AdminProfile'}" :class="active == 'profile' ? 'text-white bg-custom-red' : ''" class="flex gap-4 align-middle font-medium rounded-lg py-2 px-2 hover:bg-custom-gray hover:bg-opacity-10 hover:text-custom-red"><UserCircleIcon class="h-6 my-auto" />Profile</router-link>
+                <router-link v-if="role == 'super-admin'" :to="{name: ''}" :class="active == 'users' ? 'text-white bg-custom-red' : ''" class="flex gap-4 align-middle font-medium rounded-lg py-2 px-2 hover:bg-custom-gray hover:bg-opacity-10 hover:text-custom-red"><AdjustmentsHorizontalIcon class="h-6 my-auto" />Users</router-link>
                 <router-link :to="{name: 'AdminDashboard'}" :class="active == 'dashboard' ? 'text-white bg-custom-red' : ''" class="flex gap-4 align-middle font-medium rounded-lg py-2 px-2 hover:bg-custom-gray hover:bg-opacity-10 hover:text-custom-red"><HomeIcon class="h-6 my-auto" />Dashboard</router-link>
                 <router-link :to="{name: ''}" :class="active == 'agents' ? 'text-white bg-custom-red' : ''" class="flex gap-4 align-middle font-medium rounded-lg py-2 px-2 hover:bg-custom-gray hover:bg-opacity-10 hover:text-custom-red"><UserGroupIcon class="h-6 my-auto" />Agents</router-link>
                 <router-link :to="{name: ''}" :class="active == 'documents' ? 'text-white bg-custom-red' : ''" class="flex gap-4 align-middle font-medium rounded-lg py-2 px-2 hover:bg-custom-gray hover:bg-opacity-10 hover:text-custom-red"><DocumentTextIcon class="h-6 my-auto" />Documents</router-link>
@@ -14,7 +15,7 @@
 
             <div class="bottom-2 fixed text-custom-gray text-sm mx-auto w-fit pl-4">
                 <p>© 2023 <a target="_blank" href="https://rocketmga.com">ROCKETMGA.COM</a></p>
-                
+
             </div>
         </div>
     </aside>
@@ -25,7 +26,7 @@
 </template>
 
 <script>
-import { HomeIcon, ArrowLeftOnRectangleIcon, UserCircleIcon, UserGroupIcon, DocumentTextIcon, ClipboardDocumentCheckIcon, CheckBadgeIcon } from '@heroicons/vue/24/outline'
+import { HomeIcon, ArrowLeftOnRectangleIcon, UserCircleIcon, UserGroupIcon, DocumentTextIcon, ClipboardDocumentCheckIcon, CheckBadgeIcon, AdjustmentsHorizontalIcon } from '@heroicons/vue/24/outline'
 
 export default {
     name: "Nav Bar",
@@ -44,7 +45,8 @@ export default {
         }
     },
     props: {
-        active: String
+        active: String,
+        role: String
     },
     components: {
         HomeIcon,
@@ -53,7 +55,8 @@ export default {
         DocumentTextIcon,
         ClipboardDocumentCheckIcon,
         CheckBadgeIcon,
-        ArrowLeftOnRectangleIcon
+        ArrowLeftOnRectangleIcon,
+        AdjustmentsHorizontalIcon
     }
 }
 </script>

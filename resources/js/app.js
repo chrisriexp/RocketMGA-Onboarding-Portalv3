@@ -15,6 +15,7 @@ import ResetPassword from './views/ResetPassword.vue'
 import OnboardingForm from './views/OnboardingForm.vue'
 import AdminLogin from './views/Admin/Login.vue'
 import AdminDashboard from './views/Admin/Dashboard.vue'
+import AdminProfile from './views/Admin/Profile.vue'
 
 const router = createRouter({
     history: createWebHistory(),
@@ -57,7 +58,20 @@ const router = createRouter({
                     path: "dashboard",
                     name: "AdminDashboard",
                     component: AdminDashboard,
-                    meta: {admin: true},
+                    meta: {
+                        admin: true,
+                        role: ''
+                    },
+                    beforeEnter: validateAccessToken
+                },
+                {
+                    path: "profile",
+                    name: "AdminProfile",
+                    component: AdminProfile,
+                    meta: {
+                        admin: true,
+                        role: ''
+                    },
                     beforeEnter: validateAccessToken
                 }
             ]
@@ -77,6 +91,7 @@ async function validateAccessToken(to, from, next) {
         await axios.post('/api/token/validate', {"admin": true})
         .then(response => {
             if(response.data.valid){
+                to.meta.role = response.data.role;
                 next();
             } else {
                 router.replace({ name: "AdminLogin"});
