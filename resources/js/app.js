@@ -16,6 +16,7 @@ import OnboardingForm from './views/OnboardingForm.vue'
 import AdminLogin from './views/Admin/Login.vue'
 import AdminDashboard from './views/Admin/Dashboard.vue'
 import AdminProfile from './views/Admin/Profile.vue'
+import AgencyView from './views/Admin/Agency.vue'
 
 const router = createRouter({
     history: createWebHistory(),
@@ -53,6 +54,17 @@ const router = createRouter({
                     path: "",
                     name: "AdminLogin",
                     component: AdminLogin
+                },
+                {
+                    path: "agency/:rocket_id",
+                    name: "AgencyView",
+                    component: AgencyView,
+                    props: true,
+                    meta: {
+                        admin: true,
+                        role: ''
+                    },
+                    beforeEnter: validateAccessToken
                 },
                 {
                     path: "dashboard",

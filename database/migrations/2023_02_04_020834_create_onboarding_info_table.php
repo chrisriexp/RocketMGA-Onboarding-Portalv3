@@ -52,10 +52,12 @@ return new class extends Migration
             $table->string('agency_type')->nullable();
             $table->string('agency_logo')->nullable();
             $table->string('stage')->nullable();
-            $table->boolean('completed')->default(false);
             $table->string('document_id')->nullable();
             $table->string('document_embed')->nullable();
             $table->string('rocket_rep')->nullable();
+            $table->boolean('completed')->default(false);
+            $table->boolean('approved')->default(false);
+            $table->boolean('uip_created')->default(false);
             $table->timestamps();
         });
     }

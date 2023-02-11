@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\ApprovalController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\OnboardingController;
 use App\Http\Controllers\API\FileController;
@@ -33,6 +34,8 @@ Route::middleware('auth:sanctum')->get('/logout', [AuthController::class, 'logou
 /**Onboarding Routes */
 Route::middleware('auth:sanctum')->get('/onboarding/check', [OnboardingController::class, 'check']);
 Route::middleware('auth:sanctum')->post('/onboarding/update', [OnboardingController::class, 'update']);
+Route::middleware(['auth:sanctum', 'ability:admin,super-admin,marketing'])->get('/onboarding/{filter?}', [OnboardingController::class, 'index']);
+Route::middleware(['auth:sanctum', 'ability:admin,super-admin,marketing'])->post('/onboarding', [OnboardingController::class, 'user']);
 
 /**FIle Upload */
 Route::middleware(['auth:sanctum', 'ability:admin,super-admin,marketing'])->get('/files', [FileController::class, 'index']);
@@ -43,3 +46,7 @@ Route::middleware('auth:sanctum')->post('/upload', [FileController::class, 'uplo
 Route::middleware('auth:sanctum')->post('/notification', [NotificationController::class, 'add']);
 Route::middleware(['auth:sanctum', 'ability:admin,super-admin,marketing'])->get('/notification', [NotificationController::class, 'index']);
 Route::middleware(['auth:sanctum', 'ability:admin,super-admin,marketing'])->post('/notification/read', [NotificationController::class, 'read']);
+
+/**Approvals */
+Route::middleware('auth:sanctum')->get('/approval/check', [ApprovalController::class, 'check']);
+Route::middleware(['auth:sanctum', 'ability:admin,super-admin,marketing'])->post('/approval', [ApprovalController::class, 'user']);

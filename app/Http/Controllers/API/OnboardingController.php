@@ -146,4 +146,64 @@ class OnboardingController extends Controller
 
         return response()->json($response, 200);
     }
+
+    public function user(Request $request){
+        $validator = Validator::make($request->all(), [
+            'rocket_id'=> 'required'
+        ]);
+
+        if($validator->fails()){
+            $response = [
+                'success'=> false,
+                'message'=> $validator->errors()
+            ];
+
+            return response()->json($response, 400);
+        }
+
+        $user = onboardingInfo::find($request->rocket_id);
+
+        if($request->has('uip_created')){
+            $user->uip_created = $request->uip_created;
+            $user->save();
+
+            $response = [
+                'succes'=> true
+            ];
+
+            return response()->json($response, 200);
+        } elseif($request->has('approved')){
+            $user->approved = $request->approved;
+            $user->save();
+
+            $response = [
+                'succes'=> true,
+                'message'=> 'User approved.'
+            ];
+
+            return response()->json($response, 200);
+        } elseif($request->has('update')){
+            $updates = $request->update;
+
+            $user->fill($updates);
+            $user->save();
+
+            $response = [
+                'succes'=> true,
+                'message'=> 'User info updated.'
+            ];
+
+            return response()->json($response, 200);
+        } else {
+            return response()->json($user, 200);
+        }
+    }
+
+    public function index(Request $request, $filter = null){
+        if($filter == null){
+            return 'no filter';
+        }
+
+        return $filter;
+    }
 }

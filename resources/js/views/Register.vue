@@ -107,18 +107,26 @@ export default {
                     this.form.email = ''
                     this.form.password = ''
                     this.form.confirm_password = ''
-                    
-                    const keys  = Object.keys(error.response.data.message)
 
-                    keys.forEach(key => {
-                        error.response.data.message[key].forEach(error => {
-                            this.$alert({
-                                title: 'Registration Error',
-                                text: error,
-                                type: 'error'
+                    if(error.response.status == 401){
+                        this.$alert({
+                            title: 'Registration Error',
+                            text: error.response.data.message,
+                            type: 'error'
+                        })
+                    } else {
+                        const keys  = Object.keys(error.response.data.message)
+
+                        keys.forEach(key => {
+                            error.response.data.message[key].forEach(error => {
+                                this.$alert({
+                                    title: 'Registration Error',
+                                    text: error,
+                                    type: 'error'
+                                })
                             })
                         })
-                    })
+                    }               
                 })
             }
         }

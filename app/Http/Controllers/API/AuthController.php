@@ -78,7 +78,7 @@ class AuthController extends Controller
             return response()->json($response, 400);
         }
 
-        if(Auth::attempt(['email'=> $request->email, 'password'=> $request->password])){
+        if(Auth::attempt(['email'=> strtolower($request->email), 'password'=> $request->password])){
             $user = Auth::user();
             
             $token = $user->createToken('token', [$user->role])->plainTextToken;
@@ -118,7 +118,20 @@ class AuthController extends Controller
             return response()->json($response, 400);
         }
 
+        $findUser = User::where('email', strtolower($request->email))->exists();
+
+        if($findUser){
+            $response = [
+                'success'=> false,
+                'message'=> 'User already exists.',
+                'findUser'=> $findUser
+            ];
+
+            return response()->json($response, 401);
+        }
+
         $input = $request->all();
+        $input['email'] = strtolower($input['email']);
         $input['password'] = bcrypt($input['password']);
 
         $user = User::create($input);
@@ -192,7 +205,7 @@ class AuthController extends Controller
         $user = User::where('email', $request->user()->email)->first();
 
         if(Auth::attempt(['email'=> $request->user()->email, 'password'=> $request->password])){
-            $user->email = $request->email;
+            $user->email = strtolower($request->email);
             $user->save();
 
             $response = [

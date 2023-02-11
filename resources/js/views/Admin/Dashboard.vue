@@ -94,12 +94,12 @@ export default {
         this.moment = moment
         this.date = new Date()
 
-        this.loading = false
-
         await axios.get('/api/notification')
         .then(response => {
             console.log(response)
         })
+
+        this.loading = false
     },
     components: {
         NavBar,

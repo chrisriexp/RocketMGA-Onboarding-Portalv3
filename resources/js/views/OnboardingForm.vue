@@ -203,6 +203,9 @@ export default {
                 "agency_name": this.data.agency_name
             })
 
+            //Creat Approval
+            await axios.get('/api/approval/check')
+
             // //Send Flow and Palomar Credentials to Appointed Agents Table
             // await axios.post('/api/appointed/add', {
             //     "rocket_id": this.data.rocket_id,
@@ -215,8 +218,7 @@ export default {
                 "agency_name": this.data.agency_name,
                 "agent_name": this.data.agent_name,
                 "phone": this.data.phone,
-                // "email": this.data.email,
-                "email": "chrisriexp@gmail.com",
+                "email": this.data.email,
                 "adress": this.data.address1 + " " + this.data.address2,
                 "city": this.data.city,
                 "state": this.data.state,
@@ -264,9 +266,9 @@ export default {
                 })
             }
 
-            if(!this.data.neptune){
-                await this.neptuneAPI()
-            }
+            // if(!this.data.neptune){
+            //     await this.neptuneAPI()
+            // }
 
             this.completed = true
         },
