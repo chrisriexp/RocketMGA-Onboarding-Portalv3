@@ -37,7 +37,7 @@ return new class extends Migration
             $table->boolean('sterling')->default(false);
             $table->boolean('wright')->default(false);
             $table->string('agency_license')->nullable();
-            $table->date('agency_license_exp')->nullable();
+            $table->string('agency_license_file')->nullable();
             $table->string('agency_tax_id')->nullable();
             $table->string('agent_license')->nullable();
             $table->date('agent_license_eff')->nullable();
@@ -49,7 +49,6 @@ return new class extends Migration
             $table->integer('eo_limit')->nullable();
             $table->date('eo_exp')->nullable();
             $table->string('eo')->nullable();
-            $table->string('agency_license_file')->nullable();
             $table->string('agency_type')->nullable();
             $table->string('agency_logo')->nullable();
             $table->string('stage')->nullable();

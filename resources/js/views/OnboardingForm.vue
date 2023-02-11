@@ -95,6 +95,11 @@ export default {
             ].join('/');
         },
         async submit() {
+            await axios.get('/api/onboarding/check')
+            .then(response => {
+                this.data = response.data.message
+            })
+
             this.step += 1
 
             //Names
@@ -259,7 +264,9 @@ export default {
                 })
             }
 
-            await this.neptuneAPI()
+            if(!this.data.neptune){
+                await this.neptuneAPI()
+            }
 
             this.completed = true
         },
