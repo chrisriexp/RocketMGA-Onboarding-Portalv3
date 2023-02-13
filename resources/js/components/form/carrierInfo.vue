@@ -60,7 +60,7 @@
                             v-model="form.additional_states[index]"
                             :options="options"
                             label="name"
-                            class="w-full text-sm rounded-md border-2 border-transparent"
+                            class="w-full text-sm text-custom-gray bg-custom-blue rounded-md border-2 border-transparent"
                         ></v-select>
 
                         <TrashIcon v-if="form.additional_states.length > 1" @click="deleteState(index)" class="h-8 text-custom-red hover:cursor-pointer" />
@@ -213,3 +213,63 @@ export default {
     }
 }
 </script>
+
+<style>
+:root {
+    /* Search Input */
+    --vs-search-input-bg: #5080C7;
+
+    /* Font */
+    --vs-font-size: 1rem;
+    --vs-line-height: 1.4;
+
+    /* Disabled State */
+    --vs-state-disabled-bg: #f89393;
+    --vs-state-disabled-color: #fff;
+    --vs-state-disabled-controls-color: #fff;
+    --vs-state-disabled-cursor: not-allowed;
+
+    /* Borders */
+    --vs-border-color: var(--vs-colors--lightest);
+    --vs-border-width: 0px;
+    --vs-border-style: border-none;
+    --vs-border-radius: 4px;
+
+    /* Actions: house the component controls */
+    --vs-actions-padding: 4px 6px 0 3px;
+
+    /* Component Controls: Clear, Open Indicator */
+    --vs-controls-color: #fff;
+    --vs-controls-size: 1;
+    --vs-controls--deselect-text-shadow: 0 1px 0 #fff;
+
+    /* Selected */
+    --vs-selected-bg: #5080C7;
+    --vs-selected-color: #fff;
+    --vs-selected-padding: 5px;
+    --vs-selected-border-color: var(--vs-border-color);
+    --vs-selected-border-style: border-none;
+    --vs-selected-border-width: border-none;
+
+    /* Dropdown */
+    --vs-dropdown-bg: #fff;
+    --vs-dropdown-color: inherit;
+    --vs-dropdown-z-index: 1000;
+    --vs-dropdown-min-width: 160px;
+    --vs-dropdown-max-height: 350px;
+    --vs-dropdown-box-shadow: 0px 3px 6px 0px var(--vs-colors--darkest);
+
+    /* Options */
+    --vs-dropdown-option-bg: #000;
+    --vs-dropdown-option-color: var(--vs-dropdown-color);
+    --vs-dropdown-option-padding: 3px 20px;
+
+    /* Active State */
+    --vs-dropdown-option--active-bg: #5080C7;
+    --vs-dropdown-option--active-color: #fff;
+
+    /* Transitions */
+    --vs-transition-timing-function: cubic-bezier(1, -0.115, 0.975, 0.855);
+    --vs-transition-duration: 150ms;
+}
+</style>

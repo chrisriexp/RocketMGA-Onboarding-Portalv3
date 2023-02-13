@@ -18,7 +18,7 @@
                     v-model="form.agency_type"
                     :options="options"
                     label="name"
-                    class="text-sm font-medium rounded-xl rounded-xl w-fit bg-custom-red disabled:text-custom-gray"
+                    class="text-sm font-medium rounded-xl w-fit bg-custom-red disabled:text-custom-gray"
                     :disabled="!update"
                     @option:selected="selectChange"
                 ></v-select>
@@ -170,7 +170,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 :root {
     /* Search Input */
     --vs-search-input-bg: #FD0000;

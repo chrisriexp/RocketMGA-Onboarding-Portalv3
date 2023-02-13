@@ -1,4 +1,42 @@
 <template>
+    <div v-if="data.approved" class="w-full h-fit grid gap-4  mt-4 p-6 bg-white rounded-md border-custom-gray border-opacity-20 border-[1px]">
+        <div class="flow-root w-full">
+            <button class="float-left w-fit flex gap-2 px-6 py-2 bg-custom-dark-blue text-white rounded-md">Update MGA Agent Portal <PaperAirplaneIcon class="h-6" /></button>
+            <button @click="saveUIPs" class="float-right w-fit flex gap-2 px-6 py-2 bg-custom-dark-blue text-white rounded-md">Save</button>
+        </div>
+
+        <div class="w-full grid gap-4 text-custom-dark-blue text-md">
+            <div class="grid grid-cols-8 gap-4 font-medium text-lg pb-2 border-b-2 border-custom-dark-blue">
+                <p>Aon</p>
+                <p>Beyond</p>
+                <p>Dual</p>
+                <p>Flow</p>
+                <p>Neptune</p>
+                <p>Palomar</p>
+                <p>Sterling</p>
+                <p>Wright</p>
+            </div>
+
+            <div class="grid grid-cols-8 gap-4">
+                <div v-for="(carrier, index) in uips" :key="index" class="grid col text-[11px] text-center h-fit">
+                    <div class="w-full grid grid-cols-2 border border-custom-gray rounded-md h-fit">
+                        <button @click="carrier.direct = true" :class="carrier.direct ? 'bg-custom-dark-blue text-white' : ''" class="col rounded-tl-md rounded-bl-md border-r-2 disabled:bg-opacity-40">Direct</button>
+                        <button @click="carrier.direct = false" :class="!carrier.direct ? 'bg-custom-dark-blue text-white' : ''" class="col rounded-tr-md rounded-br-md disabled:bg-opacity-40">Rocket MGA</button>
+                    </div>
+
+                    <div v-if="!carrier.direct" class="grid gap-4 h-fit text-md">
+                        <div v-for="(uip, uipIndex) in carrier" :key="uipIndex">
+                            <div v-if="uipIndex != 'direct'" class="grid">
+                                <p class="text-left uppercase font-medium">{{ uipIndex.replace("_", " ") }}</p>
+                                <textInput @inputUpdate="uipUpdate" :inputValue="uip" :index="uipIndex" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="w-full h-fit grid gap-8 my-6 p-6 bg-white rounded-md border-custom-gray border-opacity-20 border-[1px]">
         <div class="grid w-fit h-fit">
             <h2 class="font-medium text-2xl text-custom-gray">Appointment Information</h2>
@@ -32,7 +70,7 @@
                         v-model="form.additional_states[index]"
                         :options="options"
                         label="name"
-                        class="h-fit text-sm font-medium rounded-xl rounded-xl w-fit bg-custom-red disabled:text-custom-gray"
+                        class="h-fit text-sm font-medium rounded-xl w-fit bg-custom-red disabled:text-custom-gray"
                         :disabled="!update"
                     ></v-select>
                     <button @click="remove('state', index)" :disabled="!update" class="text-custom-red disabled:text-[#f89393]"><TrashIcon class="h-6 my-auto" /></button>
@@ -48,11 +86,12 @@
 import textInput from '../textInput.vue'
 import textMask from '../textMask.vue'
 import states from '../../../../assets/states.json'
-import { ExclamationTriangleIcon, TrashIcon, PlusCircleIcon } from '@heroicons/vue/24/solid'
+import { ExclamationTriangleIcon, TrashIcon, PlusCircleIcon, PaperAirplaneIcon } from '@heroicons/vue/24/solid'
 
 export default {
     name: "Appointment Info",
     props: {
+        rocket_id: String,
         data: Object,
         update: Boolean
     },
@@ -71,7 +110,8 @@ export default {
                         name: ''
                     }
                 ]
-            }
+            },
+            uips: []
         }
     },
     async created(){
@@ -79,11 +119,42 @@ export default {
         keys.forEach(key => {
             this.form[key] = this.data[key]
         })
+
+        if(this.data.approved){
+            await axios.post('/api/appointment', {"rocket_id": this.rocket_id})
+            .then(response => {
+                const carriers = ['aon', 'beyond', 'dual', 'flow', 'neptune', 'palomar', 'sterling', 'wright']
+
+                carriers.forEach(carrier => {
+                    this.uips.push(JSON.parse(response.data.appointments[carrier]))
+                })
+            })
+        }
     },
     watch: {
 
     },
     methods: {
+        async saveUIPs() {
+            this.$emit('loading')
+
+            let updates = {}
+
+            const carriers = ['aon', 'beyond', 'dual', 'flow', 'neptune', 'palomar', 'sterling', 'wright']
+
+            let i = 0
+            carriers.forEach(carrier => {
+                updates[carrier] = this.uips[i]
+                i += 1
+            })
+
+            await axios.post('/api/appointment', {
+                "rocket_id": this.rocket_id,
+                "update": updates
+            })
+
+            this.$emit('loading')
+        },
         add(id){
             if(id == 'carriers'){
                 this.form[id].push({name: ''})
@@ -102,6 +173,9 @@ export default {
                 this.$emit('change', 'additional_states', this.form.additional_states)
             }
         },
+        uipUpdate(id, value, errors, index){
+            console.log(id+" "+value+" "+index)
+        },
         inputChange(id, value, errors, index){
             this.form.carriers[index].name = value
 
@@ -116,7 +190,8 @@ export default {
         textMask,
         ExclamationTriangleIcon,
         TrashIcon,
-        PlusCircleIcon
+        PlusCircleIcon,
+        PaperAirplaneIcon
     }
 }
 </script>

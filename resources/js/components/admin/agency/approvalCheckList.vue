@@ -55,9 +55,9 @@
         </div>
 
         <div class="grid gap-2">
-            <div :class="valid.agreement? 'text-green-400' : 'text-custom-red'" class="flex gap-4 w-fit h-fit">
+            <div :class="valid.agreement ? 'text-green-400' : 'text-custom-red'" class="flex gap-4 w-fit h-fit">
                 <button @click="approve('agreement')" :disabled="this.valid.agreement"><CheckCircleIcon class="h-10"/></button>
-                <button @click="downloadAgreement" :disabled="agreement_disabled" class="text-2xl my-auto disabled:opacity-40">View Rocket Agreement</button>
+                <button @click="downloadAgreement" :disabled="agreement_disabled" class="text-2xl my-auto disabled:opacity-40">View Executed Contracts</button>
             </div>
         </div>
     </div>
@@ -105,13 +105,34 @@ export default {
                     name: 'agency_license',
                     errors: []
                 }
-            ]
+            ],
+            appointments: {
+                aon: false,
+                beyond: false,
+                dual: false,
+                flow: false,
+                neptune: false,
+                palomar: false,
+                sterling: false,
+                wright: false
+            }
         }
     },
     async created(){
         const keys = Object.keys(this.form)
         keys.forEach(key => {
             this.form[key] = this.data[key]
+        })
+
+        const appointmenKeys = Object.keys(this.appointments)
+        appointmenKeys.forEach(key => {
+            this.appointments[key] = this.data[key]
+
+            if(this.appointments[key] == 0){
+                this.appointments[key] = false
+            } else if(this.appointments[key] == 1){
+                this.appointments[key] = true
+            }
         })
 
         await axios.post('/api/approval', {"rocket_id": this.rocket_id})
@@ -146,6 +167,7 @@ export default {
     },
     methods: {
         async approveAgency() {
+            this.$emit('loading')
             let approved = true
 
             await axios.post('/api/approval', {
@@ -171,12 +193,44 @@ export default {
             })
 
             if(approved){
+                const carriers = ['aon', 'beyond', 'dual', 'flow', 'neptune', 'palomar', 'sterling', 'wright']
+
                 await axios.post('/api/onboarding', {
                     "rocket_id": this.rocket_id,
                     "approved": true
                 })
 
+                let updates = {}
+
+                await axios.post('/api/appointment', {"rocket_id": this.rocket_id})
+                await axios.post('/api/appointment', {"rocket_id": this.rocket_id})
+                .then(response => {
+                    carriers.forEach(carrier => {
+                        let details = JSON.parse(response.data.appointments[carrier])
+
+                        if(this.appointments[carrier] == true){
+                            details.direct = true
+                            updates[carrier] = details
+                        } else if (carrier == 'flow' || carrier == 'palomar' && this.appointments[carrier] == false){
+                            details.id = this.data.email
+                            updates[carrier] = details
+                        }
+                    })
+                })
+
+                await axios.post('/api/appointment', {
+                    "rocket_id": this.rocket_id,
+                    "update": updates
+                })
+
+                await axios.post('/api/onboarding', {
+                    "rocket_id": this.rocket_id,
+                    "uip_created": true
+                })
+
                 location.reload()
+            } else{
+                this.$emit('loading')
             }
         },
         async approve(name){

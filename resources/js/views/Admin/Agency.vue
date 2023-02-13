@@ -68,7 +68,7 @@
 
         <ApprovalCheckList @loading="loading = !loading" @change="change" v-if="active == 'approval'" :data="data" :update="update" :rocket_id="rocket_id" />
         <AgencyInfo @change="change" v-if="active == 'agency'" :data="data" :update="update" />
-        <AppointmentInfo @change="change" v-if="active == 'appointments'" :data="data" :update="update" />
+        <AppointmentInfo @loading="loading = !loading" @change="change" v-if="active == 'appointments'" :data="data" :update="update" :rocket_id="rocket_id" />
         <Documents @loading="loading = !loading" @change="change" v-if="active == 'documents'" :data="data" :update="update" />
     </div>
 </template>
@@ -132,6 +132,13 @@ export default {
                 uip_created: false,
                 appointed: false,
                 created_at: '',
+                aon: false, 
+                beyond: false,
+                dual: false,
+                flow: false,
+                neptune: false,
+                palomar: false,
+                sterling: false,
                 wright: false,
                 agency_logo: '',
                 document_id: ''
@@ -323,7 +330,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 :root {
     /* Search Input */
     --vs-search-input-bg: #FD0000;

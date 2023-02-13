@@ -5,6 +5,7 @@ use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\OnboardingController;
 use App\Http\Controllers\API\FileController;
 use App\Http\Controllers\API\NotificationController;
+use App\Http\Controllers\AppointmentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -50,3 +51,6 @@ Route::middleware(['auth:sanctum', 'ability:admin,super-admin,marketing'])->post
 /**Approvals */
 Route::middleware('auth:sanctum')->get('/approval/check', [ApprovalController::class, 'check']);
 Route::middleware(['auth:sanctum', 'ability:admin,super-admin,marketing'])->post('/approval', [ApprovalController::class, 'user']);
+
+/**Appointments */
+Route::middleware(['auth:sanctum', 'ability:admin,super-admin,marketing'])->post('/appointment', [AppointmentController::class, 'appointment']);
