@@ -193,7 +193,7 @@ export default {
             //Update database submitted and stage
             await axios.post('/api/onboarding/update',{
                 "data": {
-                    "stage": "Submitted",
+                    "stage": "submitted",
                     "completed": true
                 }
             })

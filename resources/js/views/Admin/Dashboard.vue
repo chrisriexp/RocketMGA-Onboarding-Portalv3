@@ -8,7 +8,7 @@
     <div class="sm:ml-64 p-10 h-screen bg-custom-bg">
         <div class="w-full flow-root">
             <div class="float-left grid gap-2">
-                <p class="text-3xl text-custom-gray">Welcome back!</p>
+                <p class="text-3xl text-custom-gray">Welcome back <span>{{ first_name }}</span>!</p>
                 <p class="text-custom-gray font-light">Here is some important information for you:</p>
             </div>
 
@@ -80,6 +80,7 @@ export default {
         return {
             loading: true,
             role: '',
+            first_name: '',
             date: '',
             agents_onboarding: '',
             agents_review: '',
@@ -93,6 +94,13 @@ export default {
         this.role = this.$route.meta.role
         this.moment = moment
         this.date = new Date()
+
+        await axios.get('/api/user')
+        .then(response => {
+            const names = response.data.name.split(" ")
+
+            this.first_name = names[0]
+        })
 
         await axios.get('/api/notification')
         .then(response => {

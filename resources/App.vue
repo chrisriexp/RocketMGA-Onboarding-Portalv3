@@ -4,13 +4,17 @@ import { RouterView } from 'vue-router'
 
 <template>
   <RouterView />
-  <notifications />
+    <notifications />
 </template>
 
 <style>
 /**Font from google font */
 #app {
   font-family: 'Montserrat', sans-serif;
+}
+
+body {
+  background-color: #F5F5F5;
 }
 
 @media (-webkit-device-pixel-ratio: 1.25) {

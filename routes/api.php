@@ -39,7 +39,7 @@ Route::middleware(['auth:sanctum', 'ability:admin,super-admin,marketing'])->post
 
 /**FIle Upload */
 Route::middleware(['auth:sanctum', 'ability:admin,super-admin,marketing'])->get('/files', [FileController::class, 'index']);
-// Route::middleware('auth:sanctum')->get('/file', [FileController::class, 'getUser']);
+Route::middleware(['auth:sanctum', 'ability:admin,super-admin,marketing'])->get('/file/{id}', [FileController::class, 'file']);
 Route::middleware('auth:sanctum')->post('/upload', [FileController::class, 'upload'])->name('upload');
 
 /**Notifications */

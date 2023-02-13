@@ -43,6 +43,7 @@ module.exports = {
   },
   plugins: [
     require("@tailwindcss/forms"),
-    require('flowbite/plugin')
+    require('flowbite/plugin'),
+    require("tailwindcss-inner-border")
   ],
 }

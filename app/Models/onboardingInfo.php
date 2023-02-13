@@ -53,6 +53,7 @@ class onboardingInfo extends Model
         'document_id',
         'document_embed',
         'stage',
-        'completed'
+        'completed',
+        'rocket_rep'
     ];
 }

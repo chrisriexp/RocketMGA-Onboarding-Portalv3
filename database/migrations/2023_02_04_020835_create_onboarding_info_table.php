@@ -54,10 +54,12 @@ return new class extends Migration
             $table->string('stage')->nullable();
             $table->string('document_id')->nullable();
             $table->string('document_embed')->nullable();
-            $table->string('rocket_rep')->nullable();
+            $table->string('rocket_rep')->default('{"name":"None","code":"none"}');
             $table->boolean('completed')->default(false);
             $table->boolean('approved')->default(false);
             $table->boolean('uip_created')->default(false);
+            $table->boolean('appointed')->default(false);
+            $table->string('note')->nullable();
             $table->timestamps();
         });
     }

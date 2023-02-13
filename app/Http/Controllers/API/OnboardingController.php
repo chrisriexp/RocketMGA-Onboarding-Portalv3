@@ -28,6 +28,7 @@ class OnboardingController extends Controller
             $user->rocket_id = $id;
             $user->email = $email;
             $user->agent_name = $name;
+            $user->stage = 'agency';
 
             $user->save();
 
@@ -119,7 +120,17 @@ class OnboardingController extends Controller
         if($request->has('step')){
             $step = $request['step'];
             
-            if($step == 1){
+            if($step == 0){
+                if($existingUser->stage == null || $existingUser->stage == ''){
+                    $existingUser->stage = 'carrier';
+                    $existingUser->save();
+                }
+            } elseif($step == 1){
+                if($existingUser->stage == 'carrier'){
+                    $existingUser->stage = 'entity';
+                    $existingUser->save();
+                }
+                
                 $carriers = json_decode($data['carriers'], true);
                 $mgaCarriers = ['aon', 'beyond', 'dual', 'flow', 'neptune', 'palomar', 'sterling', 'wright'];
     
@@ -137,6 +148,16 @@ class OnboardingController extends Controller
     
                 $existingUser->fill($results);
                 $existingUser->save();
+            } elseif($step == 2 ){
+                if($existingUser->stage == 'entity'){
+                    $existingUser->stage = 'eo';
+                    $existingUser->save();
+                }
+            } elseif($step == 3 ){
+                if($existingUser->stage == 'eo'){
+                    $existingUser->stage = 'agreement';
+                    $existingUser->save();
+                }
             }
         }
 
@@ -163,12 +184,23 @@ class OnboardingController extends Controller
 
         $user = onboardingInfo::find($request->rocket_id);
 
-        if($request->has('uip_created')){
+        if($request->has('appointed')){
+            $user->appointed = $request->appointed;
+            $user->save();
+
+            $response = [
+                'succes'=> true,
+                'message'=> 'User appointed.'
+            ];
+
+            return response()->json($response, 200);
+        } elseif($request->has('uip_created')){
             $user->uip_created = $request->uip_created;
             $user->save();
 
             $response = [
-                'succes'=> true
+                'succes'=> true,
+                'message'=> 'UIPs created..'
             ];
 
             return response()->json($response, 200);
@@ -184,6 +216,9 @@ class OnboardingController extends Controller
             return response()->json($response, 200);
         } elseif($request->has('update')){
             $updates = $request->update;
+
+            $updates['phone'] = preg_replace('/\D+/', '', $updates['phone']);
+            $updates['agency_tax_id'] = str_replace('-', '', $updates['agency_tax_id']);
 
             $user->fill($updates);
             $user->save();
