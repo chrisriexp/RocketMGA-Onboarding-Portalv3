@@ -12,7 +12,7 @@
             <carrierInfo v-else-if="step == 1" @back="back" @next="next" />
             <entityInfo v-else-if="step == 2" @back="back" @next="next" />
             <eoInfo v-else-if="step == 3" @back="back" @next="next" />
-            <agreement v-else-if="step == 4" @back="back" @submit="submit" />
+            <agreement v-else-if="step == 4" @back="back" @agreementCompleted="submit" />
             
             <div v-else-if="step == 5" class="grid gap-8 justify-items-center w-fit h-fit mx-auto mt-24">
                 <loading />

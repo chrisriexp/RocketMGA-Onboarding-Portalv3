@@ -9,7 +9,7 @@
             <h3 class="text-center text-custom-dark-blue text-lg">Congratulations! Sign your agreement and you are done! </h3>
         </div>
 
-        <form @submit.prevent="submit" class="grid gap-4 w-full">
+        <form @submit.prevent="submitAgreement" class="grid gap-4 w-full">
             <div id="submitLoading" class="my-8 mx-auto h-[400px] hidden">
                 <loading />
             </div>
@@ -543,13 +543,13 @@ export default {
             this.submitDisabled = false;
             this.backDisabled = false;
         },
-        async submit() {
+        async submitAgreement() {
             //Disable Submit and Back Button
             this.submitDisabled = true;
             this.backDisabled = true;
 
             //Show Loading Spinner
-            document.getElementById("submitLoading").classList.remove("hidden")
+            document.getElementById('submitLoading').classList.remove('hidden')
 
             //Drop Agreement Opcity
             document.getElementById('agreement').classList.add('opacity-40')
@@ -573,13 +573,6 @@ export default {
                 //Enable Submit and Back Button
                 this.submitDisabled = false;
                 this.backDisabled = false;
-
-                //Hide Loading Spinner
-                document.getElementById("submitLoading").classList.add("hidden")
-
-                //Fix Agreement Opcity
-                document.getElementById('agreement').classList.remove('opacity-40')
-
                 this.$alert({
                     title: 'Validation Error',
                     text: 'Agreement not complete, please finalize and try again. ',
@@ -587,10 +580,14 @@ export default {
                     duration: 5000
                 })
 
-                return
-            }
+                //Hide Loading Spinner
+                document.getElementById('submitLoading').classList.add('hidden')
 
-            this.$emit('submit')
+                //Fix Agreement Opcity
+                document.getElementById('agreement').classList.remove('opacity-40')
+            }else {
+                this.$emit('agreementCompleted')
+            }
         }
     },
     components: {
