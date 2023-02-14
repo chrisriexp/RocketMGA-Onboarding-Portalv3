@@ -214,8 +214,9 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 :root {
+
     /* Search Input */
     --vs-search-input-bg: #5080C7;
 
@@ -224,7 +225,7 @@ export default {
     --vs-line-height: 1.4;
 
     /* Disabled State */
-    --vs-state-disabled-bg: #f89393;
+    --vs-state-disabled-bg: #93b3f8;
     --vs-state-disabled-color: #fff;
     --vs-state-disabled-controls-color: #fff;
     --vs-state-disabled-cursor: not-allowed;

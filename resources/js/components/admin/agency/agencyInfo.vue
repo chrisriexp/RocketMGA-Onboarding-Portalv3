@@ -170,7 +170,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 :root {
     /* Search Input */
     --vs-search-input-bg: #FD0000;
