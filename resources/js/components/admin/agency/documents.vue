@@ -191,7 +191,7 @@ export default {
         files.forEach(file => {
             axios.get('/api/file/' + this.form[file])
             .then(response => {
-                this[file] = "http://localhost:8000" + response.data.path
+                this[file] = "https://onboarding.rocketmga.com" + response.data.path
             })
         })
     },

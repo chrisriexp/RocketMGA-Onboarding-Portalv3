@@ -59,8 +59,8 @@ export default {
             api: {
                 serviceID: 'service_nf9yozb',
                 publicKey: 'h29zXRTKkaswfKPkp',
-                dualTemplate: 'template_93696xs',
-                palomarTemplate: 'template_asfertergfd',
+                dualTemplate: 'template_n43poh8',
+                palomarTemplate: 'template_lsue7c3',
                 maxTemplate: 'template_ajztr2i',
                 onboardingConfirmation: 'template_ymmtc35',
                 neptuneError: 'template_utc3pnh'

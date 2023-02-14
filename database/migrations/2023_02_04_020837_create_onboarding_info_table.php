@@ -51,7 +51,7 @@ return new class extends Migration
             $table->string('eo')->nullable();
             $table->string('agency_type')->nullable();
             $table->string('agency_logo')->nullable();
-            $table->string('stage')->nullable();
+            $table->string('stage')->default('agency');
             $table->string('document_id')->nullable();
             $table->string('document_embed')->nullable();
             $table->string('rocket_rep')->default('{"name":"None","code":"none"}');

@@ -121,7 +121,7 @@ class OnboardingController extends Controller
             $step = $request['step'];
             
             if($step == 0){
-                if($existingUser->stage == null || $existingUser->stage == ''){
+                if($existingUser->stage == 'agency'){
                     $existingUser->stage = 'carrier';
                     $existingUser->save();
                 }
