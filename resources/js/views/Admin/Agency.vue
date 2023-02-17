@@ -15,6 +15,8 @@
                     
                     <button v-if="update" @click="saveInfo" class="text-sm px-2 rounded-md bg-custom-dark-blue text-white disabled:opacity-40" :disabled="!update">Save</button>
                     <button v-if="update" @click="cancelUpdate" class="text-sm px-2 rounded-md bg-custom-red text-white">Cancel</button>
+
+                    <button v-if="!data.appointed && data.approved" class="text-sm px-2 rounded-md bg-custom-dark-blue text-white">Finalize Appointment</button>
                 </div>
 
                 <div class="float-right w-fit h-fit my-auto rounded-lg bg-white p-2 text-sm">
@@ -34,7 +36,8 @@
                 </div>
 
                 <p class="flex gap-2"><span class="font-medium my-auto">Stage </span>
-                    <span v-if="data.approved" class="flex gap-2 my-auto"><div class="w-2 h-2 my-auto rounded-full bg-custom-red"></div> Agency Appointed</span>
+                    <span v-if="data.appointed" class="flex gap-2 my-auto"><div class="w-2 h-2 my-auto rounded-full bg-custom-red"></div> Agency Appointed</span>
+                    <span v-else-if="data.approved" class="flex gap-2 my-auto"><div class="w-2 h-2 my-auto rounded-full bg-custom-red"></div> Agency in Training</span>
                     <span v-else-if="data.completed" class="flex gap-2 my-auto"><div class="w-2 h-2 my-auto rounded-full bg-custom-red"></div> Agency Under Review</span>
                     <span v-else-if="data.stage == 'agency'" class="flex gap-2 my-auto"><div class="w-2 h-2 my-auto rounded-full bg-custom-red"></div> Agency Information</span>
                     <span v-else-if="data.stage == 'carrier'" class="flex gap-2 my-auto"><div class="w-2 h-2 my-auto rounded-full bg-custom-red"></div> Carrier Information</span>
@@ -50,7 +53,7 @@
                         v-model="data.rocket_rep"
                         :options="repOptions"
                         label="name"
-                        class="text-sm font-medium rounded-xl rounded-xl w-fit bg-custom-red disabled:text-custom-gray"
+                        class="text-sm font-medium rounded-xl w-fit bg-custom-red disabled:text-custom-gray"
                         :disabled="!update"
                     ></v-select>
                 </div>
@@ -64,12 +67,14 @@
             <p @click="active = 'agency'" :class="active == 'agency' ? 'text-white bg-custom-red' : ''" class="w-full p-2 rounded-xl font-bold uppercase hover:cursor-pointer">Agency</p>
             <p @click="active = 'appointments'" :class="active == 'appointments' ? 'text-white bg-custom-red' : ''" class="w-full p-2 rounded-xl font-bold uppercase hover:cursor-pointer">Appointments</p>
             <p @click="active = 'documents'" :class="active == 'documents' ? 'text-white bg-custom-red' : ''" class="w-full p-2 rounded-xl font-bold uppercase hover:cursor-pointer">Documents</p>
+            <p @click="active = 'logins'" :class="active == 'logins' ? 'text-white bg-custom-red' : ''" class="w-full p-2 rounded-xl font-bold uppercase hover:cursor-pointer">Logins</p>
         </div>
 
         <ApprovalCheckList @loading="loading = !loading" @change="change" v-if="active == 'approval'" :data="data" :update="update" :rocket_id="rocket_id" />
         <AgencyInfo @change="change" v-if="active == 'agency'" :data="data" :update="update" />
         <AppointmentInfo @loading="loading = !loading" @change="change" v-if="active == 'appointments'" :data="data" :update="update" :rocket_id="rocket_id" />
         <Documents @loading="loading = !loading" @change="change" v-if="active == 'documents'" :data="data" :update="update" />
+        <Logins @loading="loading = !loading" @change="change" v-if="active == 'logins'" :data="data" :update="update" :rocket_id="rocket_id" />
     </div>
 </template>
 
@@ -84,6 +89,7 @@ import AgencyInfo from '../../components/admin/agency/agencyInfo.vue'
 import AppointmentInfo from '../../components/admin/agency/appointments.vue'
 import Documents from '../../components/admin/agency/documents.vue'
 import ApprovalCheckList from '../../components/admin/agency/approvalCheckList.vue'
+import Logins from '../../components/admin/agency/logins.vue'
 
 export default {
     name: "Agency View",
@@ -141,7 +147,8 @@ export default {
                 sterling: false,
                 wright: false,
                 agency_logo: '',
-                document_id: ''
+                document_id: '',
+                note: ''
             },
             errors: [
                 {
@@ -191,7 +198,7 @@ export default {
         setTimeout(() => {
             this.active = 'approval'
 
-            if(this.data.approved == true){
+            if(this.data.approved == true || !this.data.completed){
                 this.active = 'agency'
             }
         }, 100);
@@ -325,7 +332,8 @@ export default {
         AgencyInfo,
         AppointmentInfo,
         Documents,
-        ApprovalCheckList
+        ApprovalCheckList,
+        Logins
     }
 }
 </script>

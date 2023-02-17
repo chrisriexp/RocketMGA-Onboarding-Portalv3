@@ -54,6 +54,7 @@ class onboardingInfo extends Model
         'document_embed',
         'stage',
         'completed',
-        'rocket_rep'
+        'rocket_rep',
+        'note'
     ];
 }

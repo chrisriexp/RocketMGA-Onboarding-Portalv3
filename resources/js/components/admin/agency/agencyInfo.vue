@@ -5,63 +5,73 @@
             <p class="text-md font-light text-custom-gray">Below is some general agency information..</p>
         </div>
 
-        <div class="w-full flex gap-4 text-md text-custom-gray">
-            <div class="flex gap-2 w-fit h-fit justify-items-center">
-                <p class="font-medium h-fit my-auto">Agency Tax ID -</p>
-                <textMask @inputUpdate="inputChange" :inputValue="form.agency_tax_id" :id="'agency_tax_id'" :maskText="'###-##-####'" :isdisabled=!update />
-            </div>
+        <div class="w-full grid grid-cols-4 gap-8">
+            <div class="grid gap-8 col-span-3 h-fit">
+                <div class="w-full flex gap-4 text-md text-custom-gray">
+                    <div class="flex gap-2 w-fit h-fit justify-items-center">
+                        <p class="font-medium h-fit my-auto">Agency Tax ID -</p>
+                        <textMask @inputUpdate="inputChange" :inputValue="form.agency_tax_id" :id="'agency_tax_id'" :maskText="'###-##-####'" :isdisabled=!update />
+                    </div>
 
-            <div class="flex gap-2 w-fit h-fit justify-items-center">
-                <p class="font-medium h-fit my-auto">Agency Type -</p>
-                <v-select style="min-width: 280px;"
-                    code="code"
-                    v-model="form.agency_type"
-                    :options="options"
-                    label="name"
-                    class="text-sm font-medium rounded-xl w-fit bg-custom-red disabled:text-custom-gray"
+                    <div class="flex gap-2 w-fit h-fit justify-items-center">
+                        <p class="font-medium h-fit my-auto">Agency Type -</p>
+                        <v-select style="min-width: 280px;"
+                            code="code"
+                            v-model="form.agency_type"
+                            :options="options"
+                            label="name"
+                            class="text-sm font-medium rounded-xl w-fit bg-custom-red disabled:text-custom-gray"
+                            :disabled="!update"
+                            @option:selected="selectChange"
+                        ></v-select>
+                    </div>
+                </div>
+
+                <div class="w-full flex gap-4 text-md text-custom-gray">
+                    <div class="flex gap-2 w-fit h-fit justify-items-center">
+                        <p class="font-medium h-fit my-auto">Agency Phone -</p>
+                        <textMask @inputUpdate="inputChange" :inputValue="form.phone" :id="'phone'" :maskText="'(###) ###-####'" :isdisabled=!update />
+                    </div>
+
+                    <div class="flex gap-2 w-fit h-fit justify-items-center">
+                        <p class="font-medium h-fit my-auto">Agency Email -</p>
+                        <textInput @inputUpdate="inputChange" :inputValue="form.email" :id="'email'" :isdisabled=!update :email=true />
+                    </div>
+                </div>
+
+                <!--Google Autocomplete-->
+                <div class="grid w-full mx-auto gap-2 text-custom-gray">
+                    <p class="font-medium h-fit my-auto">Agency Address -</p>
+                    <vue-google-autocomplete
+                    ref="addressAutocomplete"
+                    id="map"
+                    classname="form-control"
+                    placeholder="Please type your address"
+                    v-on:placechanged="getAddressData"
+                    country="us"
+                    class="w-full p-[5px] rounded-xl inner-border-[1px] border-none focus:ring-0 disabled:bg-custom-gray disabled:bg-opacity-5"
                     :disabled="!update"
-                    @option:selected="selectChange"
-                ></v-select>
+                    >
+                    </vue-google-autocomplete>
+                </div>
+
+                <div class="w-full flex gap-4 text-md text-custom-gray">
+                        <textInput @inputUpdate="inputChange" :inputValue="form.address1" :id="'address1'" :label="'Address 1'" :isdisabled=true />
+                        <textInput @inputUpdate="inputChange" :inputValue="form.address2" :id="'address2'" :label="'Address 2'" :isdisabled=!update :required=false />
+                </div>
+
+                <div class="w-full flex gap-4 text-md text-custom-gray">
+                    <textInput @inputUpdate="inputChange" :inputValue="form.city" :id="'city'" :label="'City'" :isdisabled=true />
+                    <textInput @inputUpdate="inputChange" :inputValue="form.state" :id="'state'" :label="'State'" :isdisabled=true />
+                    <textInput @inputUpdate="inputChange" :inputValue="form.zip" :id="'zip'" :label="'Zip'" :isdisabled=true />
+                </div>
             </div>
-        </div>
 
-        <div class="w-full flex gap-4 text-md text-custom-gray">
-            <div class="flex gap-2 w-fit h-fit justify-items-center">
-                <p class="font-medium h-fit my-auto">Agency Phone -</p>
-                <textMask @inputUpdate="inputChange" :inputValue="form.phone" :id="'phone'" :maskText="'(###) ###-####'" :isdisabled=!update />
+            <div class="grid gap-4 col text-custom-gray h-fit">
+                <p class="font-medium h-fit my-auto">Agency Notes:</p>
+
+                <textarea @change="this.$emit('change', 'note', form.note)" v-model="form.note" :disabled="!update" cols="30" rows="10" class="bg-custom-bg ring-0 focus:ring-0 rounded-md border-custom-gray border-opacity-20 focus:border-custom-gray focus:border-opacity-20"></textarea>
             </div>
-
-            <div class="flex gap-2 w-fit h-fit justify-items-center">
-                <p class="font-medium h-fit my-auto">Agency Email -</p>
-                <textInput @inputUpdate="inputChange" :inputValue="form.email" :id="'email'" :isdisabled=!update :email=true />
-            </div>
-        </div>
-
-        <!--Google Autocomplete-->
-        <div class="grid w-full mx-auto gap-2 text-custom-gray">
-            <p class="font-medium h-fit my-auto">Agency Address -</p>
-            <vue-google-autocomplete
-            ref="addressAutocomplete"
-            id="map"
-            classname="form-control"
-            placeholder="Please type your address"
-            v-on:placechanged="getAddressData"
-            country="us"
-            class="w-full p-[5px] rounded-xl inner-border-[1px] border-none focus:ring-0 disabled:bg-custom-gray disabled:bg-opacity-5"
-            :disabled="!update"
-            >
-            </vue-google-autocomplete>
-        </div>
-
-        <div class="w-full flex gap-4 text-md text-custom-gray">
-                <textInput @inputUpdate="inputChange" :inputValue="form.address1" :id="'address1'" :label="'Address 1'" :isdisabled=true />
-                <textInput @inputUpdate="inputChange" :inputValue="form.address2" :id="'address2'" :label="'Address 2'" :isdisabled=!update :required=false />
-        </div>
-
-        <div class="w-full flex gap-4 text-md text-custom-gray">
-            <textInput @inputUpdate="inputChange" :inputValue="form.city" :id="'city'" :label="'City'" :isdisabled=true />
-            <textInput @inputUpdate="inputChange" :inputValue="form.state" :id="'state'" :label="'State'" :isdisabled=true />
-            <textInput @inputUpdate="inputChange" :inputValue="form.zip" :id="'zip'" :label="'Zip'" :isdisabled=true />
         </div>
     </div>
 </template>
@@ -91,7 +101,8 @@ export default {
                 phone: '',
                 email: '',
                 agency_tax_id: '',
-                agency_type: {}
+                agency_type: {},
+                note: ''
             },
             errors: [
                 {

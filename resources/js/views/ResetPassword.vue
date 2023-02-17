@@ -19,7 +19,7 @@
         </div>
         <input v-else type="submit" class="mt-4 bg-custom-dark-blue text-white rounded-md p-2 hover:cursor-pointer">
 
-        <router-link to="/register" class="text-sm text-custom-dark-blue text-center mt-[-15px]">Don't have an account? <span class="underline">Register</span></router-link>
+        <router-link to="/" class="text-sm text-custom-dark-blue text-center mt-[-15px]">Don't have an account? <span class="underline">Register</span></router-link>
     </form>
 
     <Footer class="bottom-0 absolute" />

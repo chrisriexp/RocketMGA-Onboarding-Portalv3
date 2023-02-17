@@ -67,6 +67,7 @@
 import textInput from '../textInput.vue'
 import { ExclamationTriangleIcon, CheckCircleIcon, EyeIcon, CheckBadgeIcon } from '@heroicons/vue/24/solid'
 import axios from 'axios'
+import emailjs from '@emailjs/browser';
 
 export default {
     name: 'Approval Check List',
@@ -79,7 +80,10 @@ export default {
         return {
             agreement_disabled: false,
             api: {
-                apiKey: '8135da5570abd90097a2bcc0dbbce76d1decd484'
+                apiKey: '8135da5570abd90097a2bcc0dbbce76d1decd484',
+                serviceID: 'service_nf9yozb',
+                publicKey: 'h29zXRTKkaswfKPkp',
+                trainingInvite: 'template_b3uxk2g'
             },
             valid: {},
             agency_license_file: '',
@@ -193,7 +197,9 @@ export default {
             })
 
             if(approved){
-                const carriers = ['aon', 'beyond', 'dual', 'flow', 'neptune', 'palomar', 'sterling', 'wright']
+                const carriers = ['AON Edge', 'Beyond Flood', 'Dual Flood', 'Flow Flood', 'Neptune', 'Palomar', 'Sterling', 'Wright']
+                const checkCarriers= ['aon', 'beyond', 'dual', 'flow', 'neptune', 'palomar', 'sterling', 'wright']
+                let i = 0
 
                 await axios.post('/api/onboarding', {
                     "rocket_id": this.rocket_id,
@@ -206,27 +212,156 @@ export default {
                 await axios.post('/api/appointment', {"rocket_id": this.rocket_id})
                 .then(response => {
                     carriers.forEach(carrier => {
+                        let check = checkCarriers[i]
                         let details = JSON.parse(response.data.appointments[carrier])
 
-                        if(this.appointments[carrier] == true){
+                        if(this.appointments[check] == true){
                             details.direct = true
                             updates[carrier] = details
-                        } else if (carrier == 'flow' || carrier == 'palomar' && this.appointments[carrier] == false){
-                            details.id = this.data.email
+                        } else if (carrier == 'Flow Flood' || carrier == 'Palomar' && this.appointments[check] == false){
+                            if(carrier == 'Flow Flood'){
+                                details.email = this.data.email
+                            } else if (carrier == 'Palomar'){
+                                details.AgentId = this.data.email
+                            }
+
                             updates[carrier] = details
                         }
+
+                        i += 1
                     })
+
+                    i = 0
                 })
+
+                let logins = {}
+                await axios.post('/api/logins', {"rocket_id": this.rocket_id})
+                .then(response => {
+                    carriers.forEach(carrier => {
+                        let check = checkCarriers[i]
+                        let details = JSON.parse(response.data.logins[carrier])
+
+                        if(this.appointments[check] == true){
+                            details.direct = true
+                            logins[carrier] = details
+                        }
+
+                        i += 1
+                    })
+
+                    i = 0
+                })
+
+                await axios.post('/api/logins', {
+                    "rocket_id": this.rocket_id,
+                    "update": logins
+                })
+
 
                 await axios.post('/api/appointment', {
                     "rocket_id": this.rocket_id,
                     "update": updates
                 })
 
+                //Carrier Data
+                let carrier_data = []
+                let carrier_uips = []
+
+                await axios.post('/api/appointment', {
+                    "rocket_id": this.rocket_id
+                })
+                .then(response => {
+                    carriers.forEach(carrier => {
+                        const carrier_keys = Object.keys(JSON.parse(response.data.appointments[carrier]))
+
+                        carrier_keys.forEach(key => {
+                            if(key != 'direct'){
+                                carrier_uips.push({
+                                    name: key,
+                                    value: JSON.parse(response.data.appointments[carrier])[key]
+                                })
+                            }
+                        })
+
+                        if(carrier == 'Wright'){
+                            const wright = [' - NFIP', ' - Hiscox', ' - ResiFlood']
+
+                            wright.forEach(product => {
+                                carrier_data.push({
+                                    direct: JSON.parse(response.data.appointments[carrier]).direct,
+                                    name: carrier+product,
+                                    uip_fields: carrier_uips
+                                })
+                            })
+
+                            carrier_uips = []
+
+                        }else {
+                            carrier_data.push({
+                                direct: JSON.parse(response.data.appointments[carrier]).direct,
+                                name: carrier,
+                                uip_fields: carrier_uips
+                            })
+
+                            carrier_uips = []
+                        }
+                    })
+                })
+
                 await axios.post('/api/onboarding', {
                     "rocket_id": this.rocket_id,
                     "uip_created": true
                 })
+
+                //Create Agency in Rocket MGA System
+                let states = []
+
+                this.data.additional_states.forEach(state => {
+                    if(state.code == this.data.state){
+                        states.push({name: state.code, license_number: this.data.agency_license})
+                    } else {
+                        states.push({name: state.code, license_number: null})
+                    }
+                })
+
+                const agencyInfo = {
+                    "company_name": this.data.agency_name,
+                    "rocket_id": this.rocket_id,
+                    "dba_name": this.data.dba_name,
+                    "principal_agent": this.data.agent_name,
+                    //Carriers
+                    "carriers_list": carrier_data,
+                    "phone": this.data.phone,
+                    "email": this.data.email,
+                    "address1": this.data.address1,
+                    "address2": this.data.address2,
+                    "city": this.data.city,
+                    "state": this.data.state,
+                    "zip": this.data.zip,
+                    "agency_license": this.data.agency_license,
+                    "agency_tax_id": this.data.agency_tax_id,
+                    "agency_type": this.data.agency_type.code,
+                    "agent_license": this.data.agent_license,
+                    "agent_license_eff": this.data.agent_license_eff,
+                    "agent_license_exp": this.data.agent_license_exp,
+                    "agent_npn": this.data.agent_npn,
+                    "eo_insurer": this.data.eo_insurer,
+                    "eo_limit": this.data.eo_limit,
+                    "eo_policy": this.data.eo_policy,
+                    "eo_exp": this.data.eo_exp,
+                    //Appointed States
+                    "appointed_states": states
+                }
+
+                await axios.post('https://backend.agentportal.rocketmga.com/api/services/client/new-request', agencyInfo)
+
+                //Send Training Calendly Invite
+                emailjs.init(this.api.publicKey)
+                emailjs.send(this.api.serviceID, this.api.trainingInvite, {
+                    toEmail: this.data.email,
+                    agencyName: this.data.agency_name
+                })
+
 
                 location.reload()
             } else{

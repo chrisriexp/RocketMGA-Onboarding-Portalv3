@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Sanctum\HasApiTokens;
 
-class Appointments extends Model
+class Logins extends Model
 {
     use HasApiTokens, HasFactory;
     protected $primaryKey = 'rocket_id';

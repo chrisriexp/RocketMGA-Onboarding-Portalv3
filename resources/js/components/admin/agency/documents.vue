@@ -126,7 +126,8 @@ export default {
             eo: '',
             agency_logo: '',
             api: {
-                apiKey: '8135da5570abd90097a2bcc0dbbce76d1decd484'
+                // apiKey: '8135da5570abd90097a2bcc0dbbce76d1decd484'
+                apiKey: '8135da5570abd90097a2bcc0dbbce76d1decd484', //SandBox
             },
             form: {
                 document_id: '',
@@ -191,7 +192,8 @@ export default {
         files.forEach(file => {
             axios.get('/api/file/' + this.form[file])
             .then(response => {
-                this[file] = "https://onboarding.rocketmga.com" + response.data.path
+                // this[file] = "https://onboarding.rocketmga.com" + response.data.path
+                this[file] = "http://localhost:8000" + response.data.path
             })
         })
     },

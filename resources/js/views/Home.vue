@@ -4,19 +4,38 @@
         <img src="../../assets/1.jpg" alt="Abstract Background Image">
     </div>
 
-    <form @submit.prevent="login" class="grid gap-6 w-[400px] h-fit mx-auto mt-64 px-16 py-8 bg-white shadow-newdrop border-custom-gray border-[1px] border-opacity-20 rounded-lg z-10 relative">
-        <h1 class="text-center text-custom-dark-blue text-xl font-medium">Login</h1>
+    <div class="w-fit flex gap-8 h-fit mx-auto mt-32 px-12 py-8 bg-white shadow-newdrop border-custom-gray border-[1px] border-opacity-20 rounded-lg z-10 relative">
+        <div class="w-[600px] border-r-2 border-opacity-20 pr-8">
+            <div class="h-fit grid gap-6 text-md">
+                <img src="../../assets/RocketMGALogo.png" alt="Rocket MGA logo" class="h-[35px]">
+                <h2 class="text-custom-blue font-medium text-2xl">Onboarding Portal</h2>
+                <div class="font-light">
+                    <p>To start the onboarding process you will need to create an account, during the application we will required the following information:</p>
+                    <ul class="list-disc mt-2 pl-8 text-custom-blue">
+                        <li>Agent License</li>
+                        <li>Agency License</li>
+                        <li>Agency E&O</li>
+                        <li>Agency Carrier Appointments</li>
+                    </ul>
 
-        <textInput @inputUpdate="inputChange" :inputValue="form.email" :id="'email'" :label="'Email'" :placeholderText="'john@doe.com'" :email=true />
-        <textInput @inputUpdate="inputChange" :inputValue="form.password" :id="'password'" :label="'Password'" :placeholderText="'*******'" :password=true />
+                    <p class="flex gap-4 text-custom-dark-blue mt-4"><ExclamationCircleIcon class="h-6 opacity-60" />The final step of this application will be signing our Agency Appointment Agreement</p>
 
-        <input type="submit" class="mt-4 bg-custom-dark-blue text-white rounded-md p-2 hover:cursor-pointer">
-
-        <div class="flow-root w-full mt-[-15px]">
-            <router-link to="/register" class="text-sm underline text-custom-dark-blue float-left">Create Account</router-link>
-            <router-link to="/reset-password" class="text-sm underline text-custom-dark-blue float-right">Forgot Password</router-link>
+                    <p class="mt-8 text-custom-gray">Have you already started your onboarding process? <router-link to="/login" class="text-custom-blue font-normal underline">Login now</router-link> to continue your application.</p>
+                </div>
+            </div>
         </div>
-    </form>
+        
+        <form @submit.prevent="register" class="grid gap-6 w-[400px]">
+            <h1 class="text-center text-custom-dark-blue text-xl font-medium">Create Account</h1>
+
+            <textInput @inputUpdate="inputChange" :inputValue="form.name" :id="'name'" :label="'Name'" :placeholderText="'John Doe'" />
+            <textInput @inputUpdate="inputChange" :inputValue="form.email" :id="'email'" :label="'Email'" :placeholderText="'john@doe.com'" :email=true />
+            <textInput @inputUpdate="inputChange" :inputValue="form.password" :id="'password'" :label="'Password'" :placeholderText="'*******'" :password=true />
+            <textInput @inputUpdate="inputChange" :inputValue="form.confirm_password" :id="'confirm_password'" :label="'Confirm Password'" :placeholderText="'*******'" :password=true />
+
+            <input type="submit" class="mt-4 bg-custom-dark-blue text-white rounded-md p-2 hover:cursor-pointer">
+        </form>
+    </div>
 
     <Footer class="bottom-0 absolute" />
 </template>
@@ -24,16 +43,23 @@
 <script>
 import Footer from '../components/footer.vue'
 import textInput from '../components/textInput.vue'
+import { ExclamationCircleIcon } from '@heroicons/vue/24/outline'
 
 export default {
-    name: "Home",
+    name: "Create Account",
     data() {
         return {
             form: {
+                name: '',
                 email: '',
-                password: ''
+                password: '',
+                confirm_password: ''
             },
             errors: [
+                {
+                    name: 'name',
+                    errors: []
+                },
                 {
                     name: 'email',
                     errors: []
@@ -41,23 +67,12 @@ export default {
                 {
                     name: 'password',
                     errors: []
+                },
+                {
+                    name: 'confirm_password',
+                    errors: []
                 }
             ]
-        }
-    },
-    async created() {
-        const accessToken = localStorage.getItem('token');
-        if (accessToken) {
-            axios.post('/api/token/validate')
-            .then(response => {
-
-                if (response.data.valid) {
-                    this.$router.push({name: 'OnboardingForm'})
-                }
-            })
-            .catch(error => {
-                console.error(error);
-            });
         }
     },
     methods: {
@@ -78,8 +93,8 @@ export default {
                 })
             }
         },
-        async login(){
-            let valid = true
+        async register(){
+            let valid  = true
 
             this.errors.forEach(item => {
                 if(item.errors.length > 0){
@@ -92,52 +107,55 @@ export default {
                         })
                     })
                 }
+                return
             })
 
             if(valid){
-                await axios.post('/api/login', this.form)
+                await axios.post('/api/register', this.form)
                 .then(response => {
-                    if(response.data.success){
-                        localStorage.setItem('token', response.data.token)
-                        this.$router.push({name: 'OnboardingForm'})
-                        this.$alert({
-                            title: 'Login',
-                            text: response.data.message,
-                            type: 'success'
-                        })
-                    }
+                    this.$alert({
+                        title: 'Registered',
+                        text: response.data.message,
+                        type: 'success'
+                    })
+
+                    setTimeout(() => {
+                        this.$router.push({name: "Home"})
+                    }, 500)
                 })
                 .catch(error => {
+                    this.form.name = ''
                     this.form.email = ''
                     this.form.password = ''
+                    this.form.confirm_password = ''
 
-                    if(error.response.status == 400){
-                        const keys = Object.keys(error.response.data.message)
+                    if(error.response.status == 401){
+                        this.$alert({
+                            title: 'Registration Error',
+                            text: error.response.data.message,
+                            type: 'error'
+                        })
+                    } else {
+                        const keys  = Object.keys(error.response.data.message)
 
                         keys.forEach(key => {
                             error.response.data.message[key].forEach(error => {
                                 this.$alert({
-                                    title: 'Login Error',
+                                    title: 'Registration Error',
                                     text: error,
                                     type: 'error'
                                 })
                             })
                         })
-
-                    } else if(error.response.status == 401){
-                        this.$alert({
-                            title: 'Login Error',
-                            text: error.response.data.message,
-                            type: 'error'
-                        })
-                    }
+                    }               
                 })
             }
         }
     },
     components: {
         Footer,
-        textInput
+        textInput,
+        ExclamationCircleIcon
     }
 }
 </script>

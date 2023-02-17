@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+// use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Appointments;
 
@@ -26,8 +27,6 @@ class AppointmentController extends Controller
         $existingAppointment = Appointments::find($request->rocket_id);
 
         if(!$existingAppointment){
-            $carriers = ['aon', 'beyond', 'dual', 'flow', 'neptune', 'palomar', 'sterling', 'wright'];
-
             $appointment = new Appointments();
 
             $appointment->rocket_id = $request->rocket_id;

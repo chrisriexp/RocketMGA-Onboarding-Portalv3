@@ -59,8 +59,10 @@ export default {
             api: {
                 serviceID: 'service_nf9yozb',
                 publicKey: 'h29zXRTKkaswfKPkp',
-                dualTemplate: 'template_n43poh8',
-                palomarTemplate: 'template_lsue7c3',
+                // dualTemplate: 'template_n43poh8',
+                // palomarTemplate: 'template_lsue7c3',
+                dualTemplate: 'template_93696xs', //Testing
+                palomarTemplate: 'template_asfertergfd', //Testing
                 maxTemplate: 'template_ajztr2i',
                 onboardingConfirmation: 'template_ymmtc35',
                 neptuneError: 'template_utc3pnh'
@@ -206,13 +208,6 @@ export default {
             //Creat Approval
             await axios.get('/api/approval/check')
 
-            // //Send Flow and Palomar Credentials to Appointed Agents Table
-            // await axios.post('/api/appointed/add', {
-            //     "rocket_id": this.data.rocket_id,
-            //     "flow": this.data.email,
-            //     "palomar": this.data.email
-            // })
-
             //Check and Add to Zoho
             await axios.post('https://shielded-ridge-03597.herokuapp.com/https://hooks.zapier.com/hooks/catch/14170682/bjht2i9/', {
                 "agency_name": this.data.agency_name,
@@ -265,6 +260,9 @@ export default {
                     "week": week
                 })
             }
+
+            //Create Agency in Logins Table
+            await axios.get('/api/logins/check')
 
             // if(!this.data.neptune){
             //     await this.neptuneAPI()

@@ -135,8 +135,8 @@ class AuthController extends Controller
         $input['password'] = bcrypt($input['password']);
 
         $user = User::create($input);
-        $count = 13600 + $user->id;
-        $user->rocket_id = "RMGA{$count}";
+        $count = 01000 + $user->id;
+        $user->rocket_id = "RFA{$count}";
         $user->save();
 
         $response = [

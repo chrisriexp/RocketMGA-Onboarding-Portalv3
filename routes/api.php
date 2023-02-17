@@ -5,7 +5,8 @@ use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\OnboardingController;
 use App\Http\Controllers\API\FileController;
 use App\Http\Controllers\API\NotificationController;
-use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\API\AppointmentController;
+use App\Http\Controllers\API\LoginsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -54,3 +55,7 @@ Route::middleware(['auth:sanctum', 'ability:admin,super-admin,marketing'])->post
 
 /**Appointments */
 Route::middleware(['auth:sanctum', 'ability:admin,super-admin,marketing'])->post('/appointment', [AppointmentController::class, 'appointment']);
+
+/**Agency Logins */
+Route::middleware('auth:sanctum')->get('/logins/check', [LoginsController::class, 'check']);
+Route::middleware(['auth:sanctum', 'ability:admin,super-admin,marketing'])->post('/logins', [LoginsController::class, 'logins']);

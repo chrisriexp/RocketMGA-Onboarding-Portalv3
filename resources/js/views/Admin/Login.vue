@@ -107,7 +107,7 @@ export default {
 
                     if(response.data.success){
                         localStorage.setItem('token', response.data.token)
-                        
+
                         this.$router.push({name: 'AdminDashboard'})
                         this.$alert({
                             title: 'Login',

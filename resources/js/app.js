@@ -10,7 +10,7 @@ import vSelect from "vue-select";
 import {createRouter, createWebHistory} from 'vue-router';
 import NotFound from './views/NotFound.vue'
 import Home from './views/Home.vue'
-import Register from './views/Register.vue'
+import Login from './views/Login.vue'
 import ResetPassword from './views/ResetPassword.vue'
 import OnboardingForm from './views/OnboardingForm.vue'
 import AdminLogin from './views/Admin/Login.vue'
@@ -32,9 +32,9 @@ const router = createRouter({
             component: Home
         },
         {
-            path: "/register",
-            name: "Register",
-            component: Register
+            path: "/login",
+            name: "Login",
+            component: Login
         },
         {
             path: "/reset-password",

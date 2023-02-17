@@ -4,17 +4,18 @@
         <img src="../../assets/1.jpg" alt="Abstract Background Image">
     </div>
 
-    <form @submit.prevent="register" class="grid gap-6 w-[400px] h-fit mx-auto mt-32 px-16 py-8 bg-white shadow-newdrop border-custom-gray border-[1px] border-opacity-20 rounded-lg z-10 relative">
-        <h1 class="text-center text-custom-dark-blue text-xl font-medium">Register</h1>
+    <form @submit.prevent="login" class="grid gap-6 w-[400px] h-fit mx-auto mt-64 px-16 py-8 bg-white shadow-newdrop border-custom-gray border-[1px] border-opacity-20 rounded-lg z-10 relative">
+        <h1 class="text-center text-custom-dark-blue text-xl font-medium">Login</h1>
 
-        <textInput @inputUpdate="inputChange" :inputValue="form.name" :id="'name'" :label="'Name'" :placeholderText="'John Doe'" />
         <textInput @inputUpdate="inputChange" :inputValue="form.email" :id="'email'" :label="'Email'" :placeholderText="'john@doe.com'" :email=true />
         <textInput @inputUpdate="inputChange" :inputValue="form.password" :id="'password'" :label="'Password'" :placeholderText="'*******'" :password=true />
-        <textInput @inputUpdate="inputChange" :inputValue="form.confirm_password" :id="'confirm_password'" :label="'Confirm Password'" :placeholderText="'*******'" :password=true />
 
         <input type="submit" class="mt-4 bg-custom-dark-blue text-white rounded-md p-2 hover:cursor-pointer">
 
-        <router-link to="/" class="text-sm text-custom-dark-blue text-center mt-[-15px]">Already have an account? <span class="underline">Login</span></router-link>
+        <div class="flow-root w-full mt-[-15px]">
+            <router-link to="/" class="text-sm underline text-custom-dark-blue float-left">Create Account</router-link>
+            <router-link to="/reset-password" class="text-sm underline text-custom-dark-blue float-right">Forgot Password</router-link>
+        </div>
     </form>
 
     <Footer class="bottom-0 absolute" />
@@ -25,20 +26,14 @@ import Footer from '../components/footer.vue'
 import textInput from '../components/textInput.vue'
 
 export default {
-    name: "Register",
+    name: "Home",
     data() {
         return {
             form: {
-                name: '',
                 email: '',
-                password: '',
-                confirm_password: ''
+                password: ''
             },
             errors: [
-                {
-                    name: 'name',
-                    errors: []
-                },
                 {
                     name: 'email',
                     errors: []
@@ -46,12 +41,23 @@ export default {
                 {
                     name: 'password',
                     errors: []
-                },
-                {
-                    name: 'confirm_password',
-                    errors: []
                 }
             ]
+        }
+    },
+    async created() {
+        const accessToken = localStorage.getItem('token');
+        if (accessToken) {
+            axios.post('/api/token/validate')
+            .then(response => {
+
+                if (response.data.valid) {
+                    this.$router.push({name: 'OnboardingForm'})
+                }
+            })
+            .catch(error => {
+                console.error(error);
+            });
         }
     },
     methods: {
@@ -72,8 +78,8 @@ export default {
                 })
             }
         },
-        async register(){
-            let valid  = true
+        async login(){
+            let valid = true
 
             this.errors.forEach(item => {
                 if(item.errors.length > 0){
@@ -86,47 +92,45 @@ export default {
                         })
                     })
                 }
-                return
             })
 
             if(valid){
-                await axios.post('/api/register', this.form)
+                await axios.post('/api/login', this.form)
                 .then(response => {
-                    this.$alert({
-                        title: 'Registered',
-                        text: response.data.message,
-                        type: 'success'
-                    })
-
-                    setTimeout(() => {
-                        this.$router.push({name: "Home"})
-                    }, 500)
+                    if(response.data.success){
+                        localStorage.setItem('token', response.data.token)
+                        this.$router.push({name: 'OnboardingForm'})
+                        this.$alert({
+                            title: 'Login',
+                            text: response.data.message,
+                            type: 'success'
+                        })
+                    }
                 })
                 .catch(error => {
-                    this.form.name = ''
                     this.form.email = ''
                     this.form.password = ''
-                    this.form.confirm_password = ''
 
-                    if(error.response.status == 401){
-                        this.$alert({
-                            title: 'Registration Error',
-                            text: error.response.data.message,
-                            type: 'error'
-                        })
-                    } else {
-                        const keys  = Object.keys(error.response.data.message)
+                    if(error.response.status == 400){
+                        const keys = Object.keys(error.response.data.message)
 
                         keys.forEach(key => {
                             error.response.data.message[key].forEach(error => {
                                 this.$alert({
-                                    title: 'Registration Error',
+                                    title: 'Login Error',
                                     text: error,
                                     type: 'error'
                                 })
                             })
                         })
-                    }               
+
+                    } else if(error.response.status == 401){
+                        this.$alert({
+                            title: 'Login Error',
+                            text: error.response.data.message,
+                            type: 'error'
+                        })
+                    }
                 })
             }
         }
