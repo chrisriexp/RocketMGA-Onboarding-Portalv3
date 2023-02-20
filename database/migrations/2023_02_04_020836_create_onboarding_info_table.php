@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('onboarding_info', function (Blueprint $table) {
+        Schema::table('onboarding_info', function (Blueprint $table) {
             $table->string('rocket_id')->primary();
             $table->string('agency_name')->nullable();
             $table->string('dba_name')->nullable();
