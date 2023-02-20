@@ -17,6 +17,9 @@ import AdminLogin from './views/Admin/Login.vue'
 import AdminDashboard from './views/Admin/Dashboard.vue'
 import AdminProfile from './views/Admin/Profile.vue'
 import AgencyView from './views/Admin/Agency.vue'
+import AdminAgents from './views/Admin/Agents.vue'
+import AdminReview from './views/Admin/UnderReview.vue'
+import AdminApproved from './views/Admin/Approved.vue'
 
 const router = createRouter({
     history: createWebHistory(),
@@ -70,6 +73,36 @@ const router = createRouter({
                     path: "dashboard",
                     name: "AdminDashboard",
                     component: AdminDashboard,
+                    meta: {
+                        admin: true,
+                        role: ''
+                    },
+                    beforeEnter: validateAccessToken
+                },
+                {
+                    path: "agents",
+                    name: "AdminAgents",
+                    component: AdminAgents,
+                    meta: {
+                        admin: true,
+                        role: ''
+                    },
+                    beforeEnter: validateAccessToken
+                },
+                {
+                    path: "under-review",
+                    name: "AdminReview",
+                    component: AdminReview,
+                    meta: {
+                        admin: true,
+                        role: ''
+                    },
+                    beforeEnter: validateAccessToken
+                },
+                {
+                    path: "approved",
+                    name: "AdminApproved",
+                    component: AdminApproved,
                     meta: {
                         admin: true,
                         role: ''

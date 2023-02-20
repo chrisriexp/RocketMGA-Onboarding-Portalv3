@@ -10,7 +10,7 @@
                 <img src="../../assets/RocketMGALogo.png" alt="Rocket MGA logo" class="h-[35px]">
                 <h2 class="text-custom-blue font-medium text-2xl">Onboarding Portal</h2>
                 <div class="font-light">
-                    <p>To start the onboarding process you will need to create an account, during the application we will required the following information:</p>
+                    <p>To start the onboarding process you will need to create an account, during the application we will require the following information:</p>
                     <ul class="list-disc mt-2 pl-8 text-custom-blue">
                         <li>Agent License</li>
                         <li>Agency License</li>
@@ -120,7 +120,7 @@ export default {
                     })
 
                     setTimeout(() => {
-                        this.$router.push({name: "Home"})
+                        this.$router.push({name: "Login"})
                     }, 500)
                 })
                 .catch(error => {

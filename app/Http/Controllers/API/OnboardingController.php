@@ -238,7 +238,59 @@ class OnboardingController extends Controller
         if($filter == null){
             return 'no filter';
         }
+        //Dashboard Filter
+        elseif($filter == 'dashboard'){
+            $agents = onboardingInfo::all();
+            $agentsCount = $agents->count();
+            $agentsOnboarding = $agents->where('completed', false)->count();
+            $agentsUnderReview = $agents->where('completed', true)->where('approved', false)->count();
+            $agentsAppointed = $agents->where('appointed', true)->count();
 
-        return $filter;
+            $data = onboardingInfo::orderBy('created_at', 'DESC')->take(4)->get();      
+
+            $response = [
+                'success'=> true,
+                'agents'=> $data,
+                'onboarding'=> $agentsOnboarding,
+                'review'=> $agentsUnderReview,
+                'appointed'=> $agentsAppointed,
+                'totalCount'=> $agentsCount
+            ];
+            
+            return response()->json($response, 200);
+        }
+        //Agents Onboarding Filter
+        elseif($filter == 'agents'){
+            $agents = onboardingInfo::where('completed', false)->get();     
+
+            $response = [
+                'success'=> true,
+                'agents'=> $agents
+            ];
+            
+            return response()->json($response, 200);
+        }
+        //Agents Under Review Filter
+        elseif($filter == 'review'){
+            $agents = onboardingInfo::where('completed', true)->where('approved', false)->get();     
+
+            $response = [
+                'success'=> true,
+                'agents'=> $agents
+            ];
+            
+            return response()->json($response, 200);
+        }
+        //Agents Approved Filter
+        elseif($filter == 'approved'){
+            $agents = onboardingInfo::where('completed', true)->where('approved', true)->get();     
+
+            $response = [
+                'success'=> true,
+                'agents'=> $agents
+            ];
+            
+            return response()->json($response, 200);
+        }
     }
 }

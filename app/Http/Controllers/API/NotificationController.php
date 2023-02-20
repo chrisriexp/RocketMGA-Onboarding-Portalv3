@@ -9,7 +9,7 @@ use App\Models\Notifications;
 class NotificationController extends Controller
 {
     public function index(){
-        return Notifications::all();
+        return Notifications::orderBy('created_at', 'DESC')->get();
     }
 
     public function add(Request $request){

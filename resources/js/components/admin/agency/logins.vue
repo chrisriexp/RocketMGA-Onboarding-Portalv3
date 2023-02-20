@@ -58,16 +58,18 @@ export default {
     async created(){
         this.$emit('loading')
 
-        await axios.post('/api/logins', {"rocket_id": this.rocket_id})
-        .then(response => {
-            const keys = Object.keys(response.data.logins)
+        if(this.data.completed){
+            await axios.post('/api/logins', {"rocket_id": this.rocket_id})
+            .then(response => {
+                const keys = Object.keys(response.data.logins)
 
-            keys.forEach(carrier => {
-                if(carrier != 'rocket_id' && carrier != 'created_at' && carrier != 'updated_at'){
-                    this.logins[carrier] = JSON.parse(response.data.logins[carrier])
-                }
+                keys.forEach(carrier => {
+                    if(carrier != 'rocket_id' && carrier != 'created_at' && carrier != 'updated_at'){
+                        this.logins[carrier] = JSON.parse(response.data.logins[carrier])
+                    }
+                })
             })
-        })
+        }
 
         this.$emit('loading')
     },
