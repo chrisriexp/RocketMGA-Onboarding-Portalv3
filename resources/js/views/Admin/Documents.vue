@@ -59,8 +59,8 @@ export default {
             agents:[],
             agreement_disabled: false,
             api: {
-                // apiKey: '8135da5570abd90097a2bcc0dbbce76d1decd484'
-                apiKey: '8135da5570abd90097a2bcc0dbbce76d1decd484', //SandBox
+                apiKey: '8135da5570abd90097a2bcc0dbbce76d1decd484'
+                // apiKey: '8135da5570abd90097a2bcc0dbbce76d1decd484', //SandBox
             }
         }
     },
@@ -83,8 +83,8 @@ export default {
                 if(agent[file] != null){
                     axios.get('/api/file/' + agent[file])
                     .then(response => {
-                        // this[file] = "https://onboarding.rocketmga.com" + response.data.path
-                        agent[file] = "http://localhost:8000" + response.data.path
+                        this[file] = "https://onboarding.rocketmga.com" + response.data.path
+                        // agent[file] = "http://localhost:8000" + response.data.path
                     })
                 }
             })
