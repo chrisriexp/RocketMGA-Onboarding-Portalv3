@@ -246,7 +246,7 @@ class OnboardingController extends Controller
             $agentsUnderReview = $agents->where('completed', true)->where('approved', false)->count();
             $agentsAppointed = $agents->where('appointed', true)->count();
 
-            $data = onboardingInfo::orderBy('created_at', 'DESC')->take(4)->get();      
+            $data = onboardingInfo::orderBy('created_at', 'DESC')->take(4)->get(['rocket_id', 'agency_name', 'agent_name', 'phone', 'email', 'stage']);      
 
             $response = [
                 'success'=> true,
@@ -261,7 +261,7 @@ class OnboardingController extends Controller
         }
         //Agents Onboarding Filter
         elseif($filter == 'agents'){
-            $agents = onboardingInfo::where('completed', false)->get();     
+            $agents = onboardingInfo::where('completed', false)->get(['rocket_id', 'agency_name', 'agent_name', 'phone', 'email', 'stage']);     
 
             $response = [
                 'success'=> true,
@@ -272,7 +272,7 @@ class OnboardingController extends Controller
         }
         //Agents Under Review Filter
         elseif($filter == 'review'){
-            $agents = onboardingInfo::where('completed', true)->where('approved', false)->get();     
+            $agents = onboardingInfo::where('completed', true)->where('approved', false)->get(['rocket_id', 'agency_name', 'agent_name', 'phone', 'email', 'stage']);     
 
             $response = [
                 'success'=> true,
@@ -283,7 +283,18 @@ class OnboardingController extends Controller
         }
         //Agents Approved Filter
         elseif($filter == 'approved'){
-            $agents = onboardingInfo::where('completed', true)->where('approved', true)->get();     
+            $agents = onboardingInfo::where('completed', true)->where('approved', true)->get(['rocket_id', 'agency_name', 'agent_name', 'phone', 'email']);     
+
+            $response = [
+                'success'=> true,
+                'agents'=> $agents
+            ];
+            
+            return response()->json($response, 200);
+        }
+        //Agent Documents Filter
+        elseif($filter == 'documents'){
+            $agents = onboardingInfo::get(['rocket_id', 'agency_name', 'agent_license_file', 'agency_license_file', 'eo', 'agency_logo', 'document_id']);     
 
             $response = [
                 'success'=> true,

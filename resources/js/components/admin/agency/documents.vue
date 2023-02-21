@@ -244,7 +244,7 @@ export default {
             this.$emit('loading')
             //Enable Agreement Button
             this.agreement_disabled = false
-        },
+        }
     },
     components: {
         textInput,

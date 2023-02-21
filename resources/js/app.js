@@ -20,6 +20,7 @@ import AgencyView from './views/Admin/Agency.vue'
 import AdminAgents from './views/Admin/Agents.vue'
 import AdminReview from './views/Admin/UnderReview.vue'
 import AdminApproved from './views/Admin/Approved.vue'
+import AdminDocuments from './views/Admin/Documents.vue'
 
 const router = createRouter({
     history: createWebHistory(),
@@ -103,6 +104,16 @@ const router = createRouter({
                     path: "approved",
                     name: "AdminApproved",
                     component: AdminApproved,
+                    meta: {
+                        admin: true,
+                        role: ''
+                    },
+                    beforeEnter: validateAccessToken
+                },
+                {
+                    path: "documents",
+                    name: "AdminDocuments",
+                    component: AdminDocuments,
                     meta: {
                         admin: true,
                         role: ''
