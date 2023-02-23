@@ -217,8 +217,13 @@ class OnboardingController extends Controller
         } elseif($request->has('update')){
             $updates = $request->update;
 
-            $updates['phone'] = preg_replace('/\D+/', '', $updates['phone']);
-            $updates['agency_tax_id'] = str_replace('-', '', $updates['agency_tax_id']);
+            if(array_key_exists('phone', $request->update)){
+                $updates['phone'] = preg_replace('/\D+/', '', $updates['phone']);
+            }
+            
+            if(array_key_exists('agency_tax_id', $request->update)){
+                $updates['agency_tax_id'] = str_replace('-', '', $updates['agency_tax_id']);
+            }
 
             $user->fill($updates);
             $user->save();
@@ -294,7 +299,7 @@ class OnboardingController extends Controller
         }
         //Agent Documents Filter
         elseif($filter == 'documents'){
-            $agents = onboardingInfo::get(['rocket_id', 'agency_name', 'agent_license_file', 'agency_license_file', 'eo', 'agency_logo', 'document_id']);     
+            $agents = onboardingInfo::get(['rocket_id', 'agency_name', 'agent_license_file', 'agency_license_file', 'eo', 'agency_logo', 'document_id', 'agreement', 'completed']);     
 
             $response = [
                 'success'=> true,

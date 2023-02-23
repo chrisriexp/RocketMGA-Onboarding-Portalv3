@@ -148,7 +148,8 @@ export default {
                 wright: false,
                 agency_logo: '',
                 document_id: '',
-                note: ''
+                note: '',
+                agreement: ''
             },
             errors: [
                 {

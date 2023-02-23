@@ -34,8 +34,8 @@
                     <a v-if="agent.eo != null" target="_blank" :href="agent.eo" class="text-custom-red">Click to View</a>
                     <a v-else target="_blank" :href="agent.eo" class="text-custom-gray opacity-40">File not uploaded</a>
 
-                    <button @click="downloadAgreement(agent.rocket_id, agent.agency_name, agent.document_id)" v-if="agent.document_id != null" :disabled="agreement_disabled" class="w-fit text-custom-red pl-2">Click to Download</button>
-                    <a v-else target="_blank" :href="agent.document_id" class="text-custom-gray opacity-40 pl-2">Document not created</a>
+                    <a v-if="agent.agreement != null" target="_blank" :href="agent.agreement" class="text-custom-red">Click to View</a>
+                    <a v-else target="_blank" :href="agent.agreement" class="text-custom-gray opacity-40">Document not completed</a>
 
                     <a v-if="agent.agency_logo != null" target="_blank" :href="agent.agency_logo" class="text-custom-red pl-2">Click to View</a>
                     <a v-else target="_blank" :href="agent.agency_logo" class="text-custom-gray opacity-40 pl-2">File not uploaded</a>
@@ -59,8 +59,7 @@ export default {
             agents:[],
             agreement_disabled: false,
             api: {
-                apiKey: '8135da5570abd90097a2bcc0dbbce76d1decd484'
-                // apiKey: '8135da5570abd90097a2bcc0dbbce76d1decd484', //SandBox
+                apiKey: '861fd4711f09ecbcf3f10f7a5cd449e22453abf3'
             }
         }
     },
@@ -76,15 +75,70 @@ export default {
             })
         })
 
-        const files = ['agency_license_file', 'agent_license_file', 'eo', 'agency_logo']
+        for (const agent of this.agents) {
+            if(agent.completed && agent.agreement == null){
+                console.log(agent.agency_name)
+                let agreementFile = ''
+
+                const myHeaders = {
+                    headers: {'Authorization': `API-Key ${this.api.apiKey}`, 'Content-Type': 'application/pdf'},
+                    responseType: 'blob'
+                }
+
+                //Download
+                await axios.get(`https://api.pandadoc.com/public/v1/documents/${agent.document_id}/download-protected`, myHeaders)
+                .then(response => {
+                    const agreementBlob = new Blob([response.data], { type: 'application/pdf' });
+                    agreementFile = new File([agreementBlob], `${agent.agency_name}-${agent.rocket_id}.pdf`, { type: 'application/pdf' });
+                })
+
+                let agreementId = ''
+
+                const fileHeader = {
+                    headers: {'content-type': 'multipart/form-data'}
+                }
+
+                let fileData = new FormData();
+                fileData.append('file', agreementFile);
+                fileData.append('type', 'agreement');
+                
+                //Uplolad Agreement
+                await axios.post('/api/upload', fileData, fileHeader)
+                .then(response => {
+                    agreementId = response.data.id
+                })
+
+                console.log(agreementId)
+                //Save Agreement ID
+                await axios.post('/api/onboarding', {
+                    'rocket_id': agent.rocket_id,
+                    'update': {
+                        'agreement': agreementId
+                    }
+                })
+            }
+        }
+
+        this.agents = []
+
+        await axios.get('/api/onboarding/documents')
+        .then(response => {
+            const keys = Object.keys(response.data.agents)
+
+            keys.forEach(key => {
+                this.agents.push(response.data.agents[key])
+            })
+        })
+
+        const files = ['agency_license_file', 'agent_license_file', 'eo', 'agency_logo', 'agreement']
 
         this.agents.forEach(agent => {
             files.forEach(file => {
                 if(agent[file] != null){
                     axios.get('/api/file/' + agent[file])
                     .then(response => {
-                        this[file] = "https://onboarding.rocketmga.com" + response.data.path
-                        // agent[file] = "http://localhost:8000" + response.data.path
+                        // this[file] = "https://onboarding.rocketmga.com" + response.data.path
+                        agent[file] = "http://localhost:8000" + response.data.path
                     })
                 }
             })
@@ -102,20 +156,28 @@ export default {
             //Show Loading Spinner
             this.loading = true
 
+            let agreementFile = ''
+
             const myHeaders = {
                 headers: {'Authorization': `API-Key ${this.api.apiKey}`, 'Content-Type': 'application/pdf'},
                 responseType: 'blob'
             }
             await axios.get(`https://api.pandadoc.com/public/v1/documents/${id}/download`, myHeaders)
             .then(response => {
-                const url = window.URL.createObjectURL(new Blob([response.data], {type:"application/pdf"}));
-                const link = document.createElement('a');
-                link.href = url;
-                window.open(url);
-                link.setAttribute('download', `${agency}-${rocket_id}.pdf`);
-                document.body.appendChild(link);
-                link.click();
+                const agreementBlob = new Blob([response.data], { type: 'application/pdf' });
+                agreementFile = new File([agreementBlob], `${agency}-${rocket_id}.pdf`, { type: 'application/pdf' });
             })
+
+            const fileHeader = {
+                headers: {'content-type': 'multipart/form-data'}
+            }
+
+            let fileData = new FormData();
+            fileData.append('file', agreementFile);
+            fileData.append('type', 'agreement');
+            
+            await axios.post('/api/upload', fileData, fileHeader)
+
             //Hide Loading Spinner
             this.loading = false
             //Enable Agreement Button

@@ -1,0 +1,10 @@
+[
+    {
+        "name": "Admin",
+        "code": "admin"
+    },
+    {
+        "name": "Marketing Rep",
+        "code": "marketing"
+    }
+]

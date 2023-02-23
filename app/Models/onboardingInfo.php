@@ -55,6 +55,7 @@ class onboardingInfo extends Model
         'stage',
         'completed',
         'rocket_rep',
-        'note'
+        'note',
+        'agreement'
     ];
 }

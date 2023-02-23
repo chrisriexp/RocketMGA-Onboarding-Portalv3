@@ -1,10 +1,10 @@
 <template>
     <div class="w-full h-fit grid gap-8 my-6 p-6 bg-white rounded-md border-custom-gray border-opacity-20 border-[1px]">
         <div v-if="this.data.completed" class="grid gap-6 w-fit h-fit">
-            <button @click="downloadAgreement" :disabled="agreement_disabled" class="flex gap-8 px-6 w-fit group text-white rounded-xl bg-custom-red font-medium text-xl disabled:bg-opacity-40">
+            <a target="_blank" :href="this.agreement" class="flex gap-8 px-6 w-fit group text-white rounded-xl bg-custom-red font-medium text-xl">
                 <span class="my-auto">Rocket MGA Agreement</span>
                 <FolderArrowDownIcon class="h-10" />
-            </button>
+            </a>
         </div>
 
         <div v-else class="w-full px-2 bg-custom-orange bg-opacity-60 rounded-md text-sm text-white">
@@ -125,10 +125,7 @@ export default {
             agent_license_file: '',
             eo: '',
             agency_logo: '',
-            api: {
-                apiKey: '8135da5570abd90097a2bcc0dbbce76d1decd484'
-                // apiKey: '8135da5570abd90097a2bcc0dbbce76d1decd484', //SandBox
-            },
+            agreement: '',
             form: {
                 document_id: '',
                 agent_license_file: '',
@@ -143,7 +140,8 @@ export default {
                 eo_limit: '',
                 eo_exp: '',
                 eo_insurer: '',
-                agency_logo: ''
+                agency_logo: '',
+                agreement: ''
             },
             errors: [
                 {
@@ -187,13 +185,13 @@ export default {
             this.form[key] = this.data[key]
         })
 
-        const files = ['agency_license_file', 'agent_license_file', 'eo', 'agency_logo']
+        const files = ['agency_license_file', 'agent_license_file', 'eo', 'agency_logo', 'agreement']
 
         files.forEach(file => {
             axios.get('/api/file/' + this.form[file])
             .then(response => {
-                this[file] = "https://onboarding.rocketmga.com" + response.data.path
-                // this[file] = "http://localhost:8000" + response.data.path
+                // this[file] = "https://onboarding.rocketmga.com" + response.data.path
+                this[file] = "http://localhost:8000" + response.data.path
             })
         })
     },
@@ -219,31 +217,6 @@ export default {
             }
 
             this.$emit('change', id, value, errors)
-        },
-        async downloadAgreement(){
-            //Disable Agreement Button
-            this.agreement_disabled = true
-            //Show Loading Spinner
-            this.$emit('loading') 
-
-            const myHeaders = {
-                headers: {'Authorization': `API-Key ${this.api.apiKey}`, 'Content-Type': 'application/pdf'},
-                responseType: 'blob'
-            }
-            await axios.get(`https://api.pandadoc.com/public/v1/documents/${this.form.document_id}/download`, myHeaders)
-            .then(response => {
-                const url = window.URL.createObjectURL(new Blob([response.data], {type:"application/pdf"}));
-                const link = document.createElement('a');
-                link.href = url;
-                window.open(url);
-                link.setAttribute('download', `${this.data.agency_name}-${this.data.rocket_id}.pdf`);
-                document.body.appendChild(link);
-                link.click();
-            })
-            //Hide Loading Spinner
-            this.$emit('loading')
-            //Enable Agreement Button
-            this.agreement_disabled = false
         }
     },
     components: {

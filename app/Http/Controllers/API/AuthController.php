@@ -123,8 +123,7 @@ class AuthController extends Controller
         if($findUser){
             $response = [
                 'success'=> false,
-                'message'=> 'User already exists.',
-                'findUser'=> $findUser
+                'message'=> 'User already exists.'
             ];
 
             return response()->json($response, 401);
@@ -141,8 +140,7 @@ class AuthController extends Controller
 
         $response = [
             'success'=> true,
-            'message'=> 'User registered successfully.',
-            'user'=> $user
+            'message'=> 'User registered successfully.'
         ];
 
         return response()->json($response, 200);
@@ -228,5 +226,118 @@ class AuthController extends Controller
         $request->user()->tokens()->delete();
 
         return response()->json(['success'=> true, 'message'=> 'User logged out successfully.'], 200);
+    }
+
+    public function users(){
+        $users = User::where('role', '!=', 'user')->where('role', '!=', 'super-admin')->get(['id', 'name', 'email', 'rocket_id', 'role']);
+
+        $response = [
+            'success'=> true,
+            'users'=> $users
+        ];
+
+        return response()->json($response, 200);
+    }
+
+    public function registerAdmin(Request $request){
+        $validator = Validator::make($request->all(), [
+            'role'=> 'required',
+            'name'=> 'required',
+            'email'=> 'required|email',
+            'password'=> 'required|min:8',
+            'confirm_password'=> 'required|same:password'
+        ]);
+
+        if($validator->fails()){
+            $response = [
+                'success'=> false,
+                'message'=> $validator->errors()
+            ];
+
+            return response()->json($response, 400);
+        }
+
+        $findUser = User::where('email', strtolower($request->email))->exists();
+
+        if($findUser){
+            $response = [
+                'success'=> false,
+                'message'=> 'User already exists.'
+            ];
+
+            return response()->json($response, 401);
+        }
+
+        $input = $request->all();
+        $input['email'] = strtolower($input['email']);
+        $input['password'] = bcrypt($input['password']);
+
+        $user = User::create($input);
+        $count = 21000 + $user->id;
+        $user->rocket_id = "RFA{$count}";
+        $user->role = $request->role;
+        $user->save();
+
+        $response = [
+            'success'=> true,
+            'message'=> 'User registered successfully.'
+        ];
+
+        return response()->json($response, 200);
+    }
+
+    public function updateAdmin(Request $request){
+        if($request->has('password')){
+            $validator = Validator::make($request->all(), [
+                'id'=> 'required',
+                'role'=> 'required',
+                'name'=> 'required',
+                'email'=> 'required|email',
+                'password'=> 'required|min:8',
+                'confirm_password'=> 'required|same:password'
+            ]);
+        } else {
+            $validator = Validator::make($request->all(), [
+                'id'=> 'required',
+                'role'=> 'required',
+                'name'=> 'required',
+                'email'=> 'required|email'
+            ]);
+        }
+
+        if($validator->fails()){
+            $response = [
+                'success'=> false,
+                'message'=> $validator->errors()
+            ];
+
+            return response()->json($response, 400);
+        }
+
+        $user = User::find($request->id);
+
+        if($request->has('password')){
+            $input = $request->all();
+            $input['email'] = strtolower($input['email']);
+            $input['password'] = bcrypt($input['password']);
+
+            $user->fill($input);
+            $user->role = $request->role;
+            $user->save();
+        } else {
+            $input = $request->all();
+            $input['email'] = strtolower($input['email']);
+
+            $user->fill($input);
+            $user->role = $request->role;
+            $user->save();
+        }
+
+        $response = [
+            'success'=> true,
+            'message'=> 'User updated successfully.'
+        ];
+
+        return response()->json($response, 200);
     }
 }

@@ -33,6 +33,10 @@ Route::post('/resetPassword', [AuthController::class, 'resetPassword']);
 Route::post('/resetEmail', [AuthController::class, 'resetEmail']);
 Route::middleware('auth:sanctum')->get('/logout', [AuthController::class, 'logout']);
 
+Route::middleware(['auth:sanctum', 'ability:super-admin'])->get('/users', [AuthController::class, 'users']);
+Route::middleware(['auth:sanctum', 'ability:super-admin'])->post('/register/admin', [AuthController::class, 'registerAdmin']);
+Route::middleware(['auth:sanctum', 'ability:super-admin'])->post('/update/admin', [AuthController::class, 'updateAdmin']);
+
 /**Onboarding Routes */
 Route::middleware('auth:sanctum')->get('/onboarding/check', [OnboardingController::class, 'check']);
 Route::middleware('auth:sanctum')->post('/onboarding/update', [OnboardingController::class, 'update']);
