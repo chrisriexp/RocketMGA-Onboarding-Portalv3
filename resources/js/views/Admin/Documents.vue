@@ -77,45 +77,42 @@ export default {
 
         for (const agent of this.agents) {
             if(agent.completed && agent.agreement == null){
-                console.log(agent.agency_name)
-                let agreementFile = ''
-
                 const myHeaders = {
-                    headers: {'Authorization': `API-Key ${this.api.apiKey}`, 'Content-Type': 'application/pdf'},
+                    headers: {
+                        'Authorization': `API-Key ${this.api.apiKey}`,
+                        'Content-Type': 'application/pdf',
+                        'Content-Disposition': 'attachment; filename="Agreement.pdf"'
+                    },
                     responseType: 'blob'
-                }
+                };
 
-                //Download
-                await axios.get(`https://api.pandadoc.com/public/v1/documents/${agent.document_id}/download-protected`, myHeaders)
+                await axios.get(`https://shielded-ridge-03597.herokuapp.com/https://api.pandadoc.com/public/v1/documents/${agent.document_id}/download`, myHeaders)
                 .then(response => {
-                    const agreementBlob = new Blob([response.data], { type: 'application/pdf' });
-                    agreementFile = new File([agreementBlob], `${agent.agency_name}-${agent.rocket_id}.pdf`, { type: 'application/pdf' });
-                })
 
-                let agreementId = ''
+                    const pdfFile = new File([response.data], `${agent.agency_name}-${agent.rocket_id}.pdf`, { type: 'application/pdf' });
+                    const agreementData = new FormData();
+                    agreementData.append('type', 'agreement');
+                    agreementData.append('file', pdfFile);
 
-                const fileHeader = {
-                    headers: {'content-type': 'multipart/form-data'}
-                }
-
-                let fileData = new FormData();
-                fileData.append('file', agreementFile);
-                fileData.append('type', 'agreement');
-                
-                //Uplolad Agreement
-                await axios.post('/api/upload', fileData, fileHeader)
-                .then(response => {
-                    agreementId = response.data.id
-                })
-
-                console.log(agreementId)
-                //Save Agreement ID
-                await axios.post('/api/onboarding', {
-                    'rocket_id': agent.rocket_id,
-                    'update': {
-                        'agreement': agreementId
-                    }
-                })
+                    console.log(agreementData.get('file'))
+                    axios.post('/api/upload', agreementData, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    })
+                    .then(response => {
+                        //Save Agreement ID
+                        axios.post('/api/onboarding', {
+                            'rocket_id': agent.rocket_id,
+                            'update': {
+                                'agreement': response.data.id
+                            }
+                        })
+                    })
+                    .catch(error => {
+                        console.log(error.response.data);
+                    });
+                });
             }
         }
 
@@ -137,8 +134,8 @@ export default {
                 if(agent[file] != null){
                     axios.get('/api/file/' + agent[file])
                     .then(response => {
-                        // this[file] = "https://onboarding.rocketmga.com" + response.data.path
-                        agent[file] = "http://localhost:8000" + response.data.path
+                        agent[file] = "https://onboarding.rocketmga.com" + response.data.path
+                        // agent[file] = "http://localhost:8000" + response.data.path
                     })
                 }
             })

@@ -22,12 +22,14 @@ class FileController extends Controller
 
     public function upload(Request $request){
         $validator = Validator::make($request->all(), [
-            'file' => 'required|mimes:jpg,jpeg,png,pdf|max:5048'
+            'file' => 'required|mimes:jpg,jpeg,png,pdf|max:20480'
         ]);
 
         if($validator->fails()){
             $response = [
                 'success'=> false,
+                'request'=> $request->all(),
+                'validFile'=> $request->file('file')->isValid(),
                 'message'=> $validator->errors()
             ];
 
@@ -37,6 +39,16 @@ class FileController extends Controller
         $id = $request->user()->rocket_id;
 
         $fileUpload = new FileUpload;
+        
+        $file = $request->file('file');
+        if (!$file) {
+            $response = [
+                'success' => false,
+                'message' => 'File not found'
+            ];
+
+            return response()->json($response, 400);
+        }
 
         $file_name = time().'_'.$id. '.' . $request->file('file')->getClientOriginalExtension();
         $file_path = $request->file('file')->storeAs('uploads', $file_name, 'public');

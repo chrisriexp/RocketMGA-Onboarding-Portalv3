@@ -126,6 +126,10 @@ export default {
             eo: '',
             agency_logo: '',
             agreement: '',
+            api: {
+                apiKey: '861fd4711f09ecbcf3f10f7a5cd449e22453abf3',
+                // apiKey: '8135da5570abd90097a2bcc0dbbce76d1decd484', //SandBox
+            },
             form: {
                 document_id: '',
                 agent_license_file: '',
@@ -190,8 +194,8 @@ export default {
         files.forEach(file => {
             axios.get('/api/file/' + this.form[file])
             .then(response => {
-                // this[file] = "https://onboarding.rocketmga.com" + response.data.path
-                this[file] = "http://localhost:8000" + response.data.path
+                this[file] = "https://onboarding.rocketmga.com" + response.data.path
+                // this[file] = "http://localhost:8000" + response.data.path
             })
         })
     },
@@ -217,6 +221,48 @@ export default {
             }
 
             this.$emit('change', id, value, errors)
+        },
+        async downloadAgreement(rocket_id, agency, id){
+            //Disable Agreement Button
+            this.agreement_disabled = true
+            //Show Loading Spinner
+            this.loading = true
+
+            const myHeaders = {
+                headers: {
+                    'Authorization': `API-Key ${this.api.apiKey}`,
+                    'Content-Type': 'application/pdf',
+                    'Content-Disposition': 'attachment; filename="Agreement.pdf"'
+                },
+                responseType: 'blob'
+            };
+
+            await axios.get(`https://shielded-ridge-03597.herokuapp.com/https://api.pandadoc.com/public/v1/documents/${this.form.document_id}/download`, myHeaders)
+            .then(response => {
+
+                const pdfFile = new File([response.data], 'Agreement.pdf', { type: 'application/pdf' });
+                const agreementData = new FormData();
+                agreementData.append('type', 'agreement');
+                agreementData.append('file', pdfFile);
+                
+                axios.post('/api/upload', agreementData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                })
+                .then(response => {
+                    console.log(response.data);
+                })
+                .catch(error => {
+                    console.log(error.response.data);
+                });
+            });
+
+
+            //Hide Loading Spinner
+            this.loading = false
+            //Enable Agreement Button
+            this.agreement_disabled = false
         }
     },
     components: {

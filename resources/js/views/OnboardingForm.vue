@@ -57,14 +57,14 @@ export default {
             step: 0,
             data: {},
             api: {
-                // apiKey: '861fd4711f09ecbcf3f10f7a5cd449e22453abf3'
-                apiKey: '8135da5570abd90097a2bcc0dbbce76d1decd484', //SandBox,
+                apiKey: '861fd4711f09ecbcf3f10f7a5cd449e22453abf3',
+                // apiKey: '8135da5570abd90097a2bcc0dbbce76d1decd484', //SandBox,
                 serviceID: 'service_nf9yozb',
                 publicKey: 'h29zXRTKkaswfKPkp',
-                // dualTemplate: 'template_n43poh8',
-                // palomarTemplate: 'template_lsue7c3',
-                dualTemplate: 'template_93696xs', //Testing
-                palomarTemplate: 'template_asfertergfd', //Testing
+                dualTemplate: 'template_n43poh8',
+                palomarTemplate: 'template_lsue7c3',
+                // dualTemplate: 'template_93696xs', //Testing
+                // palomarTemplate: 'template_asfertergfd', //Testing
                 maxTemplate: 'template_ajztr2i',
                 onboardingConfirmation: 'template_ymmtc35',
                 neptuneError: 'template_utc3pnh'
@@ -146,37 +146,41 @@ export default {
             let agreementFile = ''
 
             const myHeaders = {
-                headers: {'Authorization': `API-Key ${this.api.apiKey}`, 'Content-Type': 'application/pdf'},
+                headers: {
+                    'Authorization': `API-Key ${this.api.apiKey}`,
+                    'Content-Type': 'application/pdf',
+                    'Content-Disposition': 'attachment; filename="Agreement.pdf"'
+                },
                 responseType: 'blob'
-            }
+            };
 
-            //Download
-            await axios.get(`https://api.pandadoc.com/public/v1/documents/${this.data.document_id}/download-protected`, myHeaders)
+            await axios.get(`https://shielded-ridge-03597.herokuapp.com/https://api.pandadoc.com/public/v1/documents/${this.data.document_id}/download`, myHeaders)
             .then(response => {
-                const agreementBlob = new Blob([response.data], { type: 'application/pdf' });
-                agreementFile = new File([agreementBlob], `${this.data.agency_name}-${this.data.rocket_id}.pdf`, { type: 'application/pdf' });
-            })
 
-            const fileHeader = {
-                headers: {'content-type': 'multipart/form-data'}
-            }
+                const pdfFile = new File([response.data], 'Agreement.pdf', { type: 'application/pdf' });
+                const agreementData = new FormData();
+                agreementData.append('type', 'agreement');
+                agreementData.append('file', pdfFile);
 
-            let fileData = new FormData();
-            fileData.append('file', agreementFile);
-            fileData.append('type', 'agreement');
-            
-            //Uplolad Agreement
-            await axios.post('/api/upload', fileData, fileHeader)
-            .then(response => {
-                const id = response.data.id
-                console.log(id)
-                //Save Agreement ID
-                axios.post('/api/onboarding/update', {
-                    'data': {
-                        'agreement': id
+                axios.post('/api/upload', agreementData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
                     }
                 })
-            })
+                .then(response => {
+                    const id = response.data.id
+                    console.log(id)
+                    //Save Agreement ID
+                    axios.post('/api/onboarding/update', {
+                        'data': {
+                            'agreement': id
+                        }
+                    })
+                })
+                .catch(error => {
+                    console.log(error.response.data);
+                });
+            });
 
             //Get Zip+4
 
