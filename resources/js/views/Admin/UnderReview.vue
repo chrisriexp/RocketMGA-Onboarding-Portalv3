@@ -24,7 +24,7 @@
                 <div v-for="(agent, index) in agents" :key="index" @click="gotoAgency(agent.rocket_id)" class="grid grid-cols-5 gap-6 text-sm text-custom-gray bg-white border-custom-gray border-opacity-20 border-[1px] p-2 rounded-md hover:inner-border-2 hover:cursor-pointer">
                     <p>{{ agent.agency_name }}</p>
                     <p>{{ agent.agent_name }}</p>
-                    <input v-model="agent.phone" disabled v-mask="'(###) ###-####'" class="bg-white hover:cursor-pointer">
+                    <input v-model="agent.phone" disabled v-mask="'(###) ###-####'" class="bg-white h-fit hover:cursor-pointer">
                     <p>{{ agent.email }}</p>
                     <span class="flex gap-2 my-auto"><div class="w-[8px] h-[8px] my-auto rounded-full bg-custom-red"></div> Agency Under Review</span>
                 </div>

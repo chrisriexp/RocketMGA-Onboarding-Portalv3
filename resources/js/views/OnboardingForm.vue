@@ -57,14 +57,14 @@ export default {
             step: 0,
             data: {},
             api: {
-                apiKey: '861fd4711f09ecbcf3f10f7a5cd449e22453abf3',
-                // apiKey: '8135da5570abd90097a2bcc0dbbce76d1decd484', //SandBox,
+                // apiKey: '861fd4711f09ecbcf3f10f7a5cd449e22453abf3',
+                apiKey: '8135da5570abd90097a2bcc0dbbce76d1decd484', //SandBox,
                 serviceID: 'service_nf9yozb',
                 publicKey: 'h29zXRTKkaswfKPkp',
-                dualTemplate: 'template_n43poh8',
-                palomarTemplate: 'template_lsue7c3',
-                // dualTemplate: 'template_93696xs', //Testing
-                // palomarTemplate: 'template_asfertergfd', //Testing
+                // dualTemplate: 'template_n43poh8',
+                // palomarTemplate: 'template_lsue7c3',
+                dualTemplate: 'template_93696xs', //Testing
+                palomarTemplate: 'template_asfertergfd', //Testing
                 maxTemplate: 'template_ajztr2i',
                 onboardingConfirmation: 'template_ymmtc35',
                 neptuneError: 'template_utc3pnh'

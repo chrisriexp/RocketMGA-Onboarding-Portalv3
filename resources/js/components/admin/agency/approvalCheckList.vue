@@ -57,7 +57,7 @@
         <div class="grid gap-2">
             <div :class="valid.agreement ? 'text-green-400' : 'text-custom-red'" class="flex gap-4 w-fit h-fit">
                 <button @click="approve('agreement')" :disabled="this.valid.agreement"><CheckCircleIcon class="h-10"/></button>
-                <button @click="downloadAgreement" :disabled="agreement_disabled" class="text-2xl my-auto disabled:opacity-40">View Executed Contracts</button>
+                <a target="_blank" :href="agreement" class="flex gap-2 text-2xl my-auto disabled:opacity-40">View Executed Contracts</a>
             </div>
         </div>
     </div>
@@ -68,6 +68,7 @@ import textInput from '../textInput.vue'
 import { ExclamationTriangleIcon, CheckCircleIcon, EyeIcon, CheckBadgeIcon } from '@heroicons/vue/24/solid'
 import axios from 'axios'
 import emailjs from '@emailjs/browser';
+import ConvertApi from 'convertapi-js'
 
 export default {
     name: 'Approval Check List',
@@ -83,18 +84,29 @@ export default {
                 apiKey: '8135da5570abd90097a2bcc0dbbce76d1decd484',
                 serviceID: 'service_nf9yozb',
                 publicKey: 'h29zXRTKkaswfKPkp',
-                trainingInvite: 'template_b3uxk2g'
+                trainingInvite: 'template_b3uxk2g',
+                // flowAppointmentPackage: 'template_ulv4b4l',
+                // beyondAppointmentPackage: 'template_mumidxk',
+                // sterlingAppointmentPackage: 'template_lqcvkxj',
+                flowAppointmentPackage: 'template_6col11q', //Testing
+                beyondAppointmentPackage: 'template_wyh8gy4', //Testing
+                sterlingAppointmentPackage: 'template_9o8rxyd', //Testing
+                neptuneError: 'template_utc3pnh',
+                convertAPI: '0SMWWdhekiDdnZjT',
             },
             valid: {},
             agency_license_file: '',
+            agent_license_file: '',
             eo: '',
+            agreement: '',
             form: {
                 eo: '',
                 eo_exp: '',
                 eo_limit: '',
                 agency_license: '',
                 agency_license_file: '',
-                document_id: '' 
+                agent_license_file: '',
+                agreement: '' 
             },
             errors: [
                 {
@@ -154,11 +166,12 @@ export default {
             }
         })
 
-        const files = ['agency_license_file', 'eo']
+        const files = ['agency_license_file', 'agent_license_file', 'eo', 'agreement']
 
         files.forEach(file => {
             axios.get('/api/file/' + this.form[file])
             .then(response => {
+                // this[file] = "https://onboarding.rocketmga.com" + response.data.path
                 this[file] = "http://localhost:8000" + response.data.path
             })
         })
@@ -232,6 +245,90 @@ export default {
                     })
 
                     i = 0
+                })
+
+                //ConvertAPI Auth
+                let convertApi = ConvertApi.auth(this.api.convertAPI)
+
+                //Flow Document Parsing
+                let flowDocsParams = convertApi.createParams()
+                flowDocsParams.add('File', new URL(this.agreement)); //Agency Agreement
+                flowDocsParams.add('FileName', `RocketMGA-${this.data.agency_name}|FlowAgreement`);
+                flowDocsParams.add('SplitByCustomRange', '7,20-34,40');
+                flowDocsParams.add('MergeRanges', 'true');
+                flowDocsParams.add('CompressPDF', 'true');
+                let flowDocsResult = await convertApi.convert('pdf', 'split', flowDocsParams)
+
+                let flowDocs = flowDocsResult.dto.Files[0].Url
+
+                let flowPackageParams = convertApi.createParams()
+                flowPackageParams.add('Files', [
+                    new URL(flowDocs),
+                    new URL(this.agency_license_file), //Agency License
+                    new URL(this.agent_license_file), //Agent License
+                    new URL(this.eo) //E&O
+                ]);
+                flowPackageParams.add('FileName', `RocketMGA-${this.data.agency_name}|FlowPackage`);
+                let flowpackageResult = await convertApi.convert('pdf', 'merge', flowPackageParams)
+
+                let flowPackage = flowpackageResult.dto.Files[0].Url
+
+                //Send Email to Flow with Package Link
+                emailjs.init(this.api.publicKey)
+                emailjs.send(this.api.serviceID, this.api.flowAppointmentPackage, {
+                    // toEmail: this.data.email,
+                    agency_name: this.data.agency_name,
+                    flow_package: flowPackage
+                })
+
+                //Beyond Document Parsing
+                let beyondDocsParams = convertApi.createParams()
+                beyondDocsParams.add('File', new URL(this.agreement)); //Agency Agreement
+                beyondDocsParams.add('FileName', `RocketMGA-${this.data.agency_name}|BeyondAgreement`);
+                beyondDocsParams.add('SplitByCustomRange', '7-19,40');
+                beyondDocsParams.add('MergeRanges', 'true');
+                beyondDocsParams.add('CompressPDF', 'true');
+                let beyondDocsResult = await convertApi.convert('pdf', 'split', beyondDocsParams)
+
+                let beyondDocs = beyondDocsResult.dto.Files[0].Url
+
+                let beyondPackageParams = convertApi.createParams()
+                beyondPackageParams.add('Files', [
+                    new URL(beyondDocs),
+                    new URL(this.agency_license_file), //Agency License
+                    new URL(this.agent_license_file), //Agent License
+                    new URL(this.eo) //E&O
+                ]);
+                beyondPackageParams.add('FileName', `RocketMGA-${this.data.agency_name}|BeyondPackage`);
+                let beyondPackageResult = await convertApi.convert('pdf', 'merge', beyondPackageParams)
+
+                let beyondPackage = beyondPackageResult.dto.Files[0].Url
+
+                //Send Email to Beyond with Package Link
+                emailjs.init(this.api.publicKey)
+                emailjs.send(this.api.serviceID, this.api.beyondAppointmentPackage, {
+                    // toEmail: this.data.email,
+                    agency_name: this.data.agency_name,
+                    beyond_package: beyondPackage
+                })
+
+                //Sterling Document Parsing
+                let sterlingDocsParams = convertApi.createParams()
+                sterlingDocsParams.add('File', new URL(this.agreement)); //Agency Agreement
+                sterlingDocsParams.add('FileName', `RocketMGA-${this.data.agency_name}|SterlingAgreement`);
+                sterlingDocsParams.add('SplitByCustomRange', '35-40');
+                sterlingDocsParams.add('MergeRanges', 'true');
+                sterlingDocsParams.add('CompressPDF', 'true');
+                let sterlingDocsResult = await convertApi.convert('pdf', 'split', sterlingDocsParams)
+
+                let sterlingDocs = sterlingDocsResult.dto.Files[0].Url
+
+                //Send Email to Sterling with Package Link
+                emailjs.init(this.api.publicKey)
+                emailjs.send(this.api.serviceID, this.api.sterlingAppointmentPackage, {
+                    // toEmail: this.data.email,
+                    agency_name: this.data.agency_name,
+                    sterling_package: sterlingDocs
                 })
 
                 let logins = {}
@@ -362,6 +459,9 @@ export default {
                     agencyName: this.data.agency_name
                 })
 
+                if(!this.data.neptune){
+                    await this.neptuneAPI()
+                }
 
                 location.reload()
             } else{
@@ -398,6 +498,118 @@ export default {
                 }
             })
         },
+        async neptuneAPI(){
+            let token = ''
+            let type = 0
+
+            const agency_type = this.data.agency_type.code
+
+            if(agency_type == 'Sole'){
+                type = 1
+            } else if(agency_type == 'LLC-C'){
+                type = 6
+            } else if(agency_type == 'LLC-S'){
+                type = 7
+            } else if(agency_type == 'LLC-P'){
+                type = 8
+            } else if(agency_type == 'C-Corp'){
+                type = 2
+            } else if(agency_type == 'S-Corp'){
+                type = 3
+            } else if(agency_type == 'Partner'){
+                type = 4
+            } else if(agency_type == 'Trust'){
+                type = 5
+            }
+
+            await axios.get('https://api.neptuneflood.com/api/v5/auth/getToken', {
+                auth: {
+                    username: 'KQUsJAVf1wXezeLHsoXuJGMF53h1IJZ9qPakP/wQcmpsHVGb5W4UjMKVp4pQD9Pj9TyVofphOJkDa+ZdI19p4gnGsVgHAX5xAtxFUZE+s3A=',
+                    password: '433309b9-fbfa-4d62-bb7f-672aab463834'
+                }
+            })
+            .then(response => {
+                token = response.data
+            })
+
+            const neptuneHeaders = {
+                headers: {'Authorization': token}
+            }
+
+            await axios.post('https://shielded-ridge-03597.herokuapp.com/https://api.neptuneflood.com/api/v4/agency/sub', {
+                "name": this.data.agent_name,
+                "title": "Principal",
+                "company": this.data.agency_name,
+                "type": type,
+                "taxId": this.data.agency_tax_id,
+                "addr1": this.data.address1,
+                "addr2": this.data.address2,
+                "city": this.data.city,
+                "state": this.data.state,
+                "zip": this.data.zip,
+                "mailingAddr1": this.data.address1,
+                "mailingAddr2": this.data.address2,
+                "mailingCity": this.data.city,
+                "mailingState": this.data.state,
+                "mailingZip": this.data.zip,
+                "isMailingAddressUserVerified": true,
+                "email": this.data.email,
+                "phone": this.data.phone,
+                
+                "eoInsurer": this.data.eo_insurer,
+                "eoPolicyNumber": this.data.eo_policy,
+                "eoLimit": this.data.eo_limit,
+                "eoExpiration": this.data.eo_exp
+            }, neptuneHeaders)
+            .then(response => {
+                console.log(response)
+                const self = this;
+                if(response.data.payload.agencyInfo.agencyNo){
+                    // //Send Neptune Credentials to Appointed Agents Table
+                    // axios.put('/api/appointed/update/'+self.data.rocket_id, {
+                    //     "neptune": response.data.payload.agencyInfo.agencyNo
+                    // })
+                }
+
+                if(response.data.payload.errors){
+                    let neptuneErrors = ''
+                    let i = 0
+                    response.data.payload.errors.forEach(error=> {
+                        if(neptuneErrors == ''){
+                            neptuneErrors = 'ERROR-'+i+': '+error.message
+                        } else {
+                            neptuneErrors = neptuneErrors+', ERROR-'+i+': '+error.message
+                        }
+
+                        i += 1
+                    })
+
+                    emailjs.init(self.api.publicKey)
+                    emailjs.send(self.api.serviceID, self.api.neptuneError, {
+                        agencyName: self.data.agency_name,
+                        agentName: self.data.agent_name,
+                        phone: self.data.phone,
+                        email: self.data.email,
+                        address: self.data.address1+ " " +self.data.address2+ ", " +self.data.city+ ", " +self.data.state+" "+self.data.zip,
+                        errors: neptuneErrors
+                    })
+                }
+            })
+            .catch(error => {
+                const self = this;
+                emailjs.init(self.api.publicKey)
+                emailjs.send(self.api.serviceID, this.api.neptuneError, {
+                    agencyName: self.data.agency_name,
+                    agentName: self.data.agent_name,
+                    phone: self.data.phone,
+                    email: self.data.email,
+                    address: self.data.address1+ " " +self.data.address2+ ", " +self.data.city+ ", " +self.data.state+" "+self.data.zip,
+                    errors: 'ERROR: '+error.message
+                })
+            })
+
+            return
+        },
         inputChange(id, value, errors){
             this.form[id] = value
             
@@ -416,32 +628,7 @@ export default {
             }
 
             this.$emit('change', id, value, errors)
-        },
-        async downloadAgreement(){
-            //Disable Agreement Button
-            this.agreement_disabled = true
-            //Show Loading Spinner
-            this.$emit('loading') 
-
-            const myHeaders = {
-                headers: {'Authorization': `API-Key ${this.api.apiKey}`, 'Content-Type': 'application/pdf'},
-                responseType: 'blob'
-            }
-            await axios.get(`https://api.pandadoc.com/public/v1/documents/${this.form.document_id}/download`, myHeaders)
-            .then(response => {
-                const url = window.URL.createObjectURL(new Blob([response.data], {type:"application/pdf"}));
-                const link = document.createElement('a');
-                link.href = url;
-                window.open(url);
-                link.setAttribute('download', `${this.data.agency_name}-${this.data.rocket_id}.pdf`);
-                document.body.appendChild(link);
-                link.click();
-            })
-            //Hide Loading Spinner
-            this.$emit('loading')
-            //Enable Agreement Button
-            this.agreement_disabled = false
-        },
+        }
     },
     components: {
         textInput,

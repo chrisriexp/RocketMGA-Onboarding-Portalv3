@@ -13,7 +13,7 @@
 
         <div class="w-fit grid grid-cols-2 border text-md border-custom-gray rounded-md h-fit mt-8">
             <button @click=changeView(true) :class="appointed ? 'bg-custom-gray text-white' : ''" class="px-2 col rounded-tl-sm rounded-bl-sm disabled:bg-opacity-40">Appointed Agents</button>
-            <button @click=changeView(false) :class="!appointed ? 'bg-custom-gray text-white' : ''" class="px-2 col rounded-tr-sm rounded-br-sm disabled:bg-opacity-40">Not Appointed</button>
+            <button @click=changeView(false) :class="!appointed ? 'bg-custom-gray text-white' : ''" class="px-2 col rounded-tr-sm rounded-br-sm disabled:bg-opacity-40">Agents in Training</button>
         </div>
 
         <div class="mt-6 grid grid-cols-4 gap-6 text-custom-gray font-medium pb-2 border-b-2 border-custom-gray border-opacity-20 pl-2">
@@ -28,7 +28,7 @@
                 <div v-for="(agent, index) in agentsView" :key="index" @click="gotoAgency(agent.rocket_id)" class="grid grid-cols-4 gap-6 text-sm text-custom-gray bg-white border-custom-gray border-opacity-20 border-[1px] p-2 rounded-md hover:inner-border-2 hover:cursor-pointer">
                     <p>{{ agent.agency_name }}</p>
                     <p>{{ agent.agent_name }}</p>
-                    <input v-model="agent.phone" disabled v-mask="'(###) ###-####'" class="bg-white hover:cursor-pointer">
+                    <input v-model="agent.phone" disabled v-mask="'(###) ###-####'" class="bg-white h-fit hover:cursor-pointer">
                     <p>{{ agent.email }}</p>
                 </div>
             </div>

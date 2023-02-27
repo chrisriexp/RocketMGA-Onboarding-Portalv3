@@ -106,7 +106,7 @@
             <div v-for="(agent, index) in agents" :key="index" @click="gotoAgency(agent.rocket_id, false)" class="grid grid-cols-5 gap-6 w-full h-fit p-2 text-custom-gray border-2 border-opacity-20 border-custom-gray rounded-md hover:cursor-pointer hover:inner-border-2">
                 <p>{{ agent.agency_name }}</p>
                 <p>{{ agent.agent_name }}</p>
-                <input v-model="agent.phone" disabled v-mask="'(###) ###-####'" class="bg-white hover:cursor-pointer">
+                <input v-model="agent.phone" disabled v-mask="'(###) ###-####'" class="bg-white  h-fit hover:cursor-pointer">
                 <p>{{ agent.email }}</p>
 
                 <span v-if="agent.appointed" class="flex gap-2 my-auto"><div class="w-[8px] h-[8px] my-auto rounded-full bg-custom-red"></div> Agency Appointed</span>

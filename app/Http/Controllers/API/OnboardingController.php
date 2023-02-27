@@ -251,7 +251,7 @@ class OnboardingController extends Controller
             $agentsUnderReview = $agents->where('completed', true)->where('approved', false)->count();
             $agentsAppointed = $agents->where('appointed', true)->count();
 
-            $data = onboardingInfo::orderBy('created_at', 'DESC')->take(4)->get(['rocket_id', 'agency_name', 'agent_name', 'phone', 'email', 'stage']);      
+            $data = onboardingInfo::orderBy('created_at', 'DESC')->take(4)->get(['rocket_id', 'agency_name', 'agent_name', 'phone', 'email', 'stage', 'completed', 'approved', 'appointed']);      
 
             $response = [
                 'success'=> true,
