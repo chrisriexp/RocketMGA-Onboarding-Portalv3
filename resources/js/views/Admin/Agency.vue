@@ -31,7 +31,7 @@
                 </div>
                 
                 <div class="flex gap-2 w-fit h-fit justify-items-center">
-                    <p class="font-medium h-fit my-auto">Principle Agent -</p>
+                    <p class="font-medium h-fit my-auto">Principal Agent -</p>
                     <textInput @inputUpdate="inputChange" :inputValue="data.agent_name" :id="'agent_name'" :isdisabled=!update />
                 </div>
 

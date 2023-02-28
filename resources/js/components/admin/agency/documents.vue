@@ -127,8 +127,8 @@ export default {
             agency_logo: '',
             agreement: '',
             api: {
-                // apiKey: '861fd4711f09ecbcf3f10f7a5cd449e22453abf3',
-                apiKey: '8135da5570abd90097a2bcc0dbbce76d1decd484', //SandBox
+                apiKey: '861fd4711f09ecbcf3f10f7a5cd449e22453abf3',
+                // apiKey: '8135da5570abd90097a2bcc0dbbce76d1decd484', //SandBox
             },
             form: {
                 document_id: '',
@@ -194,8 +194,8 @@ export default {
         files.forEach(file => {
             axios.get('/api/file/' + this.form[file])
             .then(response => {
-                // this[file] = "https://onboarding.rocketmga.com" + response.data.path
-                this[file] = "http://localhost:8000" + response.data.path
+                this[file] = "https://onboarding.rocketmga.com" + response.data.path
+                // this[file] = "http://localhost:8000" + response.data.path
             })
         })
     },
@@ -244,7 +244,7 @@ export default {
                 const agreementData = new FormData();
                 agreementData.append('type', 'agreement');
                 agreementData.append('file', pdfFile);
-                
+
                 axios.post('/api/upload', agreementData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
