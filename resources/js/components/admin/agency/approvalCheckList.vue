@@ -565,10 +565,21 @@ export default {
                 console.log(response)
                 const self = this;
                 if(response.data.payload.agencyInfo.agencyNo){
-                    // //Send Neptune Credentials to Appointed Agents Table
-                    // axios.put('/api/appointed/update/'+self.data.rocket_id, {
-                    //     "neptune": response.data.payload.agencyInfo.agencyNo
-                    // })
+                    const uip = response.data.payload.agencyInfo.agencyNo
+
+                    let neptuneUpdates = {}
+
+                    axios.post('/api/appointment', {"rocket_id": this.rocket_id})
+                    .then(response => {
+                        neptuneUpdates.Neptune  = JSON.parse(response.data.appointments.Neptune)
+
+                        neptuneUpdates.Neptune.agentNo = uip
+
+                        axios.post('/api/appointment', {
+                            "rocket_id": this.rocket_id,
+                            "update": neptuneUpdates
+                        })
+                    })
                 }
 
                 if(response.data.payload.errors){

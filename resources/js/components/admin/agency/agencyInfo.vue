@@ -86,7 +86,8 @@ export default {
     name: "Agency Info",
     props: {
         data: Object,
-        update: Boolean
+        update: Boolean,
+        rocket_id: String
     },
     data() {
         return {

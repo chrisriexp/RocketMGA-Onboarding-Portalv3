@@ -71,7 +71,7 @@
         </div>
 
         <ApprovalCheckList @loading="loading = !loading" @change="change" v-if="active == 'approval'" :data="data" :update="update" :rocket_id="rocket_id" />
-        <AgencyInfo @change="change" v-if="active == 'agency'" :data="data" :update="update" />
+        <AgencyInfo @change="change" v-if="active == 'agency'" :data="data" :update="update" :rocket_id="rocket_id" />
         <AppointmentInfo @loading="loading = !loading" @change="change" v-if="active == 'appointments'" :data="data" :update="update" :rocket_id="rocket_id" />
         <Documents @loading="loading = !loading" @change="change" v-if="active == 'documents'" :data="data" :update="update" />
         <Logins @loading="loading = !loading" @change="change" v-if="active == 'logins'" :data="data" :update="update" :rocket_id="rocket_id" />
