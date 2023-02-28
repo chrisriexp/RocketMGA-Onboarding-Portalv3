@@ -11,11 +11,11 @@
 
         <form @submit.prevent="next" class="grid gap-6 w-full">
             <!--No Carriers Selected Disclaimer-->
-            <div :class="carrierPopup ? '' : 'hidden'" class="grid z-10 ml-24 fixed w-[400px] h-[200px] rounded-xl bg-white border-2 border-custom-gray border-opacity-40 shadow-newdrop">
-                <p class="text-center text-md text-custom-gray my-auto">We see that you have <span class="text-red-400">not</span> entered any NFIP or Private Flood carrier. Are you sure you want to continue?</p>
+            <div :class="carrierPopup ? '' : 'hidden'" class="grid z-10 ml-6 fixed w-[500px] h-[200px] rounded-xl bg-white border-2 border-custom-gray border-opacity-40 shadow-newdrop">
+                <p class="text-center text-md text-custom-gray my-auto">We see that you have <span class="text-red-400">not</span> entered any NFIP or Private Flood carriers. You must accurately list your current flood companies to continue.</p>
                 <div class="flex gap-6 w-fit mx-auto">
-                    <button @click="carrierDisYes" type="button" class="h-fit text-md border-2 rounded border-custom-gray border-opacity-40 px-4">Yes</button>
-                    <button @click="carrierDisNo" type="button" class="h-fit text-md border-2 text-white rounded border-red-400 bg-red-400 px-4">No</button>
+                    <button @click="carrierDisYes" type="button" class="h-fit text-sm text-center border-2 rounded border-custom-gray border-opacity-40 px-4">No current flood appointments</button>
+                    <button @click="carrierDisNo" type="button" class="h-fit text-sm border-2 text-white rounded border-red-400 bg-red-400 px-4">Add flood carriers</button>
                 </div>
             </div>
 

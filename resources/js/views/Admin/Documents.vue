@@ -134,8 +134,8 @@ export default {
                 if(agent[file] != null){
                     axios.get('/api/file/' + agent[file])
                     .then(response => {
-                        // agent[file] = "https://onboarding.rocketmga.com" + response.data.path
-                        agent[file] = "http://localhost:8000" + response.data.path
+                        agent[file] = "https://onboarding.rocketmga.com" + response.data.path
+                        // agent[file] = "http://localhost:8000" + response.data.path
                     })
                 }
             })

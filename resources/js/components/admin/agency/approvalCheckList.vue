@@ -171,8 +171,8 @@ export default {
         files.forEach(file => {
             axios.get('/api/file/' + this.form[file])
             .then(response => {
-                // this[file] = "https://onboarding.rocketmga.com" + response.data.path
-                this[file] = "http://localhost:8000" + response.data.path
+                this[file] = "https://onboarding.rocketmga.com" + response.data.path
+                // this[file] = "http://localhost:8000" + response.data.path
             })
         })
     },
@@ -253,7 +253,7 @@ export default {
                 //Flow Document Parsing
                 let flowDocsParams = convertApi.createParams()
                 flowDocsParams.add('File', new URL(this.agreement)); //Agency Agreement
-                flowDocsParams.add('FileName', `RocketMGA-${this.data.agency_name}|FlowAgreement`);
+                flowDocsParams.add('FileName', `RocketMGA-${this.data.agency_name}-FlowAgreement`);
                 flowDocsParams.add('SplitByCustomRange', '7,20-34,40');
                 flowDocsParams.add('MergeRanges', 'true');
                 flowDocsParams.add('CompressPDF', 'true');
@@ -268,7 +268,7 @@ export default {
                     new URL(this.agent_license_file), //Agent License
                     new URL(this.eo) //E&O
                 ]);
-                flowPackageParams.add('FileName', `RocketMGA-${this.data.agency_name}|FlowPackage`);
+                flowPackageParams.add('FileName', `RocketMGA-${this.data.agency_name}-FlowPackage`);
                 let flowpackageResult = await convertApi.convert('pdf', 'merge', flowPackageParams)
 
                 let flowPackage = flowpackageResult.dto.Files[0].Url
@@ -284,7 +284,7 @@ export default {
                 //Beyond Document Parsing
                 let beyondDocsParams = convertApi.createParams()
                 beyondDocsParams.add('File', new URL(this.agreement)); //Agency Agreement
-                beyondDocsParams.add('FileName', `RocketMGA-${this.data.agency_name}|BeyondAgreement`);
+                beyondDocsParams.add('FileName', `RocketMGA-${this.data.agency_name}-BeyondAgreement`);
                 beyondDocsParams.add('SplitByCustomRange', '7-19,40');
                 beyondDocsParams.add('MergeRanges', 'true');
                 beyondDocsParams.add('CompressPDF', 'true');
@@ -299,7 +299,7 @@ export default {
                     new URL(this.agent_license_file), //Agent License
                     new URL(this.eo) //E&O
                 ]);
-                beyondPackageParams.add('FileName', `RocketMGA-${this.data.agency_name}|BeyondPackage`);
+                beyondPackageParams.add('FileName', `RocketMGA-${this.data.agency_name}-BeyondPackage`);
                 let beyondPackageResult = await convertApi.convert('pdf', 'merge', beyondPackageParams)
 
                 let beyondPackage = beyondPackageResult.dto.Files[0].Url
@@ -315,7 +315,7 @@ export default {
                 //Sterling Document Parsing
                 let sterlingDocsParams = convertApi.createParams()
                 sterlingDocsParams.add('File', new URL(this.agreement)); //Agency Agreement
-                sterlingDocsParams.add('FileName', `RocketMGA-${this.data.agency_name}|SterlingAgreement`);
+                sterlingDocsParams.add('FileName', `RocketMGA-${this.data.agency_name}-SterlingAgreement`);
                 sterlingDocsParams.add('SplitByCustomRange', '35-40');
                 sterlingDocsParams.add('MergeRanges', 'true');
                 sterlingDocsParams.add('CompressPDF', 'true');
@@ -575,6 +575,12 @@ export default {
                     let neptuneErrors = ''
                     let i = 0
                     response.data.payload.errors.forEach(error=> {
+                        this.$alert({
+                            title: 'Neptune Appointment API Error',
+                            text: error.message,
+                            type: 'warn'
+                        })
+
                         if(neptuneErrors == ''){
                             neptuneErrors = 'ERROR-'+i+': '+error.message
                         } else {
@@ -597,6 +603,13 @@ export default {
             })
             .catch(error => {
                 const self = this;
+
+                self.$alert({
+                    title: 'Neptune Appointment API Error',
+                    text: error.message,
+                    type: 'warn'
+                })
+
                 emailjs.init(self.api.publicKey)
                 emailjs.send(self.api.serviceID, this.api.neptuneError, {
                     agencyName: self.data.agency_name,
