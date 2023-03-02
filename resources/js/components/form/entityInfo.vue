@@ -1,32 +1,39 @@
 <template>
-    <div class="grid gap-6 w-[680px] px-16 py-6 mx-auto mt-16 bg-white rounded-lg border-[1px] border-custom-gray border-opacity-20 shadow-newdrop z-0 relative">
-        <!--Progress Bar-->
-        <ProgressBar :width="'65'" />
+    <div class="h-fit grid gap-4 justify-items-center px-6 md:px-0">
+        <!--Favicon Image-->
+        <img src="../../../assets/favicon.png" alt="Rocket Favicon" class="h-[53px] md:h-[64px] mt-12">
 
-        <!--Header-->
-        <h2 class="text-center text-custom-dark-blue text-2xl font-semibold">Entity and Licensing Information</h2>
+        <!--Entity Information Header-->
+        <div class="grid h-fit text-center text-custom-dark-blue">
+            <h2 class="text-[24px] md:text-[32px] font-semibold">Entity and Licensing Information</h2>
+        </div>
 
-        <form @submit.prevent="next" class="grid gap-4 w-full">
-            <div class="w-full grid grid-cols-2 gap-6">
-                <textInput @inputUpdate="inputChange" :inputValue="form.agent_license" :id="'agent_license'" :label="'Agent License'" :placeholderText="'Z000000'" />
-                <textMask @inputUpdate="inputChange" :inputValue="form.agent_npn" class="agent_npn" :id="'agent_npn'" :label="'Agent NPN'" :placeholderText="'0000000'" :maskText="'#######'" />
+        <!--Entity Information Form-->
+        <form @submit.prevent="next" class="grid gap-4 w-full md:w-[502px]">
+            <!--Agent License and NPN-->
+            <div class="w-full grid gap-4 md:gap-0 md:flow-root">
+                <textInput @inputUpdate="inputChange" :inputValue="form.agent_license" :id="'agent_license'" :label="'Agent License'" :placeholderText="'Z000000'" class="md:w-[239px] md:float-left" />
+                <textMask @inputUpdate="inputChange" :inputValue="form.agent_npn" :id="'agent_npn'" :label="'Agent NPN'" :placeholderText="'0000000'" :maskText="'#######'" class="agent_npn md:w-[239px] md:float-right" />
             </div>
 
-            <div class="w-full grid grid-cols-2 gap-6">
-                <textInput @inputUpdate="inputChange" :inputValue="form.agent_license_eff" class="agent_license_eff" :id="'agent_license_eff'" :label="'Agent License Issue Date'" :date=true />
-                <textInput @inputUpdate="inputChange" :inputValue="form.agent_license_exp" class="agent_license_exp" :id="'agent_license_exp'" :label="'Agent License Exp Date'" :date=true />
+            <!--Agent License Eff and Exp Date-->
+            <div class="w-full grid gap-4 md:gap-0 md:flow-root">
+                <textInput @inputUpdate="inputChange" :inputValue="form.agent_license_eff" class="agent_license_eff md:w-[239px] md:float-left" :id="'agent_license_eff'" :label="'Agent License Issue Date'" :date=true />
+                <textInput @inputUpdate="inputChange" :inputValue="form.agent_license_exp" class="agent_license_exp md:w-[239px] md:float-right" :id="'agent_license_exp'" :label="'Agent License Exp Date'" :date=true />
             </div>
 
             <hr>
 
-            <div class="w-full grid grid-cols-2 gap-6">
-                <textInput @inputUpdate="inputChange" :inputValue="form.agency_license" :id="'agency_license'" :label="'Agency License'" :placeholderText="'A000000'" />
-                <textMask @inputUpdate="inputChange" :inputValue="form.agency_tax_id" :id="'agency_tax_id'" :label="'Agency Tax ID'" :placeholderText="'000-00-0000'" :maskText="'###-##-####'" />
+            <!--Agency License and Tax ID-->
+            <div class="w-full grid gap-4 md:gap-0 md:flow-root">
+                <textInput @inputUpdate="inputChange" :inputValue="form.agency_license" :id="'agency_license'" :label="'Agency License'" :placeholderText="'A000000'" class="md:w-[239px] md:float-left" />
+                <textMask @inputUpdate="inputChange" :inputValue="form.agency_tax_id" :id="'agency_tax_id'" :label="'Agency Tax ID'" :placeholderText="'000-00-0000'" :maskText="'###-##-####'" class="md:w-[239px] md:float-right" />
             </div>
 
-            <div>
+            <!--Agency Type-->
+            <div class="w-full">
                 <div class="grid gap-2">
-                    <label class="text-md text-custom-dark-blue font-medium">Agency Type <span class="text-custom-red">*</span></label>
+                    <label class="text-[16px] text-custom-dark-blue font-medium">Agency Type <span class="text-custom-red">*</span></label>
                     <v-select
                         placeholder='Agency Type'
                         id="stateagency_typeSelect"
@@ -35,24 +42,27 @@
                         v-model="form.agency_type"
                         :options="options"
                         label="name"
-                        class="w-full text-sm rounded-md border-2 bg-custom-blue  border-transparent p-0"
+                        class="w-full text-[15px] rounded-md border-2 bg-custom-blue  border-transparent p-0"
                     ></v-select>
                 </div>
             </div>
 
             <hr>
 
-            <div v-if="checkRun" class="w-full grid grid-cols-2 gap-6">
-                <fileUpload @fileUploaded="fileUploaded" :type="'agency_license_file'" :inputValue="form.agency_license_file" :label="'Agency License'" />
-                <fileUpload @fileUploaded="fileUploaded" :type="'agent_license_file'" :inputValue="form.agent_license_file" :label="'Agent License'" />
+            <!--Agent and Agency License File Upload-->
+            <div class="w-full grid gap-4 md:gap-0 md:flow-root">
+                <fileUpload v-if="checkRun" @fileUploaded="fileUploaded" :type="'agency_license_file'" :inputValue="form.agency_license_file" :label="'Agency License'" class="md:w-[239px] md:float-left" />
+                <fileUpload v-if="checkRun" @fileUploaded="fileUploaded" :type="'agent_license_file'" :inputValue="form.agent_license_file" :label="'Agent License'" class="md:w-[239px] md:float-right" />
             </div>
 
-            <fileUpload :type="'agency_logo'" :inputValue="form.agency_logo" :label="'Company Logo'" :required=false />
-
-            <div class="flex gap-12 w-full">
-                <button @click="back" type="button" class="w-[65%] bg-custom-gray bg-opacity-40 rounded-lg py-2 uppercase text-white font-bold text-sm hover:cursor-pointer">back</button>
-                <input type="submit" class="w-full bg-custom-orange  rounded-lg py-2 uppercase text-white font-bold text-sm hover:cursor-pointer" value="next">
+            <div class="w-full">
+                <fileUpload v-if="checkRun" @fileUploaded="fileUploaded" :type="'agency_logo'" :inputValue="form.agency_logo" :label="'Company Logo'" :required=false class="w-full" />
             </div>
+
+            <!--Next Button-->
+            <input type="submit" class="h-[48px] bg-custom-orange rounded-md py-2 uppercase text-white font-medium text-[18px] border-l-[5px] border-b-[6px] border-[#F4B983] active:border-custom-orange cursor-pointer shadow-newdrop active:shadow-none disabled:opacity-40 disabled:cursor-not-allowed" value="next">
+            <!--Back Button-->
+            <button @click="back" type="button" class="w-fit mx-auto mt-[-10px] mb-8 md:mb-0 text-[16px] text-custom-blue font-medium underline" >Back</button>
         </form>
     </div>
 </template>

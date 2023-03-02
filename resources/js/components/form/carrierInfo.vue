@@ -1,79 +1,110 @@
 <template>
-    <div class="grid gap-6 w-[680px] px-16 py-6 mx-auto mt-16 bg-white rounded-lg border-[1px] border-custom-gray border-opacity-20 shadow-newdrop z-0 relative">
-        <!--Progress Bar-->
-        <ProgressBar :width="'35'" />
+    <div class="h-fit grid gap-4 justify-items-center px-6 md:px-0">
+        <!--Favicon Image-->
+        <img src="../../../assets/favicon.png" alt="Rocket Favicon" class="h-[53px] md:h-[64px] mt-12">
 
-        <!--Header-->
-        <div class="grid text-sm">
-            <h2 class="text-center text-custom-dark-blue text-2xl font-semibold">Carrier and State Information</h2>
-            <p class="text-center text-custom-dark-blue">This will allow you to utilize your existing codes within<br/>the comparative rater</p>
+        <!--Carrier Information Header-->
+        <div class="grid w-full md:w-[502px] h-fit text-center text-custom-dark-blue">
+            <h2 class="text-[20px] md:text-[32px] font-semibold">Carrier and State Information</h2>
+            <p class="text-[14px] md:text-[16px] opacity-70">This will allow you to utilize your existing codes within the comparative rater</p>
         </div>
 
-        <form @submit.prevent="next" class="grid gap-6 w-full">
+        <!--Carrier Information Form-->
+        <form @submit.prevent="next" class="grid gap-2 w-full md:w-[502px] mt-[-10px] relative">
             <!--No Carriers Selected Disclaimer-->
-            <div :class="carrierPopup ? '' : 'hidden'" class="grid z-10 ml-6 fixed w-[500px] h-[200px] rounded-xl bg-white border-2 border-custom-gray border-opacity-40 shadow-newdrop">
-                <p class="text-center text-md text-custom-gray my-auto">We see that you have <span class="text-red-400">not</span> entered any NFIP or Private Flood carriers. You must accurately list your current flood companies to continue.</p>
-                <div class="flex gap-6 w-fit mx-auto">
-                    <button @click="carrierDisYes" type="button" class="h-fit text-sm text-center border-2 rounded border-custom-gray border-opacity-40 px-4">No current flood appointments</button>
-                    <button @click="carrierDisNo" type="button" class="h-fit text-sm border-2 text-white rounded border-red-400 bg-red-400 px-4">Add flood carriers</button>
+            <div :class="carrierPopup ? '' : 'hidden'" class="grid z-10 absolute mt-[25%] md:ml-[-10%] w-full md:w-[120%] h-[200px] rounded-xl bg-white border-2 border-custom-gray border-opacity-40 shadow-newdrop px-4">
+                <p class="text-center text-[15px] text-custom-gray my-auto">We see that you have <span class="text-red-400">not</span> entered any NFIP or Private Flood carriers. You must accurately list your current flood companies to continue.</p>
+                <div class="flex gap-6 w-fit h-fit mx-auto">
+                    <button @click="carrierDisYes" type="button" class="h-fit text-[15px] text-center border-2 rounded border-custom-gray border-opacity-40 px-2">No current flood appointments</button>
+                    <button @click="carrierDisNo" type="button" class="h-fit text-[15px] border-2 text-white rounded border-red-400 bg-red-400 px-2">Add flood carriers</button>
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-8">
-                <div class="grid text-custom-dark-blue ">
-                    <p class="text-lg font-medium">Flood Insurance Carriers</p>
-                    <p class="text-sm">Both NFIP and Private</p>
-                </div>
+            <!--Flood Insurance Carriers-->
+            <div class="w-full h-fit md:h-[270px] grid rounded-md md:border-[1px] border-custom-gray border-opacity-20 px-4 py-4">
+                <div class="grid h-fit">
+                    <div class="grid h-fit">
+                        <p class="text-[20px] text-custom-dark-blue font-semibold">Flood Insurance Carriers</p>
+                        <p class="text-[16px] text-custom-dark-blue opacity-70">Both NFIP and Private</p>
+                    </div>
 
-                <div class="grid text-custom-dark-blue ">
-                    <p class="text-lg font-medium">Appointed States</p>
-                    <div class="flow-root">
-                        <p @click="addAllStates" class="float-left text-sm text-custom-blue hover:cursor-pointer">Add all states</p>
-                        <p @click="removeAllStates" class="float-right text-sm text-custom-blue hover:cursor-pointer">Remove all states</p>
+                    <div class="w-full grid gap-4 md:gap-0 md:flow-root mt-6">
+                        <div class="grid gap-2 h-fit w-full md:w-[200px] float-left">
+                            <div class="grid w-full h-[48px] border-custom-gray border-[1px] opacity-20 rounded-md relative">
+                                <p class="px-4 h-fit text-[15px] my-auto">Carrier Name</p>
+                            </div>
+
+                            <!--Add Carrier Button-->
+                            <button @click="addCarrier" type="button" class="h-[40px] bg-custom-blue text-white border-l-[4px] border-b-[5px] border-[#6B92CB] active:border-custom-blue rounded-md shadow-newdrop">Add Carrier</button>
+                        </div>
+
+                        <!--Dynamic Carriers-->
+                        <div class="grid h-fit md:h-[155px] float-right overflow-y-scroll scrollbar">
+                            <div class="grid h-fit gap-4">
+                                <div v-for="(item, index) in form.carriers" :key="index" class="w-full md:w-[248px] flow-root">
+                                    <input
+                                        v-model="item.name"
+                                        type='text'
+                                        placeholder="Carrier Name"
+                                        class="w-[240px] md:w-[200px] h-[48px] md:h-[40px] text-[15px] text-custom-dark-blue p-[7px] rounded-[5px] border-[1px] border-custom-dark-blue focus:border-custom-dark-blue focus:ring-0 float-left"
+                                    >
+
+                                    <TrashIcon v-if="form.carriers.length > 1" @click="deleteCarrier(index)" class="h-[32px] text-custom-red hover:cursor-pointer float-right" />
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-6">
-                <div class="grid gap-2 h-fit">
-                    <div v-for="(item, index) in form.carriers" :key="index" class="flex gap-4 h-fit">
-                        <input
-                            v-model="item.name"
-                            type='text'
-                            placeholder="Carrier Name"
-                            class="w-full h-fit text-sm p-[7px] rounded-md border-2 border-custom-gray border-opacity-20 focus:border-custom-blue focus:ring-0"
-                        >
-
-                        <TrashIcon v-if="form.carriers.length > 1" @click="deleteCarrier(index)" class="h-8 my-auto text-custom-red hover:cursor-pointer" />
+            <!--Additional Licensed States-->
+            <div class="w-full h-fit md:h-[270px] grid rounded-md md:border-[1px] border-custom-gray border-opacity-20 px-4 py-4">
+                <div class="grid h-fit">
+                    <div class="grid h-fit">
+                        <p class="text-[20px] text-custom-dark-blue font-semibold">Appointed States</p>
+                        <div class="w-full grid grid-cols-2">
+                            <p @click="addAllStates" class="w-fit text-[16px] text-custom-blue hover:cursor-pointer">Add all states</p>
+                            <p @click="removeAllStates" class="w-fit text-[16px] ml-[-20px] text-custom-blue hover:cursor-pointer">Remove all states</p>
+                        </div>
                     </div>
 
-                    <button @click="addCarrier" type="button" class="w-fit px-4 py-2 text-sm text-white font-semibold bg-custom-blue rounded-lg uppercase">Add Carrier</button>
-                </div>
+                    <div class="w-full grid gap-4 md:gap-0 md:flow-root mt-6">
+                        <div class="grid gap-2 h-fit w-full md:w-[200px] float-left">
+                            <div class="grid w-full h-[48px] border-custom-gray border-[1px] opacity-20 rounded-md relative">
+                                <p class="px-4 h-fit text-[15px] my-auto">Select State</p>
+                            </div>
 
-                <div class="grid gap-2 h-fit">
-                    <div v-for="(item, index) in form.additional_states" :key="index" class="flex gap-4">
-                        <v-select
-                            placeholder='Select State'
-                            id="stateSelect"
-                            ref="selectRef"
-                            code="code"
-                            v-model="form.additional_states[index]"
-                            :options="options"
-                            label="name"
-                            class="w-full text-sm text-custom-gray bg-custom-blue rounded-md border-2 border-transparent"
-                        ></v-select>
+                            <!--Add State Button-->
+                            <button @click="addState" type="button" class="h-[40px] bg-custom-blue text-white border-l-[4px] border-b-[5px] border-[#6B92CB] active:border-custom-blue rounded-md shadow-newdrop">Add State</button>
+                        </div>
 
-                        <TrashIcon v-if="form.additional_states.length > 1" @click="deleteState(index)" class="h-8 text-custom-red hover:cursor-pointer" />
+                        <!--Dynamic States-->
+                        <div class="grid h-fit md:h-[155px] float-right md:overflow-y-scroll scrollbar">
+                            <div class="grid h-fit gap-4">
+                                <div v-for="(item, index) in form.additional_states" :key="index" class="w-full md:w-[248px] flow-root">
+                                    <v-select
+                                        placeholder='Select State'
+                                        id="stateSelect"
+                                        ref="selectRef"
+                                        code="code"
+                                        v-model="form.additional_states[index]"
+                                        :options="options"
+                                        label="name"
+                                        class="relative w-[240px] md:w-[200px] h-fit text-[15px] text-custom-dark-blue bg-custom-blue rounded-md border-2 border-transparent float-left"
+                                    ></v-select>
+
+                                    <TrashIcon v-if="form.additional_states.length > 1" @click="deleteState(index)" class="h-[32px] text-custom-red hover:cursor-pointer float-right" />
+                                </div>
+                            </div>
+                        </div>
                     </div>
-
-                    <button @click="addState" type="button" class="w-fit px-4 py-2 text-sm text-white font-semibold bg-custom-blue rounded-lg uppercase">Add State</button>
                 </div>
             </div>
 
-            <div class="flex gap-12 w-full">
-                <button @click="back" type="button" class="w-[65%] bg-custom-gray bg-opacity-40 rounded-lg py-2 uppercase text-white font-bold text-sm hover:cursor-pointer">back</button>
-                <input type="submit" class="w-full bg-custom-orange  rounded-lg py-2 uppercase text-white font-bold text-sm hover:cursor-pointer" value="next">
-            </div>
+            <!--Next Button-->
+            <input :disabled="carrierPopup" type="submit" class="h-[48px] mt-2 bg-custom-orange rounded-md py-2 uppercase text-white font-medium text-[18px] border-l-[5px] border-b-[6px] border-[#F4B983] active:border-custom-orange cursor-pointer shadow-newdrop active:shadow-none disabled:opacity-40 disabled:cursor-not-allowed" value="next">
+            <!--Back Button-->
+            <button @click="back" type="button" class="w-fit mx-auto mb-8 md:mb-0 text-[16px] text-custom-blue font-medium underline" >Back</button>
         </form>
     </div>
 </template>
@@ -112,7 +143,7 @@ export default {
 
             states.forEach(state => {
                 if(response.data.message.state == state.code){
-                    this.form.additional_states = [state]
+                    this.form.additional_states.push(state)
                 }
             })
 

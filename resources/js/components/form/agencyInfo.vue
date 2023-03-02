@@ -1,29 +1,36 @@
 <template>
-    <div class="grid gap-6 w-[680px] px-16 py-6 mx-auto mt-16 bg-white rounded-lg border-[1px] border-custom-gray border-opacity-20 shadow-newdrop z-0 relative">
-        <!--Progress Bar-->
-        <ProgressBar :width="'0'" />
+    <div class="h-fit grid gap-8 justify-items-center px-6 md:px-0">
+        <!--Favicon Image-->
+        <img src="../../../assets/favicon.png" alt="Rocket Favicon" class="h-[53px] md:h-[64px] mt-12">
 
-        <!--Header-->
-        <h2 class="text-center text-custom-dark-blue text-2xl font-semibold">Agency Information</h2>
+        <!--Agency Information Header-->
+        <div class="grid h-fit text-center text-custom-dark-blue">
+            <h2 class="text-[24px] md:text-[32px] font-semibold">Agency Information</h2>
+            <p class="text-[14px] md:text-[16px] opacity-70">Please enter agency details</p>
+        </div>
 
-        <form @submit.prevent="next" class="grid gap-4 w-full">
-            <div class="w-full grid grid-cols-2 gap-6">
-                <textInput @inputUpdate="inputChange" :inputValue="form.agent_name" :id="'agent_name'" :label="'Agent Full Name'" :placeholderText="'John Doe'" />
-                <textInput @inputUpdate="inputChange" :inputValue="form.agency_name" :id="'agency_name'" :label="'Agency Name'" :placeholderText="'ABC Insurance'" />
+        <!--Agency Information Form-->
+        <form @submit.prevent="next" class="grid gap-4 w-full md:w-[502px]">
+            <!--Agent and Agency Name-->
+            <div class="w-full grid gap-4 md:gap-0 md:flow-root">
+                <textInput @inputUpdate="inputChange" :inputValue="form.agent_name" :id="'agent_name'" :label="'Agent Full Name'" :placeholderText="'John Doe'" class="md:w-[239px] md:float-left" />
+                <textInput @inputUpdate="inputChange" :inputValue="form.agency_name" :id="'agency_name'" :label="'Agency Name'" :placeholderText="'ABC Insurance'" class="md:w-[239px] md:float-right" />
             </div>
 
-            <div class="w-full grid grid-cols-2 gap-6">
-                <textMask @inputUpdate="inputChange" :inputValue="form.phone" :id="'phone'" :label="'Phone Number'" :placeholderText="'(555) 555-5555'" :maskText="'(###) ###-####'" />
-                <textInput @inputUpdate="inputChange" :inputValue="form.email" :id="'email'" :label="'Email Address'" :placeholderText="'john@doe.com'" :email=true />
+            <!--Phone and Email-->
+            <div class="w-full grid gap-4 md:gap-0 md:flow-root">
+                <textMask @inputUpdate="inputChange" :inputValue="form.phone" :id="'phone'" :label="'Phone Number'" :placeholderText="'(555) 555-5555'" :maskText="'(###) ###-####'" class="md:w-[239px] md:float-left" />
+                <textInput @inputUpdate="inputChange" :inputValue="form.email" :id="'email'" :label="'Email Address'" :placeholderText="'john@doe.com'" :email=true class="md:w-[239px] md:float-right" />
             </div>
 
-
-            <div class="w-full grid grid-cols-2 gap-6">
-                <textInput @inputUpdate="inputChange" :inputValue="form.dba_name" :id="'dba_name'" :label="'DBA Name'" :placeholderText="'ABCIns'" :required=false />
+            <!--DBA Name-->
+            <div class="w-full grid gap-4 md:gap-0 md:flow-root">
+                <textInput @inputUpdate="inputChange" :inputValue="form.dba_name" :id="'dba_name'" :label="'DBA Name'" :placeholderText="'ABCIns'" :required=false class="md:w-[239px] md:float-left" />
             </div>
 
             <hr>
 
+            <!--Agency Address-->
             <!--Google Autocomplete-->
             <div class="grid w-full mx-auto gap-4">
                 <vue-google-autocomplete
@@ -38,18 +45,21 @@
                 </vue-google-autocomplete>
             </div>
 
-            <div class="w-full grid grid-cols-2 gap-6">
-                <textInput class="opacity-40" @inputUpdate="inputChange" :inputValue="form.address1" :id="'address1'" :label="'Address 1'" :isdisabled=true />
-                <textInput @inputUpdate="inputChange" :inputValue="form.address2" :id="'address2'" :label="'Address 2'" :required=false />
+            <!--Address 1 and 2-->
+            <div class="w-full grid gap-4 md:gap-0 md:flow-root">
+                <textInput class="opacity-40 md:w-[239px] md:float-left" @inputUpdate="inputChange" :inputValue="form.address1" :id="'address1'" :label="'Address 1'" :isdisabled=true />
+                <textInput @inputUpdate="inputChange" :inputValue="form.address2" :id="'address2'" :label="'Address 2'" :required=false class="md:w-[239px] md:float-right" />
             </div>
 
-            <div class="w-full grid grid-cols-3 gap-4">
+            <!--City State Zip-->
+            <div class="w-full md:w-[502px] grid gap-4 md:grid-cols-3">
                 <textInput class="opacity-40" @inputUpdate="inputChange" :inputValue="form.city" :id="'city'" :label="'City'" :isdisabled=true />
                 <textInput class="opacity-40" @inputUpdate="inputChange" :inputValue="form.state" :id="'state'" :label="'State'" :isdisabled=true />
                 <textInput class="opacity-40" @inputUpdate="inputChange" :inputValue="form.zip" :id="'zip'" :label="'Zip'" :isdisabled=true />
             </div>
 
-            <input type="submit" class="bg-custom-orange rounded-lg py-2 uppercase text-white font-bold text-sm hover:cursor-pointer" value="next">
+            <!--Next Button-->
+            <input type="submit" class="h-[48px] mt-4 mb-8 md:mb-0 bg-custom-orange rounded-md py-2 uppercase text-white font-medium text-[18px] border-l-[5px] border-b-[6px] border-[#F4B983] active:border-custom-orange cursor-pointer shadow-newdrop active:shadow-none" value="next">
         </form>
     </div>
 </template>

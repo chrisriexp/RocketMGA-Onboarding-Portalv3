@@ -81,7 +81,6 @@ export default {
         return {
             agreement_disabled: false,
             api: {
-                apiKey: '8135da5570abd90097a2bcc0dbbce76d1decd484',
                 serviceID: 'service_nf9yozb',
                 publicKey: 'h29zXRTKkaswfKPkp',
                 trainingInvite: 'template_b3uxk2g',
@@ -171,8 +170,8 @@ export default {
         files.forEach(file => {
             axios.get('/api/file/' + this.form[file])
             .then(response => {
-                this[file] = "https://onboarding.rocketmga.com" + response.data.path
-                // this[file] = "http://localhost:8000" + response.data.path
+                // this[file] = "https://onboarding.rocketmga.com" + response.data.path
+                this[file] = "http://localhost:8000" + response.data.path
             })
         })
     },
@@ -276,7 +275,6 @@ export default {
                 //Send Email to Flow with Package Link
                 emailjs.init(this.api.publicKey)
                 emailjs.send(this.api.serviceID, this.api.flowAppointmentPackage, {
-                    // toEmail: this.data.email,
                     agency_name: this.data.agency_name,
                     flow_package: flowPackage
                 })
@@ -307,7 +305,6 @@ export default {
                 //Send Email to Beyond with Package Link
                 emailjs.init(this.api.publicKey)
                 emailjs.send(this.api.serviceID, this.api.beyondAppointmentPackage, {
-                    // toEmail: this.data.email,
                     agency_name: this.data.agency_name,
                     beyond_package: beyondPackage
                 })
@@ -326,7 +323,6 @@ export default {
                 //Send Email to Sterling with Package Link
                 emailjs.init(this.api.publicKey)
                 emailjs.send(this.api.serviceID, this.api.sterlingAppointmentPackage, {
-                    // toEmail: this.data.email,
                     agency_name: this.data.agency_name,
                     sterling_package: sterlingDocs
                 })

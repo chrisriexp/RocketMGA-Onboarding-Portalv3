@@ -1,6 +1,6 @@
 <template>
     <div class="grid gap-2 h-fit">
-        <label class="text-md text-custom-dark-blue font-medium">{{ label }} <span v-if="required" class="text-custom-red">*</span></label>
+        <label class="text-[16px] text-custom-dark-blue font-medium">{{ label }} <span v-if="required" class="text-custom-red">*</span></label>
         <input
             v-if="date"
             v-model="v$.inputData.$model"
@@ -9,7 +9,7 @@
             :disabled="isdisabled"
             :id="id"
             :class="v$.inputData.$error ? 'border-custom-red focus:border-custom-red' : 'border-custom-gray border-opacity-20 focus:border-custom-blue'"
-            class="w-full p-2 rounded-md border-2 focus:ring-0"
+            class="w-full p-2 rounded-md border-2 focus:ring-0 text-[15px]"
         >
         <input
             v-else-if="password"
@@ -19,7 +19,7 @@
             :id="id"
             :placeholder="placeholderText"
             :class="v$.inputData.$error ? 'border-custom-red focus:border-custom-red' : 'border-custom-gray border-opacity-20 focus:border-custom-blue'"
-            class="w-full p-2 rounded-md border-2 focus:ring-0"
+            class="w-full p-2 rounded-md border-2 focus:ring-0 text-[15px]"
         >
         <input
             v-else
@@ -30,7 +30,7 @@
             :id="id"
             :placeholder="placeholderText"
             :class="v$.inputData.$error ? 'border-custom-red focus:border-custom-red' : 'border-custom-gray border-opacity-20 focus:border-custom-blue'"
-            class="w-full p-2 rounded-md border-2 focus:ring-0"
+            class="w-full p-2 rounded-md border-2 focus:ring-0 text-[15px]"
         >
         <div class="input-errors" v-for="(error, index) of v$.inputData.$errors" :key="index">
             <div class="error-msg text-sm text-red-400">{{ error.$message }}</div>

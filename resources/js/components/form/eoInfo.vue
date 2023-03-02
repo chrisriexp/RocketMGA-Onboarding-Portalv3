@@ -1,30 +1,33 @@
 <template>
-    <div class="grid gap-6 w-[680px] px-16 py-6 mx-auto mt-16 bg-white rounded-lg border-[1px] border-custom-gray border-opacity-20 shadow-newdrop z-0 relative">
-        <!--Progress Bar-->
-        <ProgressBar :width="'85'" />
+    <div class="h-fit grid gap-8 justify-items-center px-6 md:px-0">
+        <!--Favicon Image-->
+        <img src="../../../assets/favicon.png" alt="Rocket Favicon" class="h-[53px] md:h-[64px] mt-12">
 
-        <!--Header-->
-        <h2 class="text-center text-custom-dark-blue text-2xl font-semibold">E&O Information</h2>
+        <!--E&O Information Header-->
+        <div class="grid h-fit text-center text-custom-dark-blue">
+            <h2 class="text-[24px] md:text-[32px] font-semibold">E&O Information</h2>
+        </div>
 
-        <form @submit.prevent="next" class="grid gap-4 w-full">
-            <div class="w-full grid gap-6">
-                <fileUpload v-if="checkRun" @fileUploaded="fileUploaded" :type="'eo'" :inputValue="form.eo" :label="'E&O Document'" />
+        <!--E&O Information Form-->
+        <form @submit.prevent="next" class="grid gap-4 w-full md:w-[502px]">
+            <div class="w-full">
+                <fileUpload v-if="checkRun" @fileUploaded="fileUploaded" :type="'eo'" :inputValue="form.eo" :label="'E&O Document'" class="w-full" />
             </div>
 
-            <div class="w-full grid grid-cols-2 gap-6">
-                <textInput @inputUpdate="inputChange" :inputValue="form.eo_exp" :id="'eo_exp'" :label="'E&O Exp'" :date=true />
-                <textInput @inputUpdate="inputChange" :inputValue="form.eo_policy" :id="'eo_policy'" :label="'E&O Policy Number'" />
+            <div class="w-full grid gap-4 md:gap-0 md:flow-root">
+                <textInput @inputUpdate="inputChange" :inputValue="form.eo_exp" :id="'eo_exp'" :label="'E&O Exp'" :date=true class="md:w-[239px] md:float-left" />
+                <textInput @inputUpdate="inputChange" :inputValue="form.eo_policy" :id="'eo_policy'" :label="'E&O Policy Number'" class="md:w-[239px] md:float-right" />
             </div>
 
-            <div class="w-full grid grid-cols-2 gap-6">
-                <textInput @inputUpdate="inputChange" :inputValue="form.eo_limit" :id="'eo_limit'" :label="'E&O Limit'" />
-                <textInput @inputUpdate="inputChange" :inputValue="form.eo_insurer" :id="'eo_insurer'" :label="'E&O Insurer'" />
+            <div class="w-full grid gap-4 md:gap-0 md:flow-root">
+                <textMask @inputUpdate="inputChange" :inputValue="form.eo_limit" :id="'eo_limit'" :label="'E&O Limit'" class="md:w-[239px] md:float-left" :maskText="'#########'" />
+                <textInput @inputUpdate="inputChange" :inputValue="form.eo_insurer" :id="'eo_insurer'" :label="'E&O Insurer'" class="md:w-[239px] md:float-right" />
             </div>
 
-            <div class="flex gap-12 w-full">
-                <button @click="back" type="button" class="w-[65%] bg-custom-gray bg-opacity-40 rounded-lg py-2 uppercase text-white font-bold text-sm hover:cursor-pointer">back</button>
-                <input type="submit" class="w-full bg-custom-orange  rounded-lg py-2 uppercase text-white font-bold text-sm hover:cursor-pointer" value="next">
-            </div>
+            <!--Next Button-->
+            <input type="submit" class="h-[48px] mt-2 bg-custom-orange rounded-md py-2 uppercase text-white font-medium text-[18px] border-l-[5px] border-b-[6px] border-[#F4B983] active:border-custom-orange cursor-pointer shadow-newdrop active:shadow-none disabled:opacity-40 disabled:cursor-not-allowed" value="next">
+            <!--Back Button-->
+            <button @click="back" type="button" class="w-fit mx-auto mb-8 md:mb-0 text-[16px] text-custom-blue font-medium underline" >Back</button>
         </form>
     </div>
 </template>

@@ -1,31 +1,29 @@
 <template>
-    <div class="grid gap-6 w-[680px] px-16 py-6 mx-auto mt-16 bg-white rounded-lg border-[1px] border-custom-gray border-opacity-20 shadow-newdrop z-0 relative">
-        <!--Progress Bar-->
-        <ProgressBar :width="'90'" />
+    <div class="h-fit grid gap-2 justify-items-center px-6 md:px-0">
+        <!--Favicon Image-->
+        <!-- <img src="../../../assets/favicon.png" alt="Rocket Favicon" class="h-[53px] md:h-[64px] mt-12"> -->
 
-        <!--Header-->
-        <div class="grid gap-2">
-            <h2 class="text-center text-custom-dark-blue text-2xl font-semibold">Final Step</h2>
-            <h3 class="text-center text-custom-dark-blue text-lg">Congratulations! Sign your agreement and you are done! </h3>
+        <!--Agreement Header-->
+        <div class="grid h-fit mt-6 text-center text-custom-dark-blue">
+            <h2 class="text-[24px] md:text-[32px] font-semibold">Agreement Signing</h2>
+            <p class="text-[14px] md:text-[16px] opacity-70">Contratulations! Sign your agreement and you are done!</p>
         </div>
 
-        <form @submit.prevent="submitAgreement" class="grid gap-4 w-full">
-            <div id="submitLoading" class="my-8 mx-auto h-[400px] hidden">
+        <form @submit.prevent="submitAgreement" class="grid gap-4 w-full md:w-[600px]">
+            <div id="submitLoading" class="my-8 mx-auto h-[600px] hidden">
                 <loading />
             </div>
 
-            <div v-if="!form.document_embed" class="my-8 mx-auto h-[400px]">
+            <div v-if="!form.document_embed" class="my-8 mx-auto h-[600px]">
                 <loading />
             </div>
 
-            <div v-else class="my-4">
-                <iframe id="agreement" :src="'https://app.pandadoc.com/s/' + form.document_embed" height="800" class="w-full"></iframe>
-            </div>
+            <iframe v-else id="agreement" :src="'https://app.pandadoc.com/s/' + form.document_embed" height="660" class="w-full"></iframe>
 
-            <div class="flex gap-12 w-full">
-                <button :disabled="backDisabled" @click="back" type="button" class="w-[65%] bg-custom-gray bg-opacity-40 rounded-lg py-2 uppercase text-white font-bold text-sm hover:cursor-pointer disabled:opacity-40 disabled:cursor-default">back</button>
-                <input :disabled="submitDisabled" type="submit" class="w-full bg-custom-orange  rounded-lg py-2 uppercase text-white font-bold text-sm hover:cursor-pointer disabled:opacity-40 disabled:cursor-default" value="submit">
-            </div>
+            <!--Next Button-->
+            <input :disabled="submitDisabled" type="submit" class="h-[48px] mt-2 bg-custom-orange rounded-md py-2 uppercase text-white font-medium text-[18px] border-l-[5px] border-b-[6px] border-[#F4B983] active:border-custom-orange cursor-pointer shadow-newdrop active:shadow-none disabled:opacity-40 disabled:cursor-not-allowed" value="next">
+            <!--Back Button-->
+            <button :disabled="backDisabled" @click="back" type="button" class="w-fit mx-auto mb-8 md:mb-0 text-[16px] text-custom-blue font-medium underline" >Back</button>
         </form>
     </div>
 </template>
@@ -43,8 +41,8 @@ export default {
             backDisabled: true, 
             submitDisabled: true,
             api: {
-                apiKey: '861fd4711f09ecbcf3f10f7a5cd449e22453abf3',
-                // apiKey: '8135da5570abd90097a2bcc0dbbce76d1decd484', //SandBox
+                // apiKey: '861fd4711f09ecbcf3f10f7a5cd449e22453abf3',
+                apiKey: '8135da5570abd90097a2bcc0dbbce76d1decd484', //SandBox
                 templateID: '3gbM422FzFxVjXyWJ484hm',
             },
             form: {
@@ -105,7 +103,7 @@ export default {
                 this.form[key] = response.data.message[key]
             })
 
-            if(!this.form.document_embed){
+            if(!this.form.document_id){
                 //Set all values received
                 const keys = Object.keys(this.agreement)
 
@@ -494,10 +492,15 @@ export default {
                 this.form.document_id = response.data.id
             })
 
+            //Update database with document id
+            await axios.post('/api/onboarding/update', {
+                "data": this.form
+            })
+
             //Send Document
             setTimeout(() =>{
                 this.sendDocument()
-            }, 6000);
+            }, 7000);
         },
         async sendDocument() {
             const myHeaders = {
@@ -510,15 +513,20 @@ export default {
             }
             
             await axios.post(`https://api.pandadoc.com/public/v1/documents/${this.form.document_id}/send`, raw, myHeaders)
+            .then(response => {
+                if(response.status == 200){
+                    this.getEmbedID()
+                } else {
+                    return this.sendDocument()
+                }
+            })
             .catch(error => {
                 if(error.status === 409){
                     setTimeout(() => {
-                        this.sendDocument()
-                    }, 1000);
+                        return this.sendDocument()
+                    }, 2000);
                 }
             })
-            
-            this.getEmbedID()
         },
         async getEmbedID() {
             const myHeaders = {

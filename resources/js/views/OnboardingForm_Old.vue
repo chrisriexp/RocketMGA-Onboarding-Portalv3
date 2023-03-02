@@ -1,24 +1,31 @@
 <template>
-    <div class="w-full h-full md:w-screen md:h-screen grid md:grid-cols-5 bg-white">
-        <!--Side Bar Navigation-->
-        <NavBar class="grid md:col-span-2" :step="step" />
-        
-        <div class="grid md:col-span-3 relative">
-            <div v-if="!completed">
-                <agencyInfo v-if="step == 0" @next="next" />
-                <carrierInfo v-else-if="step == 1" @back="back" @next="next" />
-                <entityInfo v-else-if="step == 2" @back="back" @next="next" />
-                <eoInfo v-else-if="step == 3" @back="back" @next="next" />
-                <agreement v-else-if="step == 4" @back="back" @agreementCompleted="submit" />
-                <loadingFinalizeAppointment v-else-if="step == 5" />
+    <!--Background Image-->
+    <div class="w-full bottom-0 fixed z-0">
+        <img src="../../assets/1.jpg" alt="Abstract Background Image">
+    </div>
+
+    <div class="z-10 relative mb-24">
+        <NavBar />
+
+        <div v-if="!completed">
+            <agencyInfo v-if="step == 0" @next="next" />
+            <carrierInfo v-else-if="step == 1" @back="back" @next="next" />
+            <entityInfo v-else-if="step == 2" @back="back" @next="next" />
+            <eoInfo v-else-if="step == 3" @back="back" @next="next" />
+            <agreement v-else-if="step == 4" @back="back" @agreementCompleted="submit" />
+            
+            <div v-else-if="step == 5" class="grid gap-8 justify-items-center w-fit h-fit mx-auto mt-24">
+                <loading />
+                <h2 class="text-center text-2xl text-custom-dark-blue font-medium">Please wait while we finalize your appointment..</h2>
             </div>
+        </div>
 
-            <congrats v-else />
-
-            <!--Footer-->
-            <Footer />
+        <div v-else>
+            <congrats />
         </div>
     </div>
+
+    <Footer :class="step == 1 || step == 3 || step == 5 || completed ? 'absolute' : 'relative'" class="bottom-0" />
 </template>
 
 <script>
@@ -31,7 +38,6 @@ import carrierInfo from '../components/form/carrierInfo.vue'
 import entityInfo from '../components/form/entityInfo.vue'
 import eoInfo from '../components/form/eoInfo.vue'
 import agreement from '../components/form/agreement.vue'
-import loadingFinalizeAppointment from '../components/form/loadingFinalizeAppointment.vue'
 import congrats from '../components/form/congrats.vue'
 
 import emailjs from '@emailjs/browser';
@@ -70,7 +76,6 @@ export default {
         .then(response => {
             if(response.data.message.completed){
                 this.completed = true
-                this.step = 5
             } else {
                 this.data = response.data.message
             }
@@ -427,7 +432,6 @@ export default {
         eoInfo,
         agreement,
         congrats,
-        loadingFinalizeAppointment,
         loading
     }
 }

@@ -1,24 +1,52 @@
 <template>
-    <!--Background Image-->
-    <div class="w-full bottom-0 fixed z-0">
-        <img src="../../assets/1.jpg" alt="Abstract Background Image">
-    </div>
+    <div class="w-full h-full md:w-screen md:h-screen grid md:grid-cols-2 bg-white">
+        <div class="grid relative bg-custom-light-blue-bg bg-opacity-30">
+            <!--Background Image-->
+            <div class="hidden md:block absolute top-0 right-0 z-0">
+                <img src="../../assets/portal_left_bg.png" alt="Abstract Background Image" class="">
+            </div>
 
-    <form @submit.prevent="login" class="grid gap-6 w-[400px] h-fit mx-auto mt-64 px-16 py-8 bg-white shadow-newdrop border-custom-gray border-[1px] border-opacity-20 rounded-lg z-10 relative">
-        <h1 class="text-center text-custom-dark-blue text-xl font-medium">Login</h1>
+            <div class="z-10 grid justify-items-center w-fit h-fit mx-auto gap-10 px-6 md:px-0">
+                <!--Rocket MGA Logo-->
+                <img src="../../assets/RocketMGALogo.png" alt="Rocket MGA Logo" class="mx-auto md:mx-0 h-[36px] mt-24 md:mt-48">
 
-        <textInput @inputUpdate="inputChange" :inputValue="form.email" :id="'email'" :label="'Email'" :placeholderText="'john@doe.com'" :email=true />
-        <textInput @inputUpdate="inputChange" :inputValue="form.password" :id="'password'" :label="'Password'" :placeholderText="'*******'" :password=true />
-
-        <input type="submit" class="mt-4 bg-custom-dark-blue text-white rounded-md p-2 hover:cursor-pointer">
-
-        <div class="flow-root w-full mt-[-15px]">
-            <router-link to="/" class="text-sm underline text-custom-dark-blue float-left">Create Account</router-link>
-            <router-link to="/reset-password" class="text-sm underline text-custom-dark-blue float-right">Forgot Password</router-link>
+                <!--Login Illustration-->
+                <img src="../../assets/login_image.png" alt="Login Illustration">
+            </div>
         </div>
-    </form>
 
-    <Footer class="bottom-0 absolute" />
+        <div class="grid relative">
+            <div class="h-fit grid gap-12 justify-items-center px-6 md:px-0">
+                <!--Favicon Image-->
+                <img src="../../assets/favicon.png" alt="Rocket Favicon" class="h-[53px] md:h-[64px] mt-12 md:mt-24">
+
+                <!--Create Account Header-->
+                <div class="grid h-fit text-center text-custom-dark-blue">
+                    <h2 class="text-[24px] md:text-[32px] font-semibold">Login</h2>
+                    <p class="text-[14px] md:text-[16px] opacity-70">Please enter your information</p>
+                </div>
+
+                <form @submit.prevent="login" class="grid gap-6 w-full md:w-[400px] mb-16 md:mb-0">
+
+                    <textInput @inputUpdate="inputChange" :inputValue="form.email" :id="'email'" :label="'Email'" :placeholderText="'john@doe.com'" :email=true />
+                    <textInput @inputUpdate="inputChange" :inputValue="form.password" :id="'password'" :label="'Password'" :placeholderText="'*******'" :password=true />
+
+                    <!--Forgot Password-->
+                    <div class="w-full flow-rootm mt-[-15px]">
+                        <router-link to="/reset-password" class="text-[14px] md:text-[16px] underline text-custom-blue float-right">Forgot Password</router-link>
+                    </div>
+
+                    <input type="submit" value="Login" class="mt-4 bg-custom-dark-blue text-white rounded-md p-2 border-l-[4px] border-b-[5px] border-[#2c4174] active:border-custom-dark-blue hover:cursor-pointer shadow-newdrop">
+
+                    <div class="w-full grid justify-items-center mt-[-15px]">
+                        <router-link to="/" class="text-[14px] md:text-[16px] text-custom-dark-blue opacity-70 float-left">Don't have an account? <span class="text-custom-blue">Create Account</span></router-link>
+                    </div>
+                </form>
+            </div>
+
+            <Footer />
+        </div>
+    </div>
 </template>
 
 <script>

@@ -1,13 +1,13 @@
 <template>
-    <div class="grid gap-2 h-fit">
-        <label class="text-md text-custom-dark-blue font-medium">{{ label }} <span v-if="required" class="text-custom-red">*</span></label>
+    <div class="grid h-fit">
+        <label class="text-[16px] text-custom-dark-blue font-medium">{{ label }} <span v-if="required" class="text-custom-red">*</span></label>
         <input @change="uploadFile($event)" ref="logoFileUploader" type="file" accept=".png, .jpg, .jpeg, .pdf" name="fileUpload" id="fileUpload" class="hidden">
-        <div v-on:click="$refs.logoFileUploader.click()" :class="!file ? 'border-custom-blue border-opacity-40 bg-custom-blue bg-opacity-40' : 'border-green-400 bg-green-400'" class="flex gap-6 w-full border-2 py-2 px-6 rounded-md hover:cursor-pointer">
-            <img src="../../assets/upload.svg" alt="Cloud Upload Icon" id="upload-icon" class="h-[50px] my-auto">
-            <div class="flex my-auto h-fit gap-2">
-                <p class="text-md text-white font-medium">Upload {{ label }}</p>
-            </div>
+        <div v-on:click="$refs.logoFileUploader.click()" class="w-full flow-root align-items-center mt-2 p-2 rounded-md border-2">
+            <p class="float-left text-[13px] text-custom-gray opacity-20 font-medium">Upload {{ label }}</p>
+            <img src="../../assets/upload_icon.png" alt="Upload Icon" class="float-right my-auto">
         </div>
+        <p v-if="!file" class="text-custom-red text-[12px]">Pending</p>
+        <p v-else class="text-[#58BB3F] text-[12px]">Success!</p>
     </div>
 </template>
 
