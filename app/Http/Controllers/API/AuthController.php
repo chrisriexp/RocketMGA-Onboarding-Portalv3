@@ -135,7 +135,7 @@ class AuthController extends Controller
 
         $user = User::create($input);
         $count = 21000 + $user->id;
-        $user->rocket_id = "RFA{$count}";
+        $user->rocket_id = "RMA{$count}";
         $user->save();
 
         $response = [

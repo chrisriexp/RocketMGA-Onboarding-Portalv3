@@ -8,7 +8,7 @@
 
             <div class="z-10 grid w-fit h-fit mx-auto gap-10 px-6 md:px-0">
                 <!--Rocket MGA Logo-->
-                <img src="../../assets/RocketMGALogo.png" alt="Rocket MGA Logo" class="mx-auto md:mx-0 h-[36px] mt-24 md:mt-48">
+                <img src="../../assets/RocketMGALogo.png" alt="Rocket MGA Logo" class="mx-auto md:mx-0 h-[36px] mt-24 md:mt-36">
                 
                 <!--Heading-->
                 <div class="grid h-fit">

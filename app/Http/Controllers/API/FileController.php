@@ -50,7 +50,7 @@ class FileController extends Controller
             return response()->json($response, 400);
         }
 
-        $file_name = time().'_'.$id. '.' . $request->file('file')->getClientOriginalExtension();
+        $file_name = time().'_'.$request['type'].'_'.$id. '.' . $request->file('file')->getClientOriginalExtension();
         $file_path = $request->file('file')->storeAs('uploads', $file_name, 'public');
 
         $fileUpload->user = $id;

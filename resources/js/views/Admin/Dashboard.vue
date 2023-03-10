@@ -109,14 +109,14 @@
                 <input v-model="agent.phone" disabled v-mask="'(###) ###-####'" class="bg-white  h-fit hover:cursor-pointer">
                 <p>{{ agent.email }}</p>
 
-                <span v-if="agent.appointed" class="flex gap-2 my-auto"><div class="w-[8px] h-[8px] my-auto rounded-full bg-custom-red"></div> Agency Appointed</span>
-                <span v-else-if="agent.approved" class="flex gap-2 my-auto"><div class="w-[8px] h-[8px] my-auto rounded-full bg-custom-red"></div> Agency in Training</span>
-                <span v-else-if="agent.completed" class="flex gap-2 my-auto"><div class="w-[8px] h-[8px] my-auto rounded-full bg-custom-red"></div> Agency Under Review</span>
-                <span v-else-if="agent.stage == 'agency'" class="flex gap-2 my-auto"><div class="w-[8px] h-[8px] my-auto rounded-full bg-custom-red"></div> Agency Information</span>
-                <span v-else-if="agent.stage == 'carrier'" class="flex gap-2 my-auto"><div class="w-[8px] h-[8px] my-auto rounded-full bg-custom-red"></div> Carrier Information</span>
-                <span v-else-if="agent.stage == 'entity'" class="flex gap-2 my-auto"><div class="w-[8px] h-[8px] my-auto rounded-full bg-custom-red"></div> Entity Information</span>
-                <span v-else-if="agent.stage == 'eo'" class="flex gap-2 my-auto"><div class="w-[8px] h-[8px] my-auto rounded-full bg-custom-red"></div> E&O Information</span>
-                <span v-else-if="agent.stage == 'agreement'" class="flex gap-2 my-auto"><div class="w-[8px] h-[8px] my-auto rounded-full bg-custom-red"></div> Agreement</span>
+                <span v-if="agent.appointed" class="h-fit flex gap-2 my-auto"><div class="w-[8px] h-[8px] my-auto rounded-full bg-custom-red"></div> Agency Appointed</span>
+                <span v-else-if="agent.approved" class="h-fit flex gap-2 my-auto"><div class="w-[8px] h-[8px] my-auto rounded-full bg-custom-red"></div> Agency in Training</span>
+                <span v-else-if="agent.completed" class="h-fit flex gap-2 my-auto"><div class="w-[8px] h-[8px] my-auto rounded-full bg-custom-red"></div> Agency Under Review</span>
+                <span v-else-if="agent.stage == 'agency'" class="h-fit flex gap-2 my-auto"><div class="w-[8px] h-[8px] my-auto rounded-full bg-custom-red"></div> Agency Information</span>
+                <span v-else-if="agent.stage == 'carrier'" class="h-fit flex gap-2 my-auto"><div class="w-[8px] h-[8px] my-auto rounded-full bg-custom-red"></div> Carrier Information</span>
+                <span v-else-if="agent.stage == 'entity'" class="h-fit flex gap-2 my-auto"><div class="w-[8px] h-[8px] my-auto rounded-full bg-custom-red"></div> Entity Information</span>
+                <span v-else-if="agent.stage == 'eo'" class="h-fit flex gap-2 my-auto"><div class="w-[8px] h-[8px] my-auto rounded-full bg-custom-red"></div> E&O Information</span>
+                <span v-else-if="agent.stage == 'agreement'" class="h-fit flex gap-2 my-auto"><div class="w-[8px] h-[8px] my-auto rounded-full bg-custom-red"></div> Agreement</span>
             </div>
         </div>
     </div>

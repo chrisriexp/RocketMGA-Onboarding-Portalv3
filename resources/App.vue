@@ -17,9 +17,9 @@ body {
   background-color: #F5F5F5;
 }
 
-@media (-webkit-device-pixel-ratio: 1.25) {
+@media (-webkit-device-pixel-ratio: 1.15) {
     :root {
-      zoom: 0.8;
+      zoom: 0.90;
     }
 }
 

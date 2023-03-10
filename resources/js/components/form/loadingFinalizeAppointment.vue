@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import loading from '../loading.vue'
+import loading from '../loading-red.vue'
 
 export default {
     name: 'Finalizing Appointment',

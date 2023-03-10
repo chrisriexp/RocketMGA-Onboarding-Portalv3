@@ -30,19 +30,23 @@
 
 <script>
 import ProgressBar from '../progressBar.vue'
-import loading from '../loading.vue'
+import loading from '../loading-red.vue'
 import moment from 'moment';
 import states from '../../../assets/states.json'
 
 export default {
     name: "Agreement",
+    props: {
+        data: Object
+    },
     data() {
         return {
+            email: '',
             backDisabled: true, 
             submitDisabled: true,
             api: {
-                // apiKey: '861fd4711f09ecbcf3f10f7a5cd449e22453abf3',
-                apiKey: '8135da5570abd90097a2bcc0dbbce76d1decd484', //SandBox
+                apiKey: '861fd4711f09ecbcf3f10f7a5cd449e22453abf3',
+                // apiKey: '8135da5570abd90097a2bcc0dbbce76d1decd484', //SandBox
                 templateID: '3gbM422FzFxVjXyWJ484hm',
             },
             form: {
@@ -96,6 +100,9 @@ export default {
     async created(){
         await axios.get('/api/onboarding/check')
         .then(response => {
+            // Set Email
+            this.email = response.data.message.email
+            
             //Set Document and Embed ID if exists
             const keys = Object.keys(this.form)
 
@@ -182,13 +189,26 @@ export default {
             }
         })
 
-        if(!this.form.document_embed){
+        if(!this.form.document_id){
             //Set Dates
             const date = new Date()
             this.agreement.today = moment(date).format('MM/DD/YYYY')
             this.agreement.ddmm = moment(date).format('MM/DD')
 
             this.createDocument()
+        } else if(this.form.document_id && !this.form.document_embed){
+            const myHeaders = {
+                headers: {'Authorization': `API-Key ${this.api.apiKey}`, 'Content-Type': 'application/json'}
+            }
+
+            await axios.get(`https://api.pandadoc.com/public/v1/documents/${this.form.document_id}`, myHeaders)
+            .then(response => {
+                if(response.data.status == 'document.sent'){
+                    this.getEmbedID()
+                }else if(response.data.status == 'document.draft'){
+                    this.sendDocument()
+                }
+            })
         }
     },
     methods: {
@@ -534,7 +554,7 @@ export default {
             }
 
             const raw = {
-                "recipient": `${this.agreement.email}`,
+                "recipient": `${this.email}`,
                 "lifetime": 9999999
             }
 

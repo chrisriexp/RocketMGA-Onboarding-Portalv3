@@ -76,7 +76,7 @@ class OnboardingController extends Controller
                 } else {
                     $validator = Validator::make($data, [
                         'agent_license'=> 'required',
-                        'agent_npn'=> 'required|digits:7',
+                        'agent_npn'=> 'required|digits:8',
                         'agent_license_eff'=> 'required',
                         'agent_license_exp'=> 'required',
                         'agency_license'=> 'required',

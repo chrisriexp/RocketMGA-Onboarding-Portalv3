@@ -84,14 +84,20 @@ export default {
                 serviceID: 'service_nf9yozb',
                 publicKey: 'h29zXRTKkaswfKPkp',
                 trainingInvite: 'template_b3uxk2g',
-                // flowAppointmentPackage: 'template_ulv4b4l',
-                // beyondAppointmentPackage: 'template_mumidxk',
-                // sterlingAppointmentPackage: 'template_lqcvkxj',
-                flowAppointmentPackage: 'template_6col11q', //Testing
-                beyondAppointmentPackage: 'template_wyh8gy4', //Testing
-                sterlingAppointmentPackage: 'template_9o8rxyd', //Testing
+                flowAppointmentPackage: 'template_ulv4b4l',
+                beyondAppointmentPackage: 'template_mumidxk',
+                sterlingAppointmentPackage: 'template_lqcvkxj',
+                // flowAppointmentPackage: 'template_6col11q', //Testing
+                // beyondAppointmentPackage: 'template_wyh8gy4', //Testing
+                // sterlingAppointmentPackage: 'template_9o8rxyd', //Testing
                 neptuneError: 'template_utc3pnh',
                 convertAPI: '0SMWWdhekiDdnZjT',
+                dualTemplate: 'template_n43poh8',
+                palomarTemplate: 'template_lsue7c3',
+                // dualTemplate: 'template_93696xs', //Testing
+                // palomarTemplate: 'template_asfertergfd', //Testing
+                maxTemplate: 'template_ajztr2i',
+                onboardingConfirmation: 'template_ymmtc35'
             },
             valid: {},
             agency_license_file: '',
@@ -170,8 +176,8 @@ export default {
         files.forEach(file => {
             axios.get('/api/file/' + this.form[file])
             .then(response => {
-                // this[file] = "https://onboarding.rocketmga.com" + response.data.path
-                this[file] = "http://localhost:8000" + response.data.path
+                this[file] = "https://onboarding.rocketmga.com" + response.data.path
+                // this[file] = "http://localhost:8000" + response.data.path
             })
         })
     },
@@ -182,6 +188,16 @@ export default {
         })
     },
     methods: {
+        padTo2Digits(num) {
+            return num.toString().padStart(2, '0');
+        },
+        formatDate(date) {
+            return [
+                this.padTo2Digits(date.getMonth() + 1),
+                this.padTo2Digits(date.getDate()),
+                date.getFullYear(),
+            ].join('/');
+        },
         async approveAgency() {
             this.$emit('loading')
             let approved = true
@@ -246,86 +262,245 @@ export default {
                     i = 0
                 })
 
+                //Names
+                const names = this.data.agent_name.split(" ")
+                const first_name = names[0]
+                const last_name = names[1]
+
+                //Add Aon and Wright Data to Google Sheets
+                //Get the date of the beginning of the week
+                let date = new Date();
+                let day = date.getDay() || 7;
+                if( day != 1 ){
+                    date.setHours(-24 * (day));
+                };
+
+                let date_last = new Date();
+                let day_last = date_last.getDay() || 7;
+                if( day_last != 1 ){
+                    date_last.setHours(-24 * (day_last - 6));
+                };
+
+                const weekStart = this.formatDate(date)
+                const weekEnd = this.formatDate(date_last)
+                const week = weekStart + " - " + weekEnd
+
+                //Create Additional States String
+                let statesStr = ""
+
+                this.data.additional_states.forEach(state => {
+                    if(!statesStr){
+                        statesStr = state.code
+                    } else {
+                        statesStr = `${statesStr},${state.code}`
+                    }
+                })
+
+                //Email Carriers and Max
+                if(!this.data.dual){
+                    //Email to Dual
+                    emailjs.init(this.api.publicKey)
+                    emailjs.send(this.api.serviceID, this.api.dualTemplate, {
+                        agencyName: this.data.agency_name,
+                        agentName: this.data.agent_name,
+                        agentEmail: this.data.email,
+                        agentPhone: this.data.phone,
+                        agencyFullAddress: this.data.address
+                    })
+                }
+
+                //Email to Palomar
+                if(!this.data.palomar){
+                    emailjs.init(this.api.publicKey)
+                    emailjs.send(this.api.serviceID, this.api.palomarTemplate, {
+                        agencyName: this.data.agency_name,
+                        agentName: this.data.agent_name,
+                        agentEmail: this.data.email,
+                        agentPhone: this.data.phone,
+                        agencyFullAddress: this.data.address
+                    })
+                }
+
+                //Sub Agent Welcome Email
+                emailjs.init(this.api.publicKey)
+                emailjs.send(this.api.serviceID, this.api.onboardingConfirmation, {
+                    agencyName: this.data.agency_name,
+                    toEmail: this.data.email,
+                })
+
+                //Email to Max
+                emailjs.init(this.api.publicKey)
+                emailjs.send(this.api.serviceID, this.api.maxTemplate, {
+                    agentName: this.data.agent_name,
+                    agencyName: this.data.agency_name,
+                    agencyDBAname: this.data.dba_name,
+                    agencyType: this.data.agency_type.name,
+                    agentLicense: this.data.agent_license,
+                    agentLicenseEff: this.data.agent_license_eff,
+                    agentLicenseExp: this.data.agent_license_exp,
+                    NPN: this.data.agent_npn,
+                    rocketMGAid: this.rocket_id,
+                    agencyEmail: this.data.email,
+                    agencyPhone: this.data.phone,
+                    agencyFullAddress: this.data.address,
+                    additionalStates: statesStr
+                })
+
+                //Send Data to Wright Sheet
+                if(!this.data.wright){
+                    await axios.post('https://shielded-ridge-03597.herokuapp.com/https://hooks.zapier.com/hooks/catch/14170682/bjh4r3i/',  {
+                        "name": this.data.agency_name,
+                        "dba_name": this.data.dba_name,
+                        "phone": this.data.phone,
+                        "email": this.data.email,
+                        "agency_type": this.data.agency_type.code,
+                        "address1": this.data.address1,
+                        "address2": this.data.address2,
+                        "city": this.data.city,
+                        "state": this.data.state,
+                        "zip": this.data.zip,
+                        "agent_name": this.data.agent_name,
+                        "agent_license": this.data.agent_license,
+                        "license_eff": this.data.agent_license_eff,
+                        "license_exp": this.data.agent_license_exp,
+                        "npn": this.data.agent_npn,
+                        "week": week
+                    })
+                }
+
+                //Send Data to Aon Sheet
+                if(!this.data.aon){
+                    await axios.post('https://shielded-ridge-03597.herokuapp.com/https://hooks.zapier.com/hooks/catch/14170682/bjtgf41', {
+                        "name": this.data.agency_name,
+                        "phone": this.data.phone,
+                        "email": this.data.email,
+                        "address": this.data.address1 + " " + this.data.address2,
+                        "city": this.data.city,
+                        "state": this.data.state,
+                        "zip": this.data.zip,
+                        "additional_states": statesStr,
+                        "first_name": first_name,
+                        "last_name": last_name,
+                        "week": week
+                    })
+                }
+
                 //ConvertAPI Auth
                 let convertApi = ConvertApi.auth(this.api.convertAPI)
 
-                //Flow Document Parsing
-                let flowDocsParams = convertApi.createParams()
-                flowDocsParams.add('File', new URL(this.agreement)); //Agency Agreement
-                flowDocsParams.add('FileName', `RocketMGA-${this.data.agency_name}-FlowAgreement`);
-                flowDocsParams.add('SplitByCustomRange', '7,20-34,40');
-                flowDocsParams.add('MergeRanges', 'true');
-                flowDocsParams.add('CompressPDF', 'true');
-                let flowDocsResult = await convertApi.convert('pdf', 'split', flowDocsParams)
+                if(!this.data.flow){
+                    //Flow Document Parsing
+                    let flowDocsParams = convertApi.createParams()
+                    flowDocsParams.add('File', new URL(this.agreement)); //Agency Agreement
+                    flowDocsParams.add('FileName', `RocketMGA-${this.data.agency_name}-FlowAgreement`);
+                    flowDocsParams.add('SplitByCustomRange', '7,20-34,40');
+                    flowDocsParams.add('MergeRanges', 'true');
+                    flowDocsParams.add('CompressPDF', 'true');
+                    let flowDocsResult = await convertApi.convert('pdf', 'split', flowDocsParams)
 
-                let flowDocs = flowDocsResult.dto.Files[0].Url
+                    let flowDocs = flowDocsResult.dto.Files[0].Url
 
-                let flowPackageParams = convertApi.createParams()
-                flowPackageParams.add('Files', [
-                    new URL(flowDocs),
-                    new URL(this.agency_license_file), //Agency License
-                    new URL(this.agent_license_file), //Agent License
-                    new URL(this.eo) //E&O
-                ]);
-                flowPackageParams.add('FileName', `RocketMGA-${this.data.agency_name}-FlowPackage`);
-                let flowpackageResult = await convertApi.convert('pdf', 'merge', flowPackageParams)
+                    let flowPackageParams = convertApi.createParams()
+                    flowPackageParams.add('Files', [
+                        new URL(flowDocs),
+                        new URL(this.agency_license_file), //Agency License
+                        new URL(this.agent_license_file), //Agent License
+                        new URL(this.eo) //E&O
+                    ]);
+                    flowPackageParams.add('FileName', `RocketMGA-${this.data.agency_name}-FlowPackage`);
+                    let flowpackageResult = await convertApi.convert('pdf', 'merge', flowPackageParams)
 
-                let flowPackage = flowpackageResult.dto.Files[0].Url
+                    let flowPackage = flowpackageResult.dto.Files[0].Url
 
-                //Send Email to Flow with Package Link
-                emailjs.init(this.api.publicKey)
-                emailjs.send(this.api.serviceID, this.api.flowAppointmentPackage, {
-                    agency_name: this.data.agency_name,
-                    flow_package: flowPackage
-                })
+                    // Save Flow Package
+                    await axios.post('/api/download/link', {
+                        "rocket_id": this.rocket_id,
+                        "type": "flow_package",
+                        "link": flowPackage
+                    })
+                    .then(response => {
+                        flowPackage = response.data.link
+                    })
 
-                //Beyond Document Parsing
-                let beyondDocsParams = convertApi.createParams()
-                beyondDocsParams.add('File', new URL(this.agreement)); //Agency Agreement
-                beyondDocsParams.add('FileName', `RocketMGA-${this.data.agency_name}-BeyondAgreement`);
-                beyondDocsParams.add('SplitByCustomRange', '7-19,40');
-                beyondDocsParams.add('MergeRanges', 'true');
-                beyondDocsParams.add('CompressPDF', 'true');
-                let beyondDocsResult = await convertApi.convert('pdf', 'split', beyondDocsParams)
+                    //Send Email to Flow with Package Link
+                    emailjs.init(this.api.publicKey)
+                    emailjs.send(this.api.serviceID, this.api.flowAppointmentPackage, {
+                        agency_name: this.data.agency_name,
+                        flow_package: flowPackage
+                    })
+                }
 
-                let beyondDocs = beyondDocsResult.dto.Files[0].Url
+                if(!this.data.beyond){
+                    //Beyond Document Parsing
+                    let beyondDocsParams = convertApi.createParams()
+                    beyondDocsParams.add('File', new URL(this.agreement)); //Agency Agreement
+                    beyondDocsParams.add('FileName', `RocketMGA-${this.data.agency_name}-BeyondAgreement`);
+                    beyondDocsParams.add('SplitByCustomRange', '7-19,40');
+                    beyondDocsParams.add('MergeRanges', 'true');
+                    beyondDocsParams.add('CompressPDF', 'true');
+                    let beyondDocsResult = await convertApi.convert('pdf', 'split', beyondDocsParams)
 
-                let beyondPackageParams = convertApi.createParams()
-                beyondPackageParams.add('Files', [
-                    new URL(beyondDocs),
-                    new URL(this.agency_license_file), //Agency License
-                    new URL(this.agent_license_file), //Agent License
-                    new URL(this.eo) //E&O
-                ]);
-                beyondPackageParams.add('FileName', `RocketMGA-${this.data.agency_name}-BeyondPackage`);
-                let beyondPackageResult = await convertApi.convert('pdf', 'merge', beyondPackageParams)
+                    let beyondDocs = beyondDocsResult.dto.Files[0].Url
 
-                let beyondPackage = beyondPackageResult.dto.Files[0].Url
+                    let beyondPackageParams = convertApi.createParams()
+                    beyondPackageParams.add('Files', [
+                        new URL(beyondDocs),
+                        new URL(this.agency_license_file), //Agency License
+                        new URL(this.agent_license_file), //Agent License
+                        new URL(this.eo) //E&O
+                    ]);
+                    beyondPackageParams.add('FileName', `RocketMGA-${this.data.agency_name}-BeyondPackage`);
+                    let beyondPackageResult = await convertApi.convert('pdf', 'merge', beyondPackageParams)
 
-                //Send Email to Beyond with Package Link
-                emailjs.init(this.api.publicKey)
-                emailjs.send(this.api.serviceID, this.api.beyondAppointmentPackage, {
-                    agency_name: this.data.agency_name,
-                    beyond_package: beyondPackage
-                })
+                    let beyondPackage = beyondPackageResult.dto.Files[0].Url
 
-                //Sterling Document Parsing
-                let sterlingDocsParams = convertApi.createParams()
-                sterlingDocsParams.add('File', new URL(this.agreement)); //Agency Agreement
-                sterlingDocsParams.add('FileName', `RocketMGA-${this.data.agency_name}-SterlingAgreement`);
-                sterlingDocsParams.add('SplitByCustomRange', '35-40');
-                sterlingDocsParams.add('MergeRanges', 'true');
-                sterlingDocsParams.add('CompressPDF', 'true');
-                let sterlingDocsResult = await convertApi.convert('pdf', 'split', sterlingDocsParams)
+                    // Save Beyond Package
+                    await axios.post('/api/download/link', {
+                        "rocket_id": this.rocket_id,
+                        "type": "beyond_package",
+                        "link": beyondPackage
+                    })
+                    .then(response => {
+                        beyondPackage = response.data.link
+                    })
 
-                let sterlingDocs = sterlingDocsResult.dto.Files[0].Url
+                    //Send Email to Beyond with Package Link
+                    emailjs.init(this.api.publicKey)
+                    emailjs.send(this.api.serviceID, this.api.beyondAppointmentPackage, {
+                        agency_name: this.data.agency_name,
+                        beyond_package: beyondPackage
+                    })
+                }
 
-                //Send Email to Sterling with Package Link
-                emailjs.init(this.api.publicKey)
-                emailjs.send(this.api.serviceID, this.api.sterlingAppointmentPackage, {
-                    agency_name: this.data.agency_name,
-                    sterling_package: sterlingDocs
-                })
+                if(!this.data.sterling){
+                    //Sterling Document Parsing
+                    let sterlingDocsParams = convertApi.createParams()
+                    sterlingDocsParams.add('File', new URL(this.agreement)); //Agency Agreement
+                    sterlingDocsParams.add('FileName', `RocketMGA-${this.data.agency_name}-SterlingAgreement`);
+                    sterlingDocsParams.add('SplitByCustomRange', '35-40');
+                    sterlingDocsParams.add('MergeRanges', 'true');
+                    sterlingDocsParams.add('CompressPDF', 'true');
+                    let sterlingDocsResult = await convertApi.convert('pdf', 'split', sterlingDocsParams)
+
+                    let sterlingDocs = sterlingDocsResult.dto.Files[0].Url
+
+                    // Save Sterling Package
+                    await axios.post('/api/download/link', {
+                        "rocket_id": this.rocket_id,
+                        "type": "sterling_package",
+                        "link": sterlingDocs
+                    })
+                    .then(response => {
+                        sterlingDocs = response.data.link
+                    })
+
+                    //Send Email to Sterling with Package Link
+                    emailjs.init(this.api.publicKey)
+                    emailjs.send(this.api.serviceID, this.api.sterlingAppointmentPackage, {
+                        agency_name: this.data.agency_name,
+                        sterling_package: sterlingDocs
+                    })
+                }
 
                 let logins = {}
                 await axios.post('/api/logins', {"rocket_id": this.rocket_id})
@@ -413,7 +588,7 @@ export default {
                     if(state.code == this.data.state){
                         states.push({name: state.code, license_number: this.data.agency_license})
                     } else {
-                        states.push({name: state.code, license_number: null})
+                        states.push({name: state.code, license_number: ""})
                     }
                 })
 

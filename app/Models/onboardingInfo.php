@@ -56,6 +56,9 @@ class onboardingInfo extends Model
         'completed',
         'rocket_rep',
         'note',
-        'agreement'
+        'agreement',
+        'flow_package',
+        'beyond_package',
+        'sterling_package'
     ];
 }

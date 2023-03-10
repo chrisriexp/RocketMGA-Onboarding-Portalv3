@@ -149,7 +149,10 @@ export default {
                 agency_logo: '',
                 document_id: '',
                 note: '',
-                agreement: ''
+                agreement: '',
+                flow_package: '',
+                beyond_package: '',
+                sterling_package: ''
             },
             errors: [
                 {

@@ -7,6 +7,9 @@ use App\Http\Controllers\API\FileController;
 use App\Http\Controllers\API\NotificationController;
 use App\Http\Controllers\API\AppointmentController;
 use App\Http\Controllers\API\LoginsController;
+use App\Http\Controllers\API\PandaDocAgreementController;
+use App\Http\Controllers\API\DownloadController;
+use App\Http\Controllers\API\MGALoginsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -24,6 +27,12 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['auth:sanctum', 'ability:admin,super-admin,marketing'])->get('/user', function (Request $request) {
     return $request->user();
 });
+
+// Pandadoc Agreement Completed Endpoint
+Route::post('/agreement-completed', [PandaDocAgreementController::class, 'completed']);
+
+// Download Controller
+Route::middleware(['auth:sanctum', 'ability:admin,super-admin,marketing'])->post('/download/link', [DownloadController::class, 'link']);
 
 /**Authentication Routes */
 Route::middleware('auth:sanctum')->post('/token/validate', [AuthController::class, 'validateToken']);
@@ -63,3 +72,8 @@ Route::middleware(['auth:sanctum', 'ability:admin,super-admin,marketing'])->post
 /**Agency Logins */
 Route::middleware('auth:sanctum')->get('/logins/check', [LoginsController::class, 'check']);
 Route::middleware(['auth:sanctum', 'ability:admin,super-admin,marketing'])->post('/logins', [LoginsController::class, 'logins']);
+
+// MGA Logins
+Route::middleware(['auth:sanctum', 'ability:admin,super-admin,marketing'])->get('/mga-logins/{rocket_id}', [MGALoginsController::class, 'logins']);
+Route::middleware(['auth:sanctum', 'ability:admin,super-admin,marketing'])->post('/mga-login', [MGALoginsController::class, 'add']);
+Route::middleware(['auth:sanctum', 'ability:admin,super-admin,marketing'])->delete('/mga-login/{id}', [MGALoginsController::class, 'drop']);

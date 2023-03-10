@@ -1,5 +1,61 @@
 <template>
     <div class="w-full h-fit grid gap-8 my-6 p-6 bg-white rounded-md border-custom-gray border-opacity-20 border-[1px]">
+        <div v-if="this.data.approved" class="grid grid-cols-3 gap-6 w-fit h-fit">
+            <!-- Flow Package -->
+            <div class="grid col w-fit h-fit">
+                <div v-if="!this.flow && this.form.flow_package == null" class="w-full px-2 bg-custom-orange bg-opacity-60 rounded-md text-sm text-white">
+                    <p class="flex gap-2"><ExclamationCircleIcon class="h-6 my-auto"/><span class="my-auto">This agency dosen't have a Flow package generated.</span></p>
+                </div>
+
+                <a v-else-if="!this.data.flow" target="_blank" :href="this.flow_package" class="flex gap-8 px-6 w-fit group text-white rounded-xl bg-custom-red font-medium text-xl">
+                    <span class="my-auto">Flow Package</span>
+                    <FolderArrowDownIcon class="h-10" />
+                </a>
+
+                <div v-else class="w-full px-2 bg-custom-orange bg-opacity-60 rounded-md text-sm text-white">
+                    <p class="flex gap-2"><ExclamationCircleIcon class="h-6 my-auto"/><span class="my-auto">This agency is already appointed with Flow so we have not generated a package.</span></p>
+                </div>
+            </div>
+
+            <!-- Beyond Package -->
+            <div class="grid col w-fit h-fit">
+                <div v-if="!this.beyond && this.form.beyond_package == null" class="w-full px-2 bg-custom-orange bg-opacity-60 rounded-md text-sm text-white">
+                    <p class="flex gap-2"><ExclamationCircleIcon class="h-6 my-auto"/><span class="my-auto">This agency dosen't have a Beyond package generated.</span></p>
+                </div>
+
+                <a v-else-if="!this.data.beyond" target="_blank" :href="this.beyond_package" class="flex gap-8 px-6 w-fit group text-white rounded-xl bg-custom-red font-medium text-xl">
+                    <span class="my-auto">Beyond Package</span>
+                    <FolderArrowDownIcon class="h-10" />
+                </a>
+
+                <div v-else class="w-full px-2 bg-custom-orange bg-opacity-60 rounded-md text-sm text-white">
+                    <p class="flex gap-2"><ExclamationCircleIcon class="h-6 my-auto"/><span class="my-auto">This agency is already appointed with Beyond so we have not generated a package.</span></p>
+                </div>
+            </div>
+
+            <!-- Sterling Package -->
+            <div class="grid col w-fit h-fit">
+                <div v-if="!this.sterling && this.form.sterling_package == null" class="w-full px-2 bg-custom-orange bg-opacity-60 rounded-md text-sm text-white">
+                    <p class="flex gap-2"><ExclamationCircleIcon class="h-6 my-auto"/><span class="my-auto">This agency dosen't have a Sterling package generated.</span></p>
+                </div>
+
+                <a v-else-if="!this.data.sterling" target="_blank" :href="this.sterling_package" class="flex gap-8 px-6 w-fit group text-white rounded-xl bg-custom-red font-medium text-xl">
+                    <span class="my-auto">Sterling Package</span>
+                    <FolderArrowDownIcon class="h-10" />
+                </a>
+
+                <div v-else class="w-full px-2 bg-custom-orange bg-opacity-60 rounded-md text-sm text-white">
+                    <p class="flex gap-2"><ExclamationCircleIcon class="h-6 my-auto"/><span class="my-auto">This agency is already appointed with Sterling so we have not generated a package.</span></p>
+                </div>
+            </div>
+        </div>
+
+        <div v-else class="w-full px-2 bg-custom-orange bg-opacity-60 rounded-md text-sm text-white">
+            <p class="flex gap-2"><ExclamationCircleIcon class="h-6 my-auto"/><span class="my-auto">This agency has not been approved yet.</span></p>
+        </div>
+    </div>
+    
+    <div class="w-full h-fit grid gap-8 my-6 p-6 bg-white rounded-md border-custom-gray border-opacity-20 border-[1px]">
         <div v-if="this.data.completed" class="grid gap-6 w-fit h-fit">
             <a target="_blank" :href="this.agreement" class="flex gap-8 px-6 w-fit group text-white rounded-xl bg-custom-red font-medium text-xl">
                 <span class="my-auto">Rocket MGA Agreement</span>
@@ -126,6 +182,9 @@ export default {
             eo: '',
             agency_logo: '',
             agreement: '',
+            flow_package: '',
+            beyond_package: '',
+            sterling_package: '',
             form: {
                 document_id: '',
                 agent_license_file: '',
@@ -141,7 +200,10 @@ export default {
                 eo_exp: '',
                 eo_insurer: '',
                 agency_logo: '',
-                agreement: ''
+                agreement: '',
+                flow_package: '',
+                beyond_package: '',
+                sterling_package: ''
             },
             errors: [
                 {
@@ -185,14 +247,16 @@ export default {
             this.form[key] = this.data[key]
         })
 
-        const files = ['agency_license_file', 'agent_license_file', 'eo', 'agency_logo', 'agreement']
+        const files = ['agency_license_file', 'agent_license_file', 'eo', 'agency_logo', 'agreement', 'flow_package', 'beyond_package', 'sterling_package']
 
         files.forEach(file => {
-            axios.get('/api/file/' + this.form[file])
-            .then(response => {
-                // this[file] = "https://onboarding.rocketmga.com" + response.data.path
-                this[file] = "http://localhost:8000" + response.data.path
-            })
+            if(this.form[file] != null){
+                axios.get('/api/file/' + this.form[file])
+                .then(response => {
+                    this[file] = "https://onboarding.rocketmga.com" + response.data.path
+                    // this[file] = "http://localhost:8000" + response.data.path
+                })
+            }
         })
     },
     watch: {

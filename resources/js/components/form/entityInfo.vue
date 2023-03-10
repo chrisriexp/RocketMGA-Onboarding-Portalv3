@@ -13,7 +13,7 @@
             <!--Agent License and NPN-->
             <div class="w-full grid gap-4 md:gap-0 md:flow-root">
                 <textInput @inputUpdate="inputChange" :inputValue="form.agent_license" :id="'agent_license'" :label="'Agent License'" :placeholderText="'Z000000'" class="md:w-[239px] md:float-left" />
-                <textMask @inputUpdate="inputChange" :inputValue="form.agent_npn" :id="'agent_npn'" :label="'Agent NPN'" :placeholderText="'0000000'" :maskText="'#######'" class="agent_npn md:w-[239px] md:float-right" />
+                <textMask @inputUpdate="inputChange" :inputValue="form.agent_npn" :id="'agent_npn'" :label="'Agent NPN'" :placeholderText="'00000000'" :maskText="'########'" class="agent_npn md:w-[239px] md:float-right" />
             </div>
 
             <!--Agent License Eff and Exp Date-->
