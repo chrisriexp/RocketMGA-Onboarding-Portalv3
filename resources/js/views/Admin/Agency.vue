@@ -152,7 +152,8 @@ export default {
                 agreement: '',
                 flow_package: '',
                 beyond_package: '',
-                sterling_package: ''
+                sterling_package: '',
+                roster_notes: ''
             },
             errors: [
                 {

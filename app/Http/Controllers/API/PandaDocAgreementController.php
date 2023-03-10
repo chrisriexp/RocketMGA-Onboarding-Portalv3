@@ -88,45 +88,47 @@ class PandaDocAgreementController extends Controller
             "source"=> "Onboarding Portal"
         ]);
 
-        // Get PandaDoc Agreement Details
-        $pandadocAgreementDetails = $client->request('GET', 'https://api.pandadoc.com/public/v1/documents/S5iKeSTNPAzZQgXgTX4hvR/details', [
-            'headers' => [
-                'Authorization'=> 'API-Key 861fd4711f09ecbcf3f10f7a5cd449e22453abf3',
-                'accept' => 'application/json',
-            ]
-        ]);
+        if(!$user->flow){
+            // Get PandaDoc Agreement Details
+            $pandadocAgreementDetails = $client->request('GET', 'https://api.pandadoc.com/public/v1/documents/'.$document_id.'/details', [
+                'headers' => [
+                    'Authorization'=> 'API-Key 861fd4711f09ecbcf3f10f7a5cd449e22453abf3',
+                    'accept' => 'application/json',
+                ]
+            ]);
 
-        $agreementDetails = json_decode($pandadocAgreementDetails->getBody()->getContents());
+            $agreementDetails = json_decode($pandadocAgreementDetails->getBody()->getContents());
 
-        $roster = [];
+            $roster = [];
 
-        // Roster
-        for($i = 0; $i < 30; $i++){
-            $item = [];
+            // Roster
+            for($i = 0; $i < 30; $i++){
+                $item = [];
 
-            foreach($agreementDetails->fields as $field ){
-                if($field->field_id == 'rosterName'.$i || $field->field_id == 'rosterEmail'.$i){
-                    if($field->value == ""){
-                        break 2;
-                    } else {
-                        $key = $field->field_id == 'rosterName'.$i ? 'name' : 'email';
-                        $item[$key] = $field->value;
+                foreach($agreementDetails->fields as $field ){
+                    if($field->field_id == 'rosterName'.$i || $field->field_id == 'rosterEmail'.$i){
+                        if($field->value == ""){
+                            break 2;
+                        } else {
+                            $key = $field->field_id == 'rosterName'.$i ? 'name' : 'email';
+                            $item[$key] = $field->value;
+                        }
                     }
                 }
+
+                $item['role'] = $i == 0 ? 'admin' : 'agent';
+                $item['rocket_id'] = $rocket_id;
+
+                array_push($roster, $item);
             }
 
-            $item['role'] = $i == 0 ? 'admin' : 'agent';
-            $item['rocket_id'] = $rocket_id;
-
-            array_push($roster, $item);
-        }
-
-        // Add Roster to DB 
-        foreach($roster as $agent){
-            $mgaUser = new MGALogins();
-            $mgaUser->fill($agent);
-            $mgaUser->password = Str::random(9);
-            $mgaUser->save();
+            // Add Roster to DB 
+            foreach($roster as $agent){
+                $mgaUser = new MGALogins();
+                $mgaUser->fill($agent);
+                $mgaUser->password = Str::random(9);
+                $mgaUser->save();
+            }
         }
 
         $response = [

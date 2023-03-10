@@ -12,52 +12,85 @@
             </button>
         </div>
 
-        <div class="grid gap-2">
-            <div :class="valid.license && valid.license_file ? 'text-green-400' : 'text-custom-red'" class="flex gap-4 w-fit h-fit">
-                <CheckCircleIcon class="h-10"/>
-                <p class="text-2xl my-auto">Agency License</p>
+        <div class="w-full grid grid-cols-2 gap-8">
+            <!-- Approval Check List -->
+            <div class="grid col gap-8 h-fit">
+                <div class="grid gap-2">
+                    <div :class="valid.license && valid.license_file ? 'text-green-400' : 'text-custom-red'" class="flex gap-4 w-fit h-fit">
+                        <CheckCircleIcon class="h-10"/>
+                        <p class="text-2xl my-auto">Agency License</p>
+                    </div>
+
+                    <div :class="valid.license ? 'text-green-400' : 'text-custom-red'" class="flex gap-4 w-fit h-fit ml-24">
+                        <button @click="approve('license')" :disabled="this.valid.license"><CheckCircleIcon class="h-6 my-auto"/></button>
+                        <p class="text-lg my-auto">License Number - </p>
+                        <textInput @inputUpdate="inputChange" :inputValue="form.agency_license" :id="'agency_license'" :isdisabled=!update />
+                    </div>
+
+                    <div :class="valid.license_file ? 'text-green-400' : 'text-custom-red'" class="flex gap-4 w-fit h-fit ml-24">
+                        <button @click="approve('license_file')" :disabled="this.valid.license_file"><CheckCircleIcon class="h-6 my-auto"/></button>
+                        <a target="_blank" :href="agency_license_file" class="flex gap-2 my-auto text-lg">View License File</a>
+                    </div>
+                </div>
+
+                <div class="grid gap-2">
+                    <div :class="valid.eo_file && valid.eo_exp && valid.eo_limit ? 'text-green-400' : 'text-custom-red'" class="flex gap-4 w-fit h-fit">
+                        <CheckCircleIcon class="h-10"/>
+                        <p class="text-2xl my-auto">Agency E&O</p>
+                    </div>
+
+                    <div :class="valid.eo_exp ? 'text-green-400' : 'text-custom-red'" class="flex gap-4 w-fit h-fit ml-24">
+                        <button @click="approve('eo_exp')" :disabled="this.valid.eo_exp"><CheckCircleIcon class="h-6 my-auto"/></button>
+                        <p class="text-lg my-auto">E&O Exp Date - </p>
+                        <textInput @inputUpdate="inputChange" :inputValue="form.eo_exp" :id="'eo_exp'" :isdisabled=!update :date=true />
+                    </div>
+
+                    <div :class="valid.eo_limit ? 'text-green-400' : 'text-custom-red'" class="flex gap-4 w-fit h-fit ml-24">
+                        <button @click="approve('eo_limit')" :disabled="this.valid.eo_limit"><CheckCircleIcon class="h-6 my-auto"/></button>
+                        <p class="text-lg my-auto">E&O Limit - </p>
+                        <textInput @inputUpdate="inputChange" :inputValue="form.eo_limit" :id="'eo_limit'" :isdisabled=!update />
+                    </div>
+
+                    <div :class="valid.eo_file ? 'text-green-400' : 'text-custom-red'" class="flex gap-4 w-fit h-fit ml-24">
+                        <button @click="approve('eo_file')" :disabled="this.valid.eo_file"><CheckCircleIcon class="h-6 my-auto"/></button>
+                        <a target="_blank" :href="eo" class="flex gap-2 my-auto text-lg">View E&O File</a>
+                    </div>
+                </div>
+
+                <div class="grid gap-2">
+                    <div :class="valid.agreement ? 'text-green-400' : 'text-custom-red'" class="flex gap-4 w-fit h-fit">
+                        <button @click="approve('agreement')" :disabled="this.valid.agreement"><CheckCircleIcon class="h-10"/></button>
+                        <a target="_blank" :href="agreement" class="flex gap-2 text-2xl my-auto disabled:opacity-40">View Executed Contracts</a>
+                    </div>
+                </div>
             </div>
 
-            <div :class="valid.license ? 'text-green-400' : 'text-custom-red'" class="flex gap-4 w-fit h-fit ml-24">
-                <button @click="approve('license')" :disabled="this.valid.license"><CheckCircleIcon class="h-6 my-auto"/></button>
-                <p class="text-lg my-auto">License Number - </p>
-                <textInput @inputUpdate="inputChange" :inputValue="form.agency_license" :id="'agency_license'" :isdisabled=!update />
-            </div>
+            <!--Agency Roster-->
+            <div class="grid col gap-8">
+                <div v-if="this.data.flow" class="w-full h-fit px-2 bg-custom-orange bg-opacity-60 rounded-md text-sm text-white">
+                    <p class="flex gap-2"><ExclamationCircleIcon class="h-6 my-auto"/><span class="my-auto">This agency is already appointed with flow.</span></p>
+                </div>
 
-            <div :class="valid.license_file ? 'text-green-400' : 'text-custom-red'" class="flex gap-4 w-fit h-fit ml-24">
-                <button @click="approve('license_file')" :disabled="this.valid.license_file"><CheckCircleIcon class="h-6 my-auto"/></button>
-                <a target="_blank" :href="agency_license_file" class="flex gap-2 my-auto text-lg">View License File</a>
-            </div>
-        </div>
+                <div v-else class="grid gap-4 h-fit">
+                    <button @click="saveRoster()" class="w-fit bg-custom-dark-blue text-white p-2 rounded-md">Save</button>
 
-        <div class="grid gap-2">
-            <div :class="valid.eo_file && valid.eo_exp && valid.eo_limit ? 'text-green-400' : 'text-custom-red'" class="flex gap-4 w-fit h-fit">
-                <CheckCircleIcon class="h-10"/>
-                <p class="text-2xl my-auto">Agency E&O</p>
-            </div>
+                    <div class="grid gap-4 h-fit">
+                        <div class="flow-root w-full">
+                            <p class="text-lg text-custom-gray float-left my-auto">Flow Flood Rosters</p>
+                            <button @click="addToRoster()" class="my-auto bg-custom-gray text-white text-sm px-2 float-right rounded-md">Add</button>
+                        </div>
+                        <div v-for="(agent, index) in rosterLogins" :key="index" class="flex gap-4">
+                            <input v-model="agent.name" type="text">
+                            <input v-model="agent.email" type="text">
+                            <TrashIcon @click="deleteRoster(agent.id, index)" class="h-8 my-auto text-custom-gray hover:text-custom-red cursor-pointer" />
+                        </div>
+                    </div>
 
-            <div :class="valid.eo_exp ? 'text-green-400' : 'text-custom-red'" class="flex gap-4 w-fit h-fit ml-24">
-                <button @click="approve('eo_exp')" :disabled="this.valid.eo_exp"><CheckCircleIcon class="h-6 my-auto"/></button>
-                <p class="text-lg my-auto">E&O Exp Date - </p>
-                <textInput @inputUpdate="inputChange" :inputValue="form.eo_exp" :id="'eo_exp'" :isdisabled=!update :date=true />
-            </div>
-
-            <div :class="valid.eo_limit ? 'text-green-400' : 'text-custom-red'" class="flex gap-4 w-fit h-fit ml-24">
-                <button @click="approve('eo_limit')" :disabled="this.valid.eo_limit"><CheckCircleIcon class="h-6 my-auto"/></button>
-                <p class="text-lg my-auto">E&O Limit - </p>
-                <textInput @inputUpdate="inputChange" :inputValue="form.eo_limit" :id="'eo_limit'" :isdisabled=!update />
-            </div>
-
-            <div :class="valid.eo_file ? 'text-green-400' : 'text-custom-red'" class="flex gap-4 w-fit h-fit ml-24">
-                <button @click="approve('eo_file')" :disabled="this.valid.eo_file"><CheckCircleIcon class="h-6 my-auto"/></button>
-                <a target="_blank" :href="eo" class="flex gap-2 my-auto text-lg">View E&O File</a>
-            </div>
-        </div>
-
-        <div class="grid gap-2">
-            <div :class="valid.agreement ? 'text-green-400' : 'text-custom-red'" class="flex gap-4 w-fit h-fit">
-                <button @click="approve('agreement')" :disabled="this.valid.agreement"><CheckCircleIcon class="h-10"/></button>
-                <a target="_blank" :href="agreement" class="flex gap-2 text-2xl my-auto disabled:opacity-40">View Executed Contracts</a>
+                    <div class="grid gap-2 h-fit">
+                        <p class="text-lg text-custom-gray">Roster Notes</p>
+                        <textarea v-model="form.roster_notes" name="roster_notes" id="roster_notes" class="h-32"></textarea>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -65,7 +98,7 @@
 
 <script>
 import textInput from '../textInput.vue'
-import { ExclamationTriangleIcon, CheckCircleIcon, EyeIcon, CheckBadgeIcon } from '@heroicons/vue/24/solid'
+import { ExclamationTriangleIcon, CheckCircleIcon, EyeIcon, CheckBadgeIcon, ExclamationCircleIcon, TrashIcon } from '@heroicons/vue/24/solid'
 import axios from 'axios'
 import emailjs from '@emailjs/browser';
 import ConvertApi from 'convertapi-js'
@@ -111,7 +144,8 @@ export default {
                 agency_license: '',
                 agency_license_file: '',
                 agent_license_file: '',
-                agreement: '' 
+                agreement: '',
+                roster_notes: ''
             },
             errors: [
                 {
@@ -136,7 +170,8 @@ export default {
                 palomar: false,
                 sterling: false,
                 wright: false
-            }
+            },
+            rosterLogins: []
         }
     },
     async created(){
@@ -180,6 +215,19 @@ export default {
                 // this[file] = "http://localhost:8000" + response.data.path
             })
         })
+
+        await axios.get('/api/mga-logins/'+this.rocket_id)
+        .then(response => {
+            response.data.logins.forEach(login => {
+                let item = {}
+
+                item.id = login.id
+                item.name = login.name
+                item.email = login.email
+
+                this.rosterLogins.push(item)
+            })
+        })
     },
     mounted() {
         const keys = Object.keys(this.form)
@@ -188,6 +236,39 @@ export default {
         })
     },
     methods: {
+        async deleteRoster(id, index){
+            if(id != null){
+                await axios.delete('/api/mga-login/'+id)
+                this.rosterLogins.splice(index, 1)
+            } else {
+                this.rosterLogins.splice(index, 1)
+            }
+        },
+        addToRoster(){
+            this.rosterLogins.push({
+                id: null,
+                name: '',
+                email: ''
+            })
+        },
+        async saveRoster(){
+            for (const login of this.rosterLogins){
+                if(login.id == null){
+                    await axios.post('/api/mga-login', {
+                        "rocket_id": this.rocket_id,
+                        "name": login.name,
+                        "email": login.email
+                    })
+                }
+            }
+
+            await axios.post('/api/onboarding', {
+                "rocket_id": this.rocket_id,
+                "update": {
+                    "roster_notes": this.form.roster_notes
+                }
+            })
+        },
         padTo2Digits(num) {
             return num.toString().padStart(2, '0');
         },
@@ -307,6 +388,11 @@ export default {
                         agentPhone: this.data.phone,
                         agencyFullAddress: this.data.address
                     })
+
+                    this.$alert({
+                        title: "Email sent to Dual.",
+                        type: "success"
+                    })
                 }
 
                 //Email to Palomar
@@ -319,6 +405,11 @@ export default {
                         agentPhone: this.data.phone,
                         agencyFullAddress: this.data.address
                     })
+
+                    this.$alert({
+                        title: "Email sent to Palomar.",
+                        type: "success"
+                    })
                 }
 
                 //Sub Agent Welcome Email
@@ -326,6 +417,11 @@ export default {
                 emailjs.send(this.api.serviceID, this.api.onboardingConfirmation, {
                     agencyName: this.data.agency_name,
                     toEmail: this.data.email,
+                })
+
+                this.$alert({
+                    title: "Onboarding confirmation email sent to agency.",
+                    type: "success"
                 })
 
                 //Email to Max
@@ -344,6 +440,11 @@ export default {
                     agencyPhone: this.data.phone,
                     agencyFullAddress: this.data.address,
                     additionalStates: statesStr
+                })
+
+                this.$alert({
+                    title: "Email sent to Max.",
+                    type: "success"
                 })
 
                 //Send Data to Wright Sheet
@@ -366,6 +467,11 @@ export default {
                         "npn": this.data.agent_npn,
                         "week": week
                     })
+
+                    this.$alert({
+                        title: "Data added to Wright Sheet",
+                        type: "success"
+                    })
                 }
 
                 //Send Data to Aon Sheet
@@ -382,6 +488,11 @@ export default {
                         "first_name": first_name,
                         "last_name": last_name,
                         "week": week
+                    })
+
+                    this.$alert({
+                        title: "Data added to Aon Sheet",
+                        type: "success"
                     })
                 }
 
@@ -422,11 +533,24 @@ export default {
                         flowPackage = response.data.link
                     })
 
+                    let rosterHTML = ''
+
+                    this.rosterLogins.forEach(login => {
+                        rosterHTML = rosterHTML+'<p>'+login.name+" - "+login.email+'</p>'
+                    })
+
                     //Send Email to Flow with Package Link
                     emailjs.init(this.api.publicKey)
                     emailjs.send(this.api.serviceID, this.api.flowAppointmentPackage, {
                         agency_name: this.data.agency_name,
-                        flow_package: flowPackage
+                        flow_package: flowPackage,
+                        roster_notes: this.form.roster_notes,
+                        roster: rosterHTML
+                    })
+
+                    this.$alert({
+                        title: "Flow package sent.",
+                        type: "success"
                     })
                 }
 
@@ -470,6 +594,11 @@ export default {
                         agency_name: this.data.agency_name,
                         beyond_package: beyondPackage
                     })
+
+                    this.$alert({
+                        title: "Beyond package sent.",
+                        type: "success"
+                    })
                 }
 
                 if(!this.data.sterling){
@@ -500,6 +629,11 @@ export default {
                         agency_name: this.data.agency_name,
                         sterling_package: sterlingDocs
                     })
+
+                    this.$alert({
+                        title: "Sterling package sent.",
+                        type: "success"
+                    })
                 }
 
                 let logins = {}
@@ -525,10 +659,20 @@ export default {
                     "update": logins
                 })
 
+                this.$alert({
+                    title: "Logins created.",
+                    type: "success"
+                })
+
 
                 await axios.post('/api/appointment', {
                     "rocket_id": this.rocket_id,
                     "update": updates
+                })
+
+                this.$alert({
+                    title: "Appointment information created.",
+                    type: "success"
                 })
 
                 //Carrier Data
@@ -582,6 +726,23 @@ export default {
                 })
 
                 //Create Agency in Rocket MGA System
+                // Agency Logo Link
+                let agency_logo = ""
+                if(this.data.agency_logo != null){
+                    await axios.get('api/file/'+this.data.agency_logo)
+                    .then(response => {
+                        agency_logo = 'https://onboarding.rocketmga.com'+response.data.path
+                    })
+                }
+
+                // Agency E&O Link
+                let eo_file = ""
+                await axios.get('api/file/'+this.data.eo)
+                .then(response => {
+                    eo_file = 'https://onboarding.rocketmga.com'+response.data.path
+                })
+
+                // Licensed States
                 let states = []
 
                 this.data.additional_states.forEach(state => {
@@ -592,8 +753,26 @@ export default {
                     }
                 })
 
+                // Agency Logins
+                let mgaUsers = []
+                await axios.get('/api/mga-logins/'+this.rocket_id)
+                .then(response => {
+                    response.data.logins.forEach(login => {
+                        let item = {}
+
+                        item.role = login.role
+                        item.name = login.name
+                        item.email = login.email
+                        item.password = login.password
+
+                        mgaUsers.push(item)
+                    })
+                })
+
+                // Agency Data
                 const agencyInfo = {
                     "company_name": this.data.agency_name,
+                    "company_logo": agency_logo,
                     "rocket_id": this.rocket_id,
                     "dba_name": this.data.dba_name,
                     "principal_agent": this.data.agent_name,
@@ -613,21 +792,34 @@ export default {
                     "agent_license_eff": this.data.agent_license_eff,
                     "agent_license_exp": this.data.agent_license_exp,
                     "agent_npn": this.data.agent_npn,
+                    "eo_file": eo_file,
                     "eo_insurer": this.data.eo_insurer,
                     "eo_limit": this.data.eo_limit,
                     "eo_policy": this.data.eo_policy,
                     "eo_exp": this.data.eo_exp,
                     //Appointed States
-                    "appointed_states": states
+                    "appointed_states": states,
+                    // Agency Users
+                    "agency_users": mgaUsers
                 }
 
                 await axios.post('https://backend.agentportal.rocketmga.com/api/services/client/new-request', agencyInfo)
+                .then(response => {
+                    this.$alert({
+                        title: "Agency created in Rocket MGA.",
+                        type: "success"
+                    })
+                })
 
                 //Send Training Calendly Invite
                 emailjs.init(this.api.publicKey)
                 emailjs.send(this.api.serviceID, this.api.trainingInvite, {
                     toEmail: this.data.email,
                     agencyName: this.data.agency_name
+                })
+                this.$alert({
+                    title: "Training invite sent.",
+                    type: "success"
                 })
 
                 if(!this.data.neptune){
@@ -830,7 +1022,9 @@ export default {
         ExclamationTriangleIcon,
         CheckCircleIcon,
         EyeIcon,
-        CheckBadgeIcon
+        CheckBadgeIcon,
+        ExclamationCircleIcon,
+        TrashIcon
     }
 }
 </script>
